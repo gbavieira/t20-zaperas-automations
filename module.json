@@ -1,0 +1,29 @@
+{
+  "id": "t20-zaperas-automations",
+  "title": "T20 Zapera's Automations",
+  "description": "Automações do Zapera para o sistema Tormenta20",
+  "version": "0.1",
+  "authors": [{ "name": "Zapera" }],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "tormenta20",
+        "type": "system"
+      }
+    ]
+  },
+  "esmodules": ["scripts/index.mjs"],
+  "packs": [
+    {
+      "name": "zaperas-macros",
+      "label": "Zapera's Macros",
+      "path": "packs/zaperas-macros",
+      "type": "Macro",
+      "system": "tormenta20"
+    }
+  ]
+}
