@@ -1,0 +1,68 @@
+<div class="waypoint-label {{cssClass}}">
+    {{#if action.img}}
+    <div class="img" style="background-image: url('{{ action.img }}');"></div>
+    {{else if action.icon}}
+    <i class="icon {{action.icon}}"></i>
+    {{else if action.label}}
+    <label class="action-label">{{localize action.label}}</label>
+    {{/if}}
+    {{#if cost}}
+    <span class="total-measurement">{{cost.total}} {{cost.units}}</span>
+    {{#if cost.delta}}
+    <span class="delta-measurement">({{cost.delta}})</span>
+    {{/if}}
+    {{else}}
+    <span class="total-measurement">{{distance.total}} {{units}}</span>
+    {{#if distance.delta}}
+    <span class="delta-measurement">({{distance.delta}})</span>
+    {{/if}}
+    {{/if}}
+    {{#if (and elevation (not elevation.hidden))}}
+    <i class="icon {{elevation.icon}}"></i>
+    <span class="total-elevation">{{elevation.total}} {{units}}</span>
+    {{#if elevation.delta}}
+    <span class="delta-elevation">({{elevation.delta}})</span>
+    {{/if}}
+    {{/if}}
+    {{#if secret}}
+    <i class="icon fa-solid fa-eye-slash"></i>
+    {{/if}}
+
+    {{#if travelTime}}
+    <div class="t20-travel-time" style="
+        margin-top: 4px;
+        padding: 4px 6px;
+        background: rgba(20, 16, 12, 0.92);
+        border: 1px solid #6b5a3e;
+        border-radius: 4px;
+        color: #e8d9b5;
+        font-family: 'Signika', sans-serif;
+        font-size: 11px;
+        min-width: 200px;
+    ">
+        <div style="font-size: 10px; color: #aaa; margin-bottom: 3px; padding-bottom: 2px; border-bottom: 1px solid #4a3e2a;">
+            <i class="fas fa-map-signs" style="color: #c9a84c;"></i>
+            <b style="color: #e8d9b5; margin-left: 3px;">Tempo de Viagem</b>
+            <span style="float: right; color: #c9a84c;">{{travelTime.distanceLabel}}</span>
+        </div>
+        <div style="display: flex; gap: 0;">
+            {{#each travelTime.modes}}
+            <div style="flex: 1; text-align: center; padding: 3px 4px; {{#unless @first}}border-left: 1px solid #4a3e2a;{{/unless}}">
+                <div style="font-size: 14px; margin-bottom: 1px;">
+                    <i class="fas {{this.icon}}"></i>
+                </div>
+                <div style="font-weight: bold; font-size: 10px; margin-bottom: 2px;">{{this.label}}</div>
+                <div style="color: #aaa; font-size: 9px;">{{this.speed}}</div>
+                <div style="color: #e8d9b5; font-size: 10px; margin-top: 1px;">{{this.days}}</div>
+                <div style="color: #c9a84c; font-size: 9px; margin-top: 1px;">
+                    <i class="fas fa-utensils" style="font-size: 8px;"></i> {{this.rations}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div style="font-size: 8px; color: #666; margin-top: 3px; text-align: right;">
+            {{travelTime.pcInfo}}
+        </div>
+    </div>
+    {{/if}}
+</div>
