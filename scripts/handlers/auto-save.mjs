@@ -5,6 +5,10 @@
    conjurador tem alvos marcados (targeted), abre automaticamente
    um prompt para o jogador (ou GM) do alvo rolar o teste.
 
+   Para magias de ÁREA (com template): em vez de rolar imediatamente,
+   aguarda o template ser colocado no mapa e então rola para os
+   alvos selecionados naquele momento.
+
    CRÍTICO: Este handler roda em TODOS os clients (não só GM).
    Cada client processa apenas os tokens que controla.
    ============================================================ */
@@ -170,11 +174,50 @@ async function promptSaveRoll(token, saveType, cd, spellName, casterName, origin
 	await rollSaveAndReport(token, saveType, cd, spellName, casterName, originalMessage);
 }
 
+// ── Lógica de área (template) ──────────────────────────────
+
+/**
+ * Aguarda o template ser colocado no mapa e então rola os testes
+ * de resistência para os alvos dentro da área.
+ * Usa hook one-shot em createMeasuredTemplate.
+ */
+function waitForAreaTemplate(message, saveType, cd, spellName, casterName) {
+	const authorId = message.author?.id ?? message.user;
+
+	const hookId = Hooks.on("createMeasuredTemplate", async (templateDoc) => {
+		const templateAuthor = templateDoc.author?.id ?? templateDoc.user;
+		if (templateAuthor !== authorId) return;
+
+		// Remove hook one-shot
+		Hooks.off("createMeasuredTemplate", hookId);
+
+		// Aguarda targets estarem disponíveis após posicionamento
+		await new Promise((r) => setTimeout(r, 150));
+
+		const user = game.users.get(authorId);
+		const targets = [...(user?.targets ?? [])];
+		if (!targets.length) return;
+
+		for (const target of targets) {
+			const actor = target.actor;
+			if (!actor) continue;
+			if (!shouldCurrentUserRoll(actor)) continue;
+			await promptSaveRoll(target, saveType, cd, spellName, casterName, message);
+		}
+	});
+
+	// Timeout: remove hook se template nunca for criado (5 min)
+	setTimeout(() => Hooks.off("createMeasuredTemplate", hookId), 300000);
+}
+
 // ── Handler principal ───────────────────────────────────────
 
 /**
  * Handler de createChatMessage para testes de resistência automáticos.
  * RODA EM TODOS OS CLIENTS — cada client processa os tokens que controla.
+ *
+ * Para magias de área (com template): aguarda o template ser colocado
+ * antes de rolar os testes.
  */
 export async function handleAutoSave(message) {
 	const itemData = message.flags?.tormenta20?.itemData;
@@ -199,11 +242,19 @@ export async function handleAutoSave(message) {
 	const author = game.users.get(authorId);
 	if (!author) return;
 
-	const targets = author.targets;
-	if (!targets?.size) return;
-
 	const spellName = extractItemName(content);
 	const casterName = message.speaker?.alias || "???";
+
+	// Se a magia tem template de área, esperar o template ser colocado
+	const hasTemplate = message.getFlag("tormenta20", "template");
+	if (hasTemplate) {
+		waitForAreaTemplate(message, saveType, cd, spellName, casterName);
+		return;
+	}
+
+	// Fluxo normal (sem área): usa targets atuais do autor
+	const targets = author.targets;
+	if (!targets?.size) return;
 
 	for (const target of targets) {
 		const actor = target.actor;

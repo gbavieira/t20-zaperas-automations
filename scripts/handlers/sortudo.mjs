@@ -14,36 +14,28 @@ const MOD = "t20-zaperas-automations";
 
 /**
  * Detecta se a mensagem é um teste de perícia elegível para Sortudo.
- * - Tem rolagem com d20
- * - Não é rolagem de dano nem de ataque
- * - Não é card de item de ataque (arma, equipamento, poder)
- * - Não é mensagem de reroll "(Sortudo)"
- * - Ainda não usou Sortudo nesta mensagem
  */
 function isSortudoEligible(message) {
 	if (!message.rolls?.length) return false;
 
 	const roll = message.rolls[0];
-	// Deve ter um d20 (usa roll.dice para não depender da posição na fórmula)
-	const hasD20 = roll.dice?.some((d) => d.faces === 20);
+
+	const hasD20 = roll.dice?.some((d) => d.faces === 20)
+		|| roll.formula?.includes("d20");
 	if (!hasD20) return false;
 
-	// Não pode ser dano
 	if (roll.options?.type === "damage") return false;
-	// Não pode ser ataque explícito
-	if (roll.options?.type === "attack") return false;
+	// NÃO checar roll.options.type === "attack" — o sistema T20 marca TODAS
+	// as rolagens d20 (incluindo perícias) como "attack" internamente.
+	// Ataques reais são detectados pela presença de rolls de dano na mensagem.
 
-	// Não pode ser item de ataque (arma, equipamento, poder)
 	const itemData = message.flags?.tormenta20?.itemData;
 	if (itemData?.type && itemData.type !== "pericia") return false;
 
-	// Se a mensagem tem roll de dano, é card de ataque
 	if (message.rolls.some((r) => r.options?.type === "damage")) return false;
 
-	// Não pode ter sido usado nesta mensagem
 	if (message.getFlag(MOD, "sortudoUsed")) return false;
 
-	// Não mostrar em mensagens de reroll "(Sortudo)"
 	const flavor = message.flavor ?? "";
 	if (flavor.includes("(Sortudo)")) return false;
 
@@ -76,7 +68,6 @@ export function renderSortudo(message, html) {
 	const actor = getMessageActor(message);
 	if (!actor || !hasSortudo(actor)) return;
 
-	// Só o autor da mensagem ou o GM podem ver e usar o botão
 	if (!message.isAuthor && !game.user.isGM) return;
 
 	const btn = document.createElement("div");
@@ -147,8 +138,21 @@ async function handleSortudoClick(message, actor, btnContainer) {
 		div.querySelector(".card-header h3, .item-name")?.textContent?.trim() || "Teste";
 	const flavor = `<strong>${headerTitle} (Sortudo)</strong>`;
 
-	// Incluir headerTitle no content para que testes opostos detectem o trigger
-	const content = `<div class="tormenta20 chat-card"><header class="card-header flexrow"><h3 class="item-name" style="flex:1; border: none;"><div>${headerTitle}</div></h3></header></div>`;
+	// Renderizar o dado para incluir no content (sem isso o roll não aparece)
+	const rollHTML = await newRoll.render();
+
+	// Content com header (para testes opostos), card-content vazio (evita crash
+	// no _onChatCardToggleContent do sistema) e o roll renderizado
+	const content = `
+		<div class="tormenta20 chat-card">
+			<header class="card-header flexrow">
+				<h3 class="item-name" style="flex:1; border: none;">
+					<div>${headerTitle}</div>
+				</h3>
+			</header>
+			<div class="card-content" style="display:none;"></div>
+			<div class="roll" data-roll-title="${headerTitle}">${rollHTML}</div>
+		</div>`;
 
 	await newRoll.toMessage({
 		speaker: message.speaker,
@@ -157,5 +161,5 @@ async function handleSortudoClick(message, actor, btnContainer) {
 		flags: { tormenta20: { rollType: "pericia" } }
 	});
 
-	ui.notifications.info(`${actor.name} usou Sortudo!`);
+	console.log(`T20 Zapera | ${actor.name} usou Sortudo (3 PM)`);
 }

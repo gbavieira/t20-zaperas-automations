@@ -34,7 +34,9 @@ Sabe aquela hora que o mestre lança uma magia de área e precisa pedir para cad
 
 **O que faz:** Quando um personagem lança uma magia que exige teste de resistência (como Adaga Mental), o módulo identifica automaticamente qual tipo de resistência é necessária — Fortitude, Reflexo ou Vontade — e abre o prompt de rolagem para cada jogador afetado, sem que o mestre precise pedir nada.
 
-**Como usar:** Não é necessário fazer nada de especial. Ao lançar uma magia com resistência pelo sistema Tormenta20, os prompts aparecem automaticamente para os jogadores cujos personagens estão na área.
+Para magias de área: quando o conjurador coloca o template no mapa, os alvos dentro da área rolam o teste de resistência automaticamente, sem necessidade de selecionar alvos manualmente antes.
+
+**Como usar:** Lance a magia normalmente pelo sistema Tormenta20. Para magias com alvo direto, selecione os tokens como alvo antes. Para magias de área, clique em "Colocar Área de Efeito" e posicione no mapa — os testes são enviados automaticamente.
 
 ---
 
@@ -109,26 +111,18 @@ Se o módulo **Sequencer** estiver instalado, um efeito visual de raio de energi
 
 ---
 
-### 8. Explosão de Área
+### 8. Mapa de Viagem Interativo
 
-**O que faz:** Quando um template de área de efeito é colocado no mapa (como ao usar uma magia de área), o módulo identifica automaticamente a magia, a resistência e a CD a partir do card no chat, e pergunta ao GM se deseja enviar os prompts de resistência para todos os tokens dentro da área. Se confirmar, todos os testes são abertos simultaneamente para os jogadores.
-
-**Como usar:** Lance a magia pelo sistema Tormenta20 e clique em "Colocar Área de Efeito". O módulo faz o resto.
-
----
-
-### 9. Mapa de Viagem Interativo
-
-**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe um painel que calcula automaticamente o tempo de deslocamento enquanto você usa a régua de medição. Mostra o tempo estimado para quatro modos de viagem:
+**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado para quatro modos de viagem, incluindo rações necessárias:
 
 | Modo | Velocidade |
 | --- | --- |
-| A pé | Caminhada normal (personagem mais lento) |
-| Carroça | Velocidade de veículo |
-| Cavalo | Velocidade de montaria |
-| Marcha Forçada | Velocidade máxima com penalidades |
+| A pé | Caminhada normal (personagem mais lento do grupo) |
+| Carroça | 9m de deslocamento (36 km/dia) |
+| Cavalo | 12m de deslocamento (48 km/dia) |
+| Veloz | 15m de deslocamento (60 km/dia) |
 
-**Como usar:** Na configuração da cena, ative a opção **"Mapa de Viagem"**. Depois, ao usar a régua de medição no mapa, o painel de viagem aparece automaticamente com os tempos calculados.
+**Como usar:** Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos). Depois, ao usar a régua de medição no mapa, as informações de viagem aparecem automaticamente no label do último ponto da régua.
 
 ---
 
