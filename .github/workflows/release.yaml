@@ -11,17 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build packs
-        run: npm run pack
-
       - name: Update module.json fields
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
@@ -34,7 +23,7 @@ jobs:
             module.json > module.json.tmp && mv module.json.tmp module.json
 
       - name: Create module.zip
-        run: zip -r module.zip . --exclude ".git/*" --exclude ".github/*" --exclude "node_modules/*" --exclude "src/*"
+        run: zip -r module.zip . --exclude ".git/*" --exclude ".github/*" --exclude "node_modules/*" --exclude "src/*" --exclude "package*.json"
 
       - name: Upload to release
         uses: ncipollo/release-action@v1
