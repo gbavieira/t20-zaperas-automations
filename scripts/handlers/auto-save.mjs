@@ -98,26 +98,22 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 		speaker: ChatMessage.getSpeaker({ actor, token: token.document ?? token }),
 		rolls: [roll],
 		content: `
-      <div class="tormenta20 chat-card">
-        <header class="card-header flexrow">
-          <h3 class="item-name" style="flex:1; border: none;">
-            <div>Teste de ${saveLabel}</div>
-          </h3>
-        </header>
-        <div class="card-content" style="display:block; padding: 4px 8px;">
-          <p style="margin: 2px 0;"><b>${actor.name}</b> vs <b>${spellName}</b>
-             de <b>${casterName}</b></p>
-        </div>
-        <div class="roll">${rollHTML}</div>
-        <div style="text-align:center; padding: 6px; margin: 4px 0;
-                    font-size: 1.15em; font-weight: bold;
-                    color: ${success ? "#18520b" : "#aa0200"};
-                    background: ${success ? "rgba(199,245,186,0.35)" : "rgba(245,186,186,0.35)"};
-                    border-radius: 3px;">
-          ${success ? "✓ SUCESSO" : "✗ FALHA"} &nbsp; (${total} vs CD ${cd})
-        </div>
-      </div>
-    `
+			<div class="tormenta20 chat-card item-card">
+				<header class="card-header flexrow">
+					<h3 class="item-name">
+						<div>Teste de ${saveLabel}</div>
+					</h3>
+				</header>
+				<div class="card-content">
+					<p><b>${actor.name}</b> vs <b>${spellName}</b>
+					   de <b>${casterName}</b></p>
+				</div>
+				<div class="roll">${rollHTML}</div>
+				<div class="t20-result-banner ${success ? "success" : "failure"}">
+					${success ? "✓ SUCESSO" : "✗ FALHA"} &nbsp; (${total} vs CD ${cd})
+				</div>
+			</div>
+		`
 	});
 
 	// Em caso de FALHA: aplica efeitos automaticamente se o alvo estiver vivo

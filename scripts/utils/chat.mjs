@@ -33,20 +33,18 @@ export function buildResultTable({
   const bonusHeader = showBonus ? "<th>Bônus</th>" : "";
   const actorOrToken = showBonus ? "Ator" : "Token";
   const resultHeader = showBonus ? "Result" : "Resultado";
-  const nat20Tag = '<span style="color:#d4a017; font-weight:bold;" title="20 Natural"> (nat 20)</span>';
+  const nat20Tag = '<span class="t20-nat20" title="20 Natural"> (nat 20)</span>';
   const attackerNat20 = attackerNat === 20 ? nat20Tag : "";
 
   let html = `<div class="tormenta20">
     <h3>${emoji} ${headerText}</h3>
     <p><b>${attackerName}</b> rolou ${attackLabel}: <b>${attackerTotal}</b>${attackerNat20}</p>
     <hr>
-    <table style="width:100%; font-size:0.9em;">
+    <table class="t20-opposed-table">
       <tr><th>${actorOrToken}</th><th>${defenseAbbr}</th>${bonusHeader}<th>${resultHeader}</th></tr>`;
 
   for (const r of results) {
     const icon = r.passed ? "✅" : "❌";
-    const color = r.passed ? "green" : "#888";
-    const weight = r.passed ? "bold" : "normal";
     const defNat20 = r.nat === 20 ? nat20Tag : "";
 
     let linkData;
@@ -62,7 +60,7 @@ export function buildResultTable({
 
     const bonusCell = showBonus ? `<td>+${r.bonus}</td>` : "";
 
-    html += `<tr style="color:${color}; font-weight:${weight};">
+    html += `<tr class="t20-opposed-row ${r.passed ? "passed" : "failed"}">
       <td><a ${linkData}>${r.name}</a></td>
       <td>${r.total}${defNat20}</td>
       ${bonusCell}

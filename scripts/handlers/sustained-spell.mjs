@@ -118,42 +118,28 @@ export async function handleSustainTurn(combat, data, options, userId) {
 		if (!canAfford) {
 			await actor.deleteEmbeddedDocuments("ActiveEffect", [effect.id]);
 			await ChatMessage.create({
-				content: `<i class="fas fa-times" style="color: #aa0200;"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b> (PM insuficiente).`,
+				content: `<span class="t20-status-msg ended"><i class="fas fa-times"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b> (PM insuficiente).</span>`,
 				speaker: ChatMessage.getSpeaker({ actor })
 			});
 			continue;
 		}
 
 		const content = `
-		<div class="${PROMPT_CLASS}" style="
-			border: 2px solid #6c5ce7; border-radius: 6px;
-			padding: 10px; margin: 4px 0;
-			background: rgba(108, 92, 231, 0.08);
-		">
-			<div style="font-weight: bold; font-size: 1em; margin-bottom: 6px;">
-				<i class="fas fa-magic" style="color: #6c5ce7;"></i>
+		<div class="${PROMPT_CLASS}">
+			<div class="t20-sustain-title">
+				<i class="fas fa-magic"></i>
 				Sustentar: ${spellName}
 			</div>
-			<div style="margin-bottom: 8px; font-size: 0.9em;">
+			<div class="t20-sustain-body">
 				Deseja pagar <b>${pmCost} PM</b> para sustentar <b>${spellName}</b>?
 			</div>
-			<div style="display: flex; gap: 6px;">
+			<div class="t20-sustain-actions">
 				<button class="sustain-yes" data-actor-id="${actor.id}" data-effect-id="${effect.id}"
-						data-pm-cost="${pmCost}" data-spell-name="${spellName}"
-						style="
-							flex: 1; padding: 4px 8px; border: none; border-radius: 4px;
-							font-weight: bold; cursor: pointer;
-							color: #18520b; background: rgba(199,245,186,0.5);
-						">
+						data-pm-cost="${pmCost}" data-spell-name="${spellName}">
 					<i class="fas fa-check"></i> Sim, pagar ${pmCost} PM
 				</button>
 				<button class="sustain-no" data-actor-id="${actor.id}" data-effect-id="${effect.id}"
-						data-spell-name="${spellName}"
-						style="
-							flex: 1; padding: 4px 8px; border: none; border-radius: 4px;
-							font-weight: bold; cursor: pointer;
-							color: #aa0200; background: rgba(245,186,186,0.5);
-						">
+						data-spell-name="${spellName}">
 					<i class="fas fa-times"></i> Encerrar
 				</button>
 			</div>
@@ -202,8 +188,8 @@ export function renderSustainPrompt(message, html) {
 	}
 
 	function disableButtons() {
-		if (yesBtn) { yesBtn.disabled = true; yesBtn.style.opacity = "0.5"; yesBtn.style.cursor = "default"; }
-		if (noBtn) { noBtn.disabled = true; noBtn.style.opacity = "0.5"; noBtn.style.cursor = "default"; }
+		if (yesBtn) yesBtn.disabled = true;
+		if (noBtn) noBtn.disabled = true;
 	}
 
 	// Usa o nome do token ativo se existir, fallback para o nome do ator
@@ -222,7 +208,7 @@ export function renderSustainPrompt(message, html) {
 
 				// Mensagem pública para todos
 				await ChatMessage.create({
-					content: `<i class="fas fa-magic" style="color: #6c5ce7;"></i> <b>${actorName}</b> está sustentando <b>${spellName}</b>.`,
+					content: `<span class="t20-status-msg sustaining"><i class="fas fa-magic"></i> <b>${actorName}</b> está sustentando <b>${spellName}</b>.</span>`,
 					speaker: ChatMessage.getSpeaker({ actor })
 				});
 
@@ -237,7 +223,7 @@ export function renderSustainPrompt(message, html) {
 						const name = remaining.flags.tormenta20.spellName || "Magia";
 						await actor.deleteEmbeddedDocuments("ActiveEffect", [remaining.id]);
 						await ChatMessage.create({
-							content: `<i class="fas fa-times" style="color: #aa0200;"></i> <b>${actorName}</b> encerrou a sustentação de <b>${name}</b> (PM insuficiente).`,
+							content: `<span class="t20-status-msg ended"><i class="fas fa-times"></i> <b>${actorName}</b> encerrou a sustentação de <b>${name}</b> (PM insuficiente).</span>`,
 							speaker: ChatMessage.getSpeaker({ actor })
 						});
 					}
@@ -249,7 +235,7 @@ export function renderSustainPrompt(message, html) {
 				if (effect) {
 					await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
 					await ChatMessage.create({
-						content: `<i class="fas fa-times" style="color: #aa0200;"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b> (PM insuficiente).`,
+						content: `<span class="t20-status-msg ended"><i class="fas fa-times"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b> (PM insuficiente).</span>`,
 						speaker: ChatMessage.getSpeaker({ actor })
 					});
 				}
@@ -268,7 +254,7 @@ export function renderSustainPrompt(message, html) {
 				await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
 				// Mensagem pública para todos
 				await ChatMessage.create({
-					content: `<i class="fas fa-times" style="color: #aa0200;"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b>.`,
+					content: `<span class="t20-status-msg ended"><i class="fas fa-times"></i> <b>${actorName}</b> encerrou a sustentação de <b>${spellName}</b>.</span>`,
 					speaker: ChatMessage.getSpeaker({ actor })
 				});
 			}

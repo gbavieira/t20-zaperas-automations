@@ -17,6 +17,7 @@
     ]
   },
   "esmodules": ["scripts/index.mjs"],
+  "styles": ["styles/module.css"],
   "packs": [
     {
       "name": "zaperas-macros",

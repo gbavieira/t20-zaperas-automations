@@ -71,21 +71,12 @@ export function renderSortudo(message, html) {
 	if (!message.isAuthor && !game.user.isGM) return;
 
 	const btn = document.createElement("div");
-	btn.style.cssText = "padding: 4px 6px 2px;";
+	btn.className = "t20-sortudo-wrapper";
 	btn.innerHTML = `
-    <button type="button" class="t20-sortudo-btn" style="
-      background: #4a0060;
-      color: #e8d0ff;
-      border: 1px solid #7a2090;
-      border-radius: 4px;
-      width: 100%;
-      font-family: 'Signika', sans-serif;
-      cursor: pointer;
-      padding: 4px 8px;
-    ">
-      <i class="fas fa-dice"></i> Usar Sortudo (3 PM)
-    </button>
-  `;
+		<button type="button" class="t20-sortudo-btn">
+			<i class="fas fa-dice"></i> Usar Sortudo (3 PM)
+		</button>
+	`;
 
 	btn.querySelector("button").addEventListener("click", (ev) => {
 		ev.preventDefault();
@@ -146,7 +137,7 @@ async function handleSortudoClick(message, actor, btnContainer) {
 	const content = `
 		<div class="tormenta20 chat-card">
 			<header class="card-header flexrow">
-				<h3 class="item-name" style="flex:1; border: none;">
+				<h3 class="item-name">
 					<div>${headerTitle}</div>
 				</h3>
 			</header>

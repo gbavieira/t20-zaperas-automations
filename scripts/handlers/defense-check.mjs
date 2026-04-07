@@ -103,20 +103,15 @@ export function renderDefenseCheck(message, html) {
 	for (const t of targets) {
 		const hit = attackTotal >= t.defense;
 		const label = hit ? "ACERTOU!" : "ERROU!";
-		const color = hit ? "#18520b" : "#aa0200";
-		const bg = hit ? "rgba(199,245,186,0.35)" : "rgba(245,186,186,0.35)";
 
 		defenseHTML += `
-      <div style="text-align:center; padding: 4px 8px; margin: 2px 0;
-                  font-size: 1em; font-weight: bold;
-                  color: ${color}; background: ${bg};
-                  border-radius: 3px;">
-        <span style="font-weight:normal; font-size:0.9em;">
-          vs <b>${t.name}</b> (Def ${t.defense})
-        </span>
-        <br>
-        ${hit ? "✓" : "✗"} ${label} &nbsp; (${attackTotal} vs ${t.defense})
-      </div>`;
+			<div class="t20-result-banner ${hit ? "success" : "failure"}">
+				<span class="t20-result-label">
+					vs <b>${t.name}</b> (Def ${t.defense})
+				</span>
+				<br>
+				${hit ? "✓" : "✗"} ${label} &nbsp; (${attackTotal} vs ${t.defense})
+			</div>`;
 	}
 
 	const wrapper = document.createElement("div");

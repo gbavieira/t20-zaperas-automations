@@ -16,8 +16,6 @@ export function handleTokenLinks(message, html) {
 
   // Links completos: pan ao token + control + abre ficha do ator
   el.querySelectorAll(".t20-contest-token").forEach((link) => {
-    link.style.cursor = "pointer";
-    link.style.textDecoration = "underline";
     link.addEventListener("click", (ev) => {
       ev.preventDefault();
       const tokenId = ev.currentTarget.dataset.tid;
@@ -34,8 +32,6 @@ export function handleTokenLinks(message, html) {
 
   // Links simples: pan ao token + control (sem abrir ficha)
   el.querySelectorAll(".t20-perc-token").forEach((link) => {
-    link.style.cursor = "pointer";
-    link.style.textDecoration = "underline";
     link.addEventListener("click", (ev) => {
       ev.preventDefault();
       const tokenId = ev.currentTarget.dataset.tid;

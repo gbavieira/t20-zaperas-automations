@@ -137,12 +137,6 @@ export function renderLifeDrain(message, html) {
 			const modLabel = mod === 1 ? "" : mod === 2 ? " em dobro" : " (metade)";
 			drainBtn.title = `Aplicar dano${modLabel} e curar atacante`;
 
-			// Estilo: mesma base + destaque roxo
-			drainBtn.style.cssText = `
-				color: #9b59b6;
-				text-shadow: 0 0 4px rgba(155, 89, 182, 0.4);
-			`;
-
 			// Registra click handler com o multiplicador correto
 			drainBtn.addEventListener("click", (event) => handleDrainClick(event, message, config, mod));
 

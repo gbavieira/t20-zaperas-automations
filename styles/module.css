@@ -1,0 +1,180 @@
+/* ============================================================
+   T20 Zapera's Automations — Estilos de Chat
+   Cores e padrões extraídos do sistema Tormenta20
+   (less/variables.less + less/chat.less)
+
+   Paleta do sistema:
+     @colorOlive:   #4b4a44  (texto de header)
+     @colorCrimson:  #7b3324  (acento)
+     @colorRuby:     #b52d34  (destaque)
+     @borderGroove:  2px groove #eeede0
+     Sucesso:  bg #c7d0c0, border 1px solid #006c00
+     Falha:    bg #ffdddd, border 1px solid #6e0000
+   ============================================================ */
+
+/* ── Banners de Resultado (Sucesso/Falha) ─────────────────── */
+/* Usado por: auto-save, defense-check                        */
+
+.t20-result-banner {
+  text-align: center;
+  padding: 4px 8px;
+  margin: 4px 0;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 3px;
+}
+
+.t20-result-banner.success {
+  color: #006c00;
+  background: #c7d0c0;
+  border: 1px solid #006c00;
+}
+
+.t20-result-banner.failure {
+  color: #6e0000;
+  background: #ffdddd;
+  border: 1px solid #6e0000;
+}
+
+.t20-result-banner .t20-result-label {
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+/* ── Botão Sortudo ──────────────────────────────────────── */
+
+.t20-sortudo-wrapper {
+  padding: 4px 0 2px;
+}
+
+.t20-sortudo-btn {
+  background: rgba(255, 255, 240, 0.8);
+  color: #4b4a44;
+  border: 2px groove #eeede0;
+  border-radius: 4px;
+  width: 100%;
+  font-family: "Signika", sans-serif;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.t20-sortudo-btn:hover {
+  color: #111;
+  text-shadow: 0 0 10px red;
+}
+
+/* ── Prompt de Sustentação ─────────────────────────────── */
+
+.t20-sustain-prompt {
+  border: 2px groove #eeede0;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin: 4px 0;
+  background: rgba(255, 255, 240, 0.5);
+}
+
+.t20-sustain-prompt .t20-sustain-title {
+  font-weight: bold;
+  font-size: 1em;
+  margin-bottom: 6px;
+  color: #4b4a44;
+}
+
+.t20-sustain-prompt .t20-sustain-title i {
+  color: #7b3324;
+}
+
+.t20-sustain-prompt .t20-sustain-body {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+.t20-sustain-prompt .t20-sustain-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.t20-sustain-prompt .sustain-yes,
+.t20-sustain-prompt .sustain-no {
+  flex: 1;
+  padding: 4px 8px;
+  border: 2px groove #eeede0;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.t20-sustain-prompt .sustain-yes {
+  color: #006c00;
+  background: #c7d0c0;
+}
+
+.t20-sustain-prompt .sustain-no {
+  color: #6e0000;
+  background: #ffdddd;
+}
+
+.t20-sustain-prompt .sustain-yes:disabled,
+.t20-sustain-prompt .sustain-no:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Status de Sustentação (mensagens no chat) ──────────── */
+
+.t20-status-msg i {
+  margin-right: 2px;
+}
+
+.t20-status-msg.sustaining i {
+  color: #7b3324;
+}
+
+.t20-status-msg.ended i {
+  color: #b52d34;
+}
+
+/* ── Dreno de Vida ──────────────────────────────────────── */
+/* Herda layout dos .apply-dmg do sistema; só muda a cor    */
+
+.apply-dmg-drain {
+  color: #7b3324;
+  text-shadow: 0 0 4px rgba(123, 50, 36, 0.4);
+}
+
+/* ── Tabela de Testes Opostos ──────────────────────────── */
+
+.t20-opposed-table {
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.t20-opposed-row.passed {
+  color: #006c00;
+  font-weight: bold;
+}
+
+.t20-opposed-row.failed {
+  color: #888;
+  font-weight: normal;
+}
+
+.t20-nat20 {
+  color: #b52d34;
+  font-weight: bold;
+}
+
+/* ── Tabela de Condições (zero-pv) ─────────────────────── */
+
+.t20-condition-table {
+  width: 100%;
+  font-size: 0.95em;
+}
+
+/* ── Links de Token no Chat ──────────────────────────── */
+
+.t20-contest-token,
+.t20-perc-token {
+  cursor: pointer;
+  text-decoration: underline;
+}
