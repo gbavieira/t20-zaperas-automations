@@ -4,9 +4,6 @@ on:
   release:
     types: [published]
 
-env:
-  package_type: module
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -14,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -25,19 +22,16 @@ jobs:
       - name: Build packs
         run: npm run pack
 
-      - name: Extract tag version
-        id: get_version
-        uses: battila7/get-version-action@v2
-
-      - name: Substitute fields in module.json
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: "module.json"
-        env:
-          version: ${{ steps.get_version.outputs.version-without-v }}
-          url: https://github.com/${{ github.repository }}
-          manifest: https://github.com/${{ github.repository }}/releases/latest/download/module.json
-          download: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip
+      - name: Update module.json fields
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          jq \
+            --arg version "$VERSION" \
+            --arg url "https://github.com/${{ github.repository }}" \
+            --arg manifest "https://github.com/${{ github.repository }}/releases/latest/download/module.json" \
+            --arg download "https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip" \
+            '.version = $version | .url = $url | .manifest = $manifest | .download = $download' \
+            module.json > module.json.tmp && mv module.json.tmp module.json
 
       - name: Create module.zip
         run: zip -r module.zip . --exclude ".git/*" --exclude ".github/*" --exclude "node_modules/*" --exclude "src/*"

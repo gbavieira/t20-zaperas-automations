@@ -144,7 +144,6 @@ node_modules/
 packs-temp/
 .claude/
 CLAUDE.md
-package-lock.json
 docs/superpowers/
 src/packs/
 
