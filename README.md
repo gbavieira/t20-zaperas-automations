@@ -70,7 +70,7 @@ Quando o personagem recupera pelo menos 1 PV, as condições são removidas auto
 
 ---
 
-### 4. Verificador de Defesa
+### 4. Verificador de Defesa (Não funcional ainda)
 
 **O que faz:** Ao rolar um ataque com um alvo selecionado, o módulo compara automaticamente o total do dado com a Defesa do alvo e mostra no card do chat se o ataque **acertou** ou **errou**, com destaque visual.
 
@@ -111,7 +111,7 @@ Se o módulo **Sequencer** estiver instalado, um efeito visual de raio de energi
 
 ---
 
-### 8. Mapa de Viagem Interativo
+### 8. Mapa de Viagem Interativo (Em Desenvolvimento)
 
 **O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado para quatro modos de viagem, incluindo rações necessárias:
 
@@ -137,6 +137,19 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 | **Dano de Queda** | Calcula e rola o dano de queda conforme as regras do Tormenta20, com suporte a quedas na água e objetos pesados. |
 | **Relógio de Tibares** | Aplica a regra de Custo de Vida diário, descontando moedas automaticamente de cada personagem conforme o estilo de vida escolhido. |
 | **Limpar Réguas** | Remove todas as réguas de medição do cenário atual com um clique. |
+
+---
+
+## Bugs Conhecidos
+
+### 1. Testes de Resistência Automáticos
+-- Aqui quando um poder/magia tem algum efeito que vai para o chat, mesmo as vezes sendo proveniente de um aprimoramento de magia não usado, o efeito é aplicado automaticamente no token alvo se ele falhar na resistência.
+
+### 4. Verificador de Defesa (Não funcional ainda)
+-- Ainda tem bugs, não está identificando um "ataque".
+
+### 8. Mapa de Viagem Interativo
+-- O front ainda está em desenvolvimento, com alguns bugs visuais
 
 ---
 
