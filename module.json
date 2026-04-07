@@ -2,7 +2,6 @@
   "id": "t20-zaperas-automations",
   "title": "T20 Zapera's Automations",
   "description": "Automações do Zapera para o sistema Tormenta20",
-  "version": "0.1",
   "authors": [{ "name": "Zapera" }],
   "compatibility": {
     "minimum": "13",
@@ -26,5 +25,10 @@
       "type": "Macro",
       "system": "tormenta20"
     }
-  ]
+  ],
+  "bugs": "https://github.com/gbavieira/t20-zaperas-automations/issues",
+  "url": "This is auto replaced",
+  "version": "This is auto replaced",
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced"
 }
