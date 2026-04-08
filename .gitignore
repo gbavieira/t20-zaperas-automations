@@ -151,3 +151,6 @@ src/packs/
 packs/*/LOCK
 packs/*/LOG
 packs/*/LOG.old
+
+#local scripts
+*.bat
