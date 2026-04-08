@@ -73,7 +73,7 @@ async function applyEffectsToActor(actor, effects) {
 
 /**
  * Rola o teste de resistência, compara com a CD e posta resultado no chat.
- * Reutilizável por qualquer handler (auto-save, area-save, etc.).
+ * Exportada para reuso por handlers externos.
  */
 export async function rollSaveAndReport(token, saveType, cd, spellName, casterName, originalMessage = null) {
 	const actor = token.actor;

@@ -12,7 +12,7 @@
 import { ZERO_PV_CONDITIONS, ZERO_PV_FLAG, ZERO_PV_FLAG_STATUS } from "../config.mjs";
 import { normalizeConditionName } from "../utils/text.mjs";
 
-/** Lock de processamento — previne re-entrada durante criação de efeitos */
+/** Previne reprocessamento do mesmo ator — evita loop updateActor → createEmbeddedDocuments → updateActor */
 const processing = new Set();
 
 // ── Helpers ─────────────────────────────────────────────────

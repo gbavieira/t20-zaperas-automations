@@ -69,8 +69,8 @@ function getPCs() {
 // ── Ruler patch ──────────────────────────────────────────────
 
 /**
- * Registra o patch na régua: substitui o template HBS e envolve
- * _getWaypointLabelContext para injetar dados de viagem.
+ * Inicializa o suporte ao Mapa de Viagem na régua: substitui o template HBS
+ * e envolve _getWaypointLabelContext para injetar os dados de tempo de viagem.
  * Deve ser chamado em Hooks.once("init").
  */
 export function registerRulerPatch() {
@@ -130,7 +130,7 @@ export function registerRulerPatch() {
 		return context;
 	};
 
-	console.log("T20 Zapera | Ruler patch registrado para Mapa de Viagem");
+	console.log("T20 Zapera | Mapa de Viagem: régua inicializada.");
 }
 
 // ── Injeção de checkbox na configuração de cena ───────────────
@@ -157,8 +157,8 @@ export function injectSceneConfigCheckbox(app, html) {
 		</p>
 	`;
 
-	// Localizar aba Básicas (data-tab="basics", grupo "sheet")
-	// CUIDADO: data-tab="basic" (sem 's') é sub-aba de Ambiente, não Básicos!
+	// Nota: data-tab="basics" (com 's') é a aba Básicas da config de cena;
+	//       data-tab="basic" (sem 's') é sub-aba da aba Ambiente — seletores distintos.
 	const basicTab = html.querySelector(".tab[data-group='sheet'][data-tab='basics']");
 	if (!basicTab) {
 		console.warn("T20 Zapera | SceneConfig: aba Básicas não encontrada.");

@@ -7,13 +7,13 @@
    Hooks:
      - 1× init                   → registra configurações do módulo
      - 1× ready                  → registra os hooks de automação
-     - 1× createChatMessage      → auto-save (inclui área via template) + testes opostos + defesa + sustentação
+     - 1× createChatMessage      → testes de resistência + testes opostos + defesa + sustentação
      - 1× renderChatMessage      → links clicáveis de token + visual de defesa
      - 1× renderChatMessageHTML  → dreno de vida + sustentação + sortudo
      - 1× updateCombat           → prompt de sustentação no início do turno
      - 1× updateActor            → condições em 0 PV
      - 1× renderSceneConfig      → checkbox "Mapa de Viagem" na config da cena
-     - 1× init (travelRuler)     → patch na régua para exibir tempo de viagem
+     - 1× init (travelRuler)     → registra a régua de Mapa de Viagem
    ============================================================ */
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
@@ -80,7 +80,7 @@ Hooks.once("init", async () => {
 		});
 	}
 
-	// ── Ruler patch (deve rodar em init, antes do canvas) ────
+	// ── Régua de Viagem (deve rodar em init, antes do canvas) ────
 	if (game.settings.get(MOD, "travelRuler")) {
 		const { registerRulerPatch } = await import("./handlers/travel-ruler.mjs");
 		registerRulerPatch();

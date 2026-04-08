@@ -24,8 +24,7 @@ function findDrainConfig(itemName) {
 }
 
 /**
- * Extrai o roll de dano correspondente ao elemento .roll,
- * replicando a lógica de _onChatApplyDamage em chat.mjs.
+ * Localiza o Roll de dano pelo título (options.title) dentro dos rolls da mensagem.
  */
 function findDamageRoll(message, rollEl) {
 	const rollTitle = rollEl.dataset.rollTitle;
@@ -101,10 +100,9 @@ async function handleDrainClick(event, message, config, multiplier) {
 // ── Render hook ──────────────────────────────────────────────
 
 /**
- * Chamado em renderChatMessageHTML — APÓS hooks.mjs criar os botões.
- * Detecta magias de drain e substitui TODOS os botões de dano (1x, 2x, ½)
- * por botões de drain que curam o atacante proporcionalmente.
- * O botão de cura (-1) não é alterado.
+ * Chamado em renderChatMessageHTML — após o sistema Tormenta20 criar os botões de dano.
+ * Detecta magias de drain e substitui os botões de dano (1x, 2x, ½) por botões
+ * que aplicam dano E curam o atacante proporcionalmente. O botão de cura (-1) não é alterado.
  *
  * @param {ChatMessage} message  documento da mensagem
  * @param {HTMLElement} html     elemento DOM renderizado

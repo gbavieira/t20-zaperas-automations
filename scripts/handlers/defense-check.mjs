@@ -6,9 +6,9 @@
    card de chat se o ataque acertou ou errou comparando com a
    Defesa do alvo.
 
-   Two-phase:
-     1. createChatMessage → armazena defesa do alvo nas flags
-     2. renderChatMessage → injeta visual de acertou/errou no card
+   Fluxo em dois passos:
+     1. createChatMessage → armazena defesa do alvo nas flags da mensagem
+     2. renderChatMessage → injeta o visual de acertou/errou no card
    ============================================================ */
 
 // ── Constante para evitar re-injeção no render ──────────────

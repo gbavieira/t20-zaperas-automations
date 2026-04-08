@@ -63,7 +63,7 @@ export async function handleSustainCast(message) {
 						castMessageId: message.id
 					}
 				},
-				changes: [] // Vazio — NÃO trigga combat.mjs
+				changes: [] // Sem modificadores — efeito puramente de rastreamento
 			}
 		]);
 
@@ -165,7 +165,7 @@ export async function handleSustainTurn(combat, data, options, userId) {
 // ── Fase 3: Handlers dos botões do prompt ────────────────────
 
 /**
- * Wires up listeners nos botões Sim/Não dos prompts de sustentação.
+ * Registra os listeners dos botões Sim/Não nos prompts de sustentação.
  * Chamado em renderChatMessageHTML.
  *
  * @param {ChatMessage} message
@@ -230,7 +230,7 @@ export function renderSustainPrompt(message, html) {
 				}
 			} catch (err) {
 				console.error("T20 | Erro ao gastar PM:", err);
-				// PM insuficiente — remove o efeito e avisa publicamente
+				// Erro ao gastar PM — encerra a sustentação por segurança
 				const effect = actor.effects.get(effectId);
 				if (effect) {
 					await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
