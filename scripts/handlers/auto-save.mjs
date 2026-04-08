@@ -94,26 +94,26 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 	const success = total >= cd;
 	const rollHTML = await roll.render();
 
+	const content = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/auto-save/result.hbs`,
+		{
+			saveLabel,
+			actorName: actor.name,
+			spellName,
+			casterName,
+			rollHTML,
+			bannerClass: success ? "success" : "failure",
+			bannerIcon: success ? "✓" : "✗",
+			bannerText: success ? "SUCESSO" : "FALHA",
+			total,
+			cd
+		}
+	);
+
 	await ChatMessage.create({
 		speaker: ChatMessage.getSpeaker({ actor, token: token.document ?? token }),
 		rolls: [roll],
-		content: `
-			<div class="tormenta20 chat-card item-card">
-				<header class="card-header flexrow">
-					<h3 class="item-name">
-						<div>Teste de ${saveLabel}</div>
-					</h3>
-				</header>
-				<div class="card-content">
-					<p><b>${actor.name}</b> vs <b>${spellName}</b>
-					   de <b>${casterName}</b></p>
-				</div>
-				<div class="roll">${rollHTML}</div>
-				<div class="t20-result-banner ${success ? "success" : "failure"}">
-					${success ? "✓ SUCESSO" : "✗ FALHA"} &nbsp; (${total} vs CD ${cd})
-				</div>
-			</div>
-		`
+		content
 	});
 
 	// Em caso de FALHA: aplica efeitos automaticamente se o alvo estiver vivo
@@ -137,18 +137,17 @@ async function promptSaveRoll(token, saveType, cd, spellName, casterName, origin
 
 	const saveLabel = pericia.label || saveType;
 
+	const content = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/auto-save/prompt.hbs`,
+		{ casterName, spellName, actorName: actor.name, saveLabel, cd }
+	);
+
 	const confirmed = await foundry.applications.api.DialogV2.wait({
 		window: {
 			title: `Teste de Resistência — ${actor.name}`,
 			icon: "fa-solid fa-shield-halved"
 		},
-		content: `
-      <div style="margin: 8px 0; font-size: 0.95em;">
-        <p><b>${casterName}</b> usou <b>${spellName}</b>!</p>
-        <p><b>${actor.name}</b> precisa fazer um teste de
-           <b>${saveLabel}</b> (CD ${cd}).</p>
-      </div>
-    `,
+		content,
 		buttons: [
 			{
 				action: "roll",

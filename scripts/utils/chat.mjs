@@ -18,7 +18,7 @@
  * @param {Array<{name:string, actorId?:string, tokenId?:string, total:number, bonus?:number, nat?:number, passed:boolean}>} opts.results
  * @returns {string} HTML
  */
-export function buildResultTable({
+export async function buildResultTable({
   emoji,
   headerText,
   attackerName,
@@ -30,46 +30,32 @@ export function buildResultTable({
   linkClass = "t20-contest-token",
   results
 }) {
-  const bonusHeader = showBonus ? "<th>Bônus</th>" : "";
-  const actorOrToken = showBonus ? "Ator" : "Token";
-  const resultHeader = showBonus ? "Result" : "Resultado";
   const nat20Tag = '<span class="t20-nat20" title="20 Natural"> (nat 20)</span>';
-  const attackerNat20 = attackerNat === 20 ? nat20Tag : "";
 
-  let html = `<div class="tormenta20">
-    <h3>${emoji} ${headerText}</h3>
-    <p><b>${attackerName}</b> rolou ${attackLabel}: <b>${attackerTotal}</b>${attackerNat20}</p>
-    <hr>
-    <table class="t20-opposed-table">
-      <tr><th>${actorOrToken}</th><th>${defenseAbbr}</th>${bonusHeader}<th>${resultHeader}</th></tr>`;
+  const processedResults = results.map((r) => ({
+    ...r,
+    linkClass,
+    nat20HTML: r.nat === 20 ? nat20Tag : "",
+    icon: r.passed ? "✅" : "❌",
+    cssClass: r.passed ? "passed" : "failed"
+  }));
 
-  for (const r of results) {
-    const icon = r.passed ? "✅" : "❌";
-    const defNat20 = r.nat === 20 ? nat20Tag : "";
-
-    let linkData;
-    if (r.tokenId && r.actorId) {
-      linkData = `class="${linkClass}" data-tid="${r.tokenId}" data-aid="${r.actorId}"`;
-    } else if (r.tokenId) {
-      linkData = `class="${linkClass}" data-tid="${r.tokenId}"`;
-    } else if (r.actorId) {
-      linkData = `class="${linkClass}" data-aid="${r.actorId}"`;
-    } else {
-      linkData = `class="${linkClass}"`;
+  return renderTemplate(
+    `modules/t20-zaperas-automations/templates/opposed-checks/result-table.hbs`,
+    {
+      emoji,
+      headerText,
+      attackerName,
+      attackerTotal,
+      attackerNat20HTML: attackerNat === 20 ? nat20Tag : "",
+      attackLabel,
+      defenseAbbr,
+      showBonus,
+      actorOrToken: showBonus ? "Ator" : "Token",
+      resultHeader: showBonus ? "Result" : "Resultado",
+      results: processedResults
     }
-
-    const bonusCell = showBonus ? `<td>+${r.bonus}</td>` : "";
-
-    html += `<tr class="t20-opposed-row ${r.passed ? "passed" : "failed"}">
-      <td><a ${linkData}>${r.name}</a></td>
-      <td>${r.total}${defNat20}</td>
-      ${bonusCell}
-      <td>${icon}</td>
-    </tr>`;
-  }
-
-  html += `</table></div>`;
-  return html;
+  );
 }
 
 /**

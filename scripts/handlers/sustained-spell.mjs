@@ -124,26 +124,16 @@ export async function handleSustainTurn(combat, data, options, userId) {
 			continue;
 		}
 
-		const content = `
-		<div class="${PROMPT_CLASS}">
-			<div class="t20-sustain-title">
-				<i class="fas fa-magic"></i>
-				Sustentar: ${spellName}
-			</div>
-			<div class="t20-sustain-body">
-				Deseja pagar <b>${pmCost} PM</b> para sustentar <b>${spellName}</b>?
-			</div>
-			<div class="t20-sustain-actions">
-				<button class="sustain-yes" data-actor-id="${actor.id}" data-effect-id="${effect.id}"
-						data-pm-cost="${pmCost}" data-spell-name="${spellName}">
-					<i class="fas fa-check"></i> Sim, pagar ${pmCost} PM
-				</button>
-				<button class="sustain-no" data-actor-id="${actor.id}" data-effect-id="${effect.id}"
-						data-spell-name="${spellName}">
-					<i class="fas fa-times"></i> Encerrar
-				</button>
-			</div>
-		</div>`;
+		const content = await renderTemplate(
+			`modules/t20-zaperas-automations/templates/sustain/prompt.hbs`,
+			{
+				promptClass: PROMPT_CLASS,
+				spellName,
+				pmCost,
+				actorId: actor.id,
+				effectId: effect.id
+			}
+		);
 
 		await ChatMessage.create({
 			content,

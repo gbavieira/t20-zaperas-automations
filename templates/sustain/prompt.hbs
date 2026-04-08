@@ -1,0 +1,24 @@
+<div class="{{promptClass}}">
+	<div class="t20-sustain-title">
+		<i class="fas fa-magic"></i>
+		Sustentar: {{spellName}}
+	</div>
+	<div class="t20-sustain-body">
+		Deseja pagar <b>{{pmCost}} PM</b> para sustentar <b>{{spellName}}</b>?
+	</div>
+	<div class="t20-sustain-actions">
+		<button class="sustain-yes"
+				data-actor-id="{{actorId}}"
+				data-effect-id="{{effectId}}"
+				data-pm-cost="{{pmCost}}"
+				data-spell-name="{{spellName}}">
+			<i class="fas fa-check"></i> Sim, pagar {{pmCost}} PM
+		</button>
+		<button class="sustain-no"
+				data-actor-id="{{actorId}}"
+				data-effect-id="{{effectId}}"
+				data-spell-name="{{spellName}}">
+			<i class="fas fa-times"></i> Encerrar
+		</button>
+	</div>
+</div>

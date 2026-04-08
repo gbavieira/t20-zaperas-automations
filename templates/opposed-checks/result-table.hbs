@@ -1,0 +1,25 @@
+<div class="tormenta20">
+	<h3>{{emoji}} {{headerText}}</h3>
+	<p><b>{{attackerName}}</b> rolou {{attackLabel}}: <b>{{attackerTotal}}</b>{{{attackerNat20HTML}}}</p>
+	<hr>
+	<table class="t20-opposed-table">
+		<tr>
+			<th>{{actorOrToken}}</th>
+			<th>{{defenseAbbr}}</th>
+			{{#if showBonus}}<th>Bônus</th>{{/if}}
+			<th>{{resultHeader}}</th>
+		</tr>
+		{{#each results}}
+		<tr class="t20-opposed-row {{this.cssClass}}">
+			<td>
+				<a class="{{this.linkClass}}"
+				   {{#if this.tokenId}}data-tid="{{this.tokenId}}"{{/if}}
+				   {{#if this.actorId}}data-aid="{{this.actorId}}"{{/if}}>{{this.name}}</a>
+			</td>
+			<td>{{this.total}}{{{this.nat20HTML}}}</td>
+			{{#if ../showBonus}}<td>+{{this.bonus}}</td>{{/if}}
+			<td>{{this.icon}}</td>
+		</tr>
+		{{/each}}
+	</table>
+</div>

@@ -62,7 +62,7 @@ function hasSortudo(actor) {
  * Injeta o botão de Sortudo no card de chat.
  * Chamado em renderChatMessageHTML — html é DOM puro.
  */
-export function renderSortudo(message, html) {
+export async function renderSortudo(message, html) {
 	if (!isSortudoEligible(message)) return;
 
 	const actor = getMessageActor(message);
@@ -70,13 +70,14 @@ export function renderSortudo(message, html) {
 
 	if (!message.isAuthor && !game.user.isGM) return;
 
+	const btnHTML = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/sortudo/button.hbs`,
+		{}
+	);
+
 	const btn = document.createElement("div");
 	btn.className = "t20-sortudo-wrapper";
-	btn.innerHTML = `
-		<button type="button" class="t20-sortudo-btn">
-			<i class="fas fa-dice"></i> Usar Sortudo (3 PM)
-		</button>
-	`;
+	btn.innerHTML = btnHTML;
 
 	btn.querySelector("button").addEventListener("click", (ev) => {
 		ev.preventDefault();
@@ -134,16 +135,10 @@ async function handleSortudoClick(message, actor, btnContainer) {
 
 	// Content com header (para testes opostos), card-content vazio (evita crash
 	// no _onChatCardToggleContent do sistema) e o roll renderizado
-	const content = `
-		<div class="tormenta20 chat-card">
-			<header class="card-header flexrow">
-				<h3 class="item-name">
-					<div>${headerTitle}</div>
-				</h3>
-			</header>
-			<div class="card-content" style="display:none;"></div>
-			<div class="roll" data-roll-title="${headerTitle}">${rollHTML}</div>
-		</div>`;
+	const content = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/sortudo/card.hbs`,
+		{ headerTitle, rollHTML }
+	);
 
 	await newRoll.toMessage({
 		speaker: message.speaker,

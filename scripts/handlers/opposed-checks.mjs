@@ -22,6 +22,11 @@ import { rollSkillCheck } from "../utils/rolls.mjs";
  * Usado pelo modo "choice" (Enganação → Percepção ou Intuição).
  */
 async function promptSkillChoice(check, attackerName, attackerTotal) {
+	const skillChoiceContent = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/opposed-checks/skill-choice.hbs`,
+		{ attackerName, attackLabel: check.attackLabel, attackerTotal }
+	);
+
 	return new Promise((resolve) => {
 		let resolved = false;
 		const buttons = {};
@@ -47,8 +52,7 @@ async function promptSkillChoice(check, attackerName, attackerTotal) {
 		new Dialog(
 			{
 				title: `${check.attackLabel} de ${attackerName} (${attackerTotal})`,
-				content: `<p><b>${attackerName}</b> rolou <b>${check.attackLabel}: ${attackerTotal}</b></p>
-                <p>Qual perícia para o teste oposto?</p>`,
+				content: skillChoiceContent,
 				buttons,
 				default: check.defenseChoices[check.defenseChoices.length - 1]?.key,
 				close: () => {
@@ -201,7 +205,7 @@ export async function handleOpposedChecks(message) {
 		const linkClass = check.tokenLinkClass ?? "t20-contest-token";
 		const headerText = check.headerText(defenseAbbr);
 
-		const html = buildResultTable({
+		const html = await buildResultTable({
 			emoji: check.emoji,
 			headerText,
 			attackerName,

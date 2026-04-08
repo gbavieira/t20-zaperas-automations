@@ -105,24 +105,10 @@ export async function handleZeroPV(actor, changes) {
 				await ChatMessage.create({
 					speaker: ChatMessage.getSpeaker({ actor }),
 					whisper: ChatMessage.getWhisperRecipients("GM"),
-					content: `
-						<div class="tormenta20 chat-card item-card">
-							<header class="card-header flexrow">
-								<h3 class="item-name"><div>${actor.name} caiu a 0 PV</div></h3>
-							</header>
-							<div class="card-content">
-								<p>Condições aplicadas automaticamente:</p>
-								<table class="t20-condition-table">
-									<tr><th>Condição</th><th>Status</th></tr>
-									<tr><td>Sangrando</td><td>OK</td></tr>
-									<tr><td>Indefeso</td><td>OK</td></tr>
-									<tr><td>Desprevenido</td><td>OK</td></tr>
-									<tr><td>Caído</td><td>OK</td></tr>
-									<tr><td>Inconsciente</td><td>OK</td></tr>
-								</table>
-							</div>
-						</div>
-					`
+					content: await renderTemplate(
+						`modules/t20-zaperas-automations/templates/zero-pv/apply.hbs`,
+						{ actorName: actor.name }
+					)
 				});
 			}
 
@@ -138,23 +124,10 @@ export async function handleZeroPV(actor, changes) {
 			await ChatMessage.create({
 				speaker: ChatMessage.getSpeaker({ actor }),
 				whisper: ChatMessage.getWhisperRecipients("GM"),
-				content: `
-					<div class="tormenta20 chat-card item-card">
-						<header class="card-header flexrow">
-							<h3 class="item-name"><div>${actor.name} voltou para 1+ PV</div></h3>
-						</header>
-						<div class="card-content">
-							<p>Condições removidas automaticamente:</p>
-							<table class="t20-condition-table">
-								<tr><th>Condição</th><th>Status</th></tr>
-								<tr><td>Sangrando</td><td>REMOVIDA</td></tr>
-								<tr><td>Indefeso</td><td>REMOVIDA</td></tr>
-								<tr><td>Desprevenido</td><td>REMOVIDA</td></tr>
-								<tr><td>Inconsciente</td><td>REMOVIDA</td></tr>
-							</table>
-						</div>
-					</div>
-				`
+				content: await renderTemplate(
+					`modules/t20-zaperas-automations/templates/zero-pv/remove.hbs`,
+					{ actorName: actor.name }
+				)
 			});
 		}
 	} catch (err) {

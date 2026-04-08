@@ -23,9 +23,28 @@ const MOD = "t20-zaperas-automations";
 /** Lê uma setting booleana do módulo */
 const enabled = (key) => game.settings.get(MOD, key);
 
+// ── Templates Handlebars do módulo ────────────────────────────
+
+const MOD_TEMPLATES = [
+	`modules/${MOD}/templates/auto-save/result.hbs`,
+	`modules/${MOD}/templates/auto-save/prompt.hbs`,
+	`modules/${MOD}/templates/defense-check/banner.hbs`,
+	`modules/${MOD}/templates/sustain/prompt.hbs`,
+	`modules/${MOD}/templates/zero-pv/apply.hbs`,
+	`modules/${MOD}/templates/zero-pv/remove.hbs`,
+	`modules/${MOD}/templates/sortudo/button.hbs`,
+	`modules/${MOD}/templates/sortudo/card.hbs`,
+	`modules/${MOD}/templates/opposed-checks/result-table.hbs`,
+	`modules/${MOD}/templates/opposed-checks/skill-choice.hbs`,
+	`modules/${MOD}/templates/travel-ruler/scene-config.hbs`,
+	`modules/${MOD}/templates/actor-picker/dialog.hbs`,
+	`modules/${MOD}/templates/actor-picker/row.hbs`,
+];
+
 // ── Registro de configurações (deve rodar em "init") ─────────
 
 Hooks.once("init", async () => {
+	foundry.applications.handlebars.loadTemplates(MOD_TEMPLATES);
 	const automations = [
 		{
 			key: "autoSave",
@@ -76,7 +95,8 @@ Hooks.once("init", async () => {
 			scope: "world",
 			config: true,
 			type: Boolean,
-			default: true
+			default: true,
+			requiresReload: true,
 		});
 	}
 
@@ -123,9 +143,9 @@ Hooks.once("ready", async () => {
 	if (enabled("defenseCheck")) {
 		({ renderDefenseCheck: _renderDefenseCheck } = await import("./handlers/defense-check.mjs"));
 	}
-	Hooks.on("renderChatMessage", (message, html) => {
+	Hooks.on("renderChatMessage", async (message, html) => {
 		handleTokenLinks(message, html);
-		if (_renderDefenseCheck) _renderDefenseCheck(message, html);
+		if (_renderDefenseCheck) await _renderDefenseCheck(message, html);
 	});
 
 	// ── renderChatMessageHTML ────────────────────────────────
@@ -143,9 +163,9 @@ Hooks.once("ready", async () => {
 		renderChatHandlers.push(renderSortudo);
 	}
 	if (renderChatHandlers.length) {
-		Hooks.on("renderChatMessageHTML", (message, html) => {
+		Hooks.on("renderChatMessageHTML", async (message, html) => {
 			for (const handler of renderChatHandlers) {
-				try { handler(message, html); }
+				try { await handler(message, html); }
 				catch (err) { console.error("T20 Zapera | renderChatMessageHTML handler error:", err); }
 			}
 		});

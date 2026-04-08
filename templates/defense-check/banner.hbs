@@ -1,0 +1,9 @@
+{{#each targets}}
+<div class="t20-result-banner {{this.cssClass}}">
+	<span class="t20-result-label">
+		vs <b>{{this.name}}</b> (Def {{this.defense}})
+	</span>
+	<br>
+	{{this.icon}} {{this.label}} &nbsp; ({{../attackTotal}} vs {{this.defense}})
+</div>
+{{/each}}

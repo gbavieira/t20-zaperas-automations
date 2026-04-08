@@ -87,7 +87,7 @@ export async function handleDefenseCheck(message) {
  * Injeta o visual de acertou/errou no card de chat quando a
  * flag defenseCheck está presente na mensagem.
  */
-export function renderDefenseCheck(message, html) {
+export async function renderDefenseCheck(message, html) {
 	const data = message.flags?.tormenta20?.[DEFENSE_CHECK_FLAG];
 	if (!data?.targets?.length) return;
 
@@ -98,21 +98,18 @@ export function renderDefenseCheck(message, html) {
 
 	const { targets, attackTotal } = data;
 
-	// Constrói HTML para cada alvo
-	let defenseHTML = "";
-	for (const t of targets) {
-		const hit = attackTotal >= t.defense;
-		const label = hit ? "ACERTOU!" : "ERROU!";
+	const processedTargets = targets.map((t) => ({
+		...t,
+		hit: attackTotal >= t.defense,
+		icon: attackTotal >= t.defense ? "✓" : "✗",
+		label: attackTotal >= t.defense ? "ACERTOU!" : "ERROU!",
+		cssClass: attackTotal >= t.defense ? "success" : "failure"
+	}));
 
-		defenseHTML += `
-			<div class="t20-result-banner ${hit ? "success" : "failure"}">
-				<span class="t20-result-label">
-					vs <b>${t.name}</b> (Def ${t.defense})
-				</span>
-				<br>
-				${hit ? "✓" : "✗"} ${label} &nbsp; (${attackTotal} vs ${t.defense})
-			</div>`;
-	}
+	const defenseHTML = await renderTemplate(
+		`modules/t20-zaperas-automations/templates/defense-check/banner.hbs`,
+		{ attackTotal, targets: processedTargets }
+	);
 
 	const wrapper = document.createElement("div");
 	wrapper.className = DEFENSE_CHECK_CLASS;

@@ -17,7 +17,7 @@
  * @param {string} opts.defenseKey     ex: "perc", "vont", "intu"
  * @returns {Promise<string[]>} array de actor IDs selecionados
  */
-export function openActorPicker({
+export async function openActorPicker({
   title,
   attackerName,
   attackerTotal,
@@ -26,34 +26,15 @@ export function openActorPicker({
   defenseAbbr,
   defenseKey
 }) {
+  const id = `t20-picker-${Date.now()}`;
+
+  const content = await renderTemplate(
+    `modules/t20-zaperas-automations/templates/actor-picker/dialog.hbs`,
+    { id, attackerName, attackLabel, attackerTotal, defenseLabel }
+  );
+
   return new Promise((resolve) => {
     let resolved = false;
-    const id = `t20-picker-${Date.now()}`;
-    const content = `
-    <style>
-      #${id} .drop-zone {
-        min-height: 120px; border: 2px dashed #888; border-radius: 6px;
-        padding: 8px; margin: 8px 0; background: rgba(0,0,0,0.05);
-      }
-      #${id} .drop-zone.drag-over { border-color: #7b68ee; background: rgba(123,104,238,0.1); }
-      #${id} .actor-entry {
-        display: flex; align-items: center; gap: 8px;
-        padding: 4px 8px; margin: 2px 0; background: rgba(255,255,255,0.1);
-        border-radius: 4px;
-      }
-      #${id} .actor-entry img { width: 28px; height: 28px; border: none; border-radius: 50%; }
-      #${id} .actor-remove { cursor: pointer; margin-left: auto; color: #c00; }
-      #${id} .bonus-col { display: flex; align-items: center; margin-left: auto; gap: 4px; }
-      #${id} .bonus-col span { font-size: 0.85em; color: #888; }
-    </style>
-    <div id="${id}">
-      <p><b>${attackerName}</b> rolou ${attackLabel}: <b>${attackerTotal}</b></p>
-      <p>Teste oposto: <b>${defenseLabel}</b></p>
-      <p style="font-size:0.85em; color:#666;">Arraste atores da barra lateral para a área abaixo:</p>
-      <div class="drop-zone">
-        <em style="color:#888;">Nenhum ator adicionado</em>
-      </div>
-    </div>`;
 
     const d = new Dialog({
       title,
@@ -82,7 +63,7 @@ export function openActorPicker({
         const dropZone = html.find(".drop-zone")[0];
         const addedIds = new Set();
 
-        function addActor(actor) {
+        async function addActor(actor) {
           if (addedIds.has(actor.id)) return;
           addedIds.add(actor.id);
 
@@ -91,14 +72,15 @@ export function openActorPicker({
           const em = dropZone.querySelector("em");
           if (em) em.remove();
 
+          const rowHTML = await renderTemplate(
+            `modules/t20-zaperas-automations/templates/actor-picker/row.hbs`,
+            { actorImg: actor.img, actorName: actor.name, defenseAbbr, bonusVal, actorId: actor.id }
+          );
+
           const row = document.createElement("div");
           row.className = "actor-entry";
           row.dataset.actorId = actor.id;
-          row.innerHTML = `
-            <img src="${actor.img}" alt="${actor.name}">
-            <span>${actor.name}</span>
-            <div class="bonus-col"><span>${defenseAbbr} ${bonusVal}</span></div>
-            <a class="actor-remove" title="Remover"><i class="fas fa-trash"></i></a>`;
+          row.innerHTML = rowHTML;
 
           row.querySelector(".actor-remove").addEventListener("click", () => {
             addedIds.delete(actor.id);

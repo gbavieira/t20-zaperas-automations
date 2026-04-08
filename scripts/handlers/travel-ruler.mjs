@@ -135,27 +135,20 @@ export function registerRulerPatch() {
 
 // ── Injeção de checkbox na configuração de cena ───────────────
 
-export function injectSceneConfigCheckbox(app, html) {
+export async function injectSceneConfigCheckbox(app, html) {
 	if (!game.user.isGM) return;
 
 	const scene = app.document;
 	const flagVal = scene.getFlag(MOD, FLAG_KEY) ?? false;
 
+	const checkboxHTML = await renderTemplate(
+		`modules/${MOD}/templates/travel-ruler/scene-config.hbs`,
+		{ mod: MOD, flagKey: FLAG_KEY, flagVal }
+	);
+
 	const checkbox = document.createElement("div");
 	checkbox.className = "form-group";
-	checkbox.innerHTML = `
-		<label>
-			<i class="fas fa-map-signs" style="color:#c9a84c; margin-right:4px;"></i>
-			Mapa de Viagem
-		</label>
-		<div class="form-fields">
-			<input type="checkbox" name="flags.${MOD}.${FLAG_KEY}"
-				${flagVal ? "checked" : ""} data-t20-travel-flag>
-		</div>
-		<p class="hint">
-			Ativa o painel de tempo de viagem ao usar a régua nesta cena.
-		</p>
-	`;
+	checkbox.innerHTML = checkboxHTML;
 
 	// Nota: data-tab="basics" (com 's') é a aba Básicas da config de cena;
 	//       data-tab="basic" (sem 's') é sub-aba da aba Ambiente — seletores distintos.
