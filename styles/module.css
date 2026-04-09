@@ -146,7 +146,10 @@
 
 .t20-opposed-table {
   width: 100%;
-  font-size: 0.9em;
+  font-size: 0.78em;
+}
+.t20-opposed-table th {
+  white-space: nowrap;
 }
 
 .t20-opposed-row.passed {

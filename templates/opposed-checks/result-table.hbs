@@ -1,7 +1,12 @@
-<div class="tormenta20">
-	<h3>{{emoji}} {{headerText}}</h3>
-	<p><b>{{attackerName}}</b> rolou {{attackLabel}}: <b>{{attackerTotal}}</b>{{{attackerNat20HTML}}}</p>
-	<hr>
+<div class="tormenta20 chat-card item-card">
+	<header class="card-header flexrow">
+		<h3 class="item-name"><div>{{emoji}} {{headerText}}</div></h3>
+	</header>
+	<div class="card-content">
+		<p style="margin:2px 0; font-size:0.85em;">
+			<b>{{attackerName}}</b> rolou {{attackLabel}}: <b>{{attackerTotal}}</b>{{{attackerNat20HTML}}}
+		</p>
+	</div>
 	<table class="t20-opposed-table">
 		<tr>
 			<th>{{actorOrToken}}</th>
