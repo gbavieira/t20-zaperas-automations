@@ -1,0 +1,55 @@
+<div class="t20-zaperas-config-list" style="padding:8px;">
+  {{#if rules.length}}
+  <table style="width:100%;border-collapse:collapse;font-size:0.92em;">
+    <thead>
+      <tr style="border-bottom:2px solid #ccc;font-weight:bold;text-align:left;">
+        <th style="padding:4px 6px;width:2em;">Emoji</th>
+        <th style="padding:4px 6px;">ID</th>
+        <th style="padding:4px 6px;">Ataque → Defesa</th>
+        <th style="padding:4px 6px;">Modo</th>
+        <th style="padding:4px 6px;width:5em;text-align:center;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rules}}
+      <tr data-idx="{{@index}}" style="border-bottom:1px solid #eee;">
+        <td style="padding:4px 6px;text-align:center;">{{this.emoji}}</td>
+        <td style="padding:4px 6px;">{{this.id}}</td>
+        <td style="padding:4px 6px;font-size:0.88em;color:#555;">{{this.attackLabel}} → {{this.defenseLabels}}</td>
+        <td style="padding:4px 6px;">{{this.modeLabel}}</td>
+        <td style="padding:4px 2px;text-align:center;white-space:nowrap;">
+          <button type="button" data-action="editRule"
+            title="Editar" style="padding:2px 7px;margin:1px;cursor:pointer;">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button type="button" data-action="deleteRule"
+            title="Excluir" style="padding:2px 7px;margin:1px;cursor:pointer;color:#b52d34;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p style="color:#888;text-align:center;margin:16px 0;">
+    Nenhuma regra configurada.
+  </p>
+  {{/if}}
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;">
+    <div style="display:flex;gap:6px;">
+      <button type="button" data-action="addRule" style="cursor:pointer;">
+        <i class="fas fa-plus"></i> Adicionar Regra
+      </button>
+      <button type="button" data-action="resetDefaults"
+        style="cursor:pointer;color:#888;font-size:0.88em;">
+        <i class="fas fa-rotate-left"></i> Restaurar Padrão
+      </button>
+    </div>
+    <button type="button" data-action="save"
+      style="cursor:pointer;color:#006c00;font-weight:bold;padding:4px 14px;">
+      <i class="fas fa-save"></i> Salvar
+    </button>
+  </div>
+</div>

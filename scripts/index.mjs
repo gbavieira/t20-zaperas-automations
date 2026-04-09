@@ -17,6 +17,7 @@
    ============================================================ */
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
+import { DEFAULT_OPPOSED_CHECKS_DATA } from "./config.mjs";
 
 const MOD = "t20-zaperas-automations";
 
@@ -39,12 +40,17 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/travel-ruler/scene-config.hbs`,
 	`modules/${MOD}/templates/actor-picker/dialog.hbs`,
 	`modules/${MOD}/templates/actor-picker/row.hbs`,
+	`modules/${MOD}/templates/opposed-checks-config/main.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
 
 Hooks.once("init", async () => {
 	foundry.applications.handlebars.loadTemplates(MOD_TEMPLATES);
+
+	// Helper para exibir arrays como string no HBS
+	Handlebars.registerHelper("join", (arr, sep) => (Array.isArray(arr) ? arr.join(sep) : ""));
+
 	const automations = [
 		{
 			key: "autoSave",
@@ -99,6 +105,24 @@ Hooks.once("init", async () => {
 			requiresReload: true,
 		});
 	}
+
+	// ── Dados persistentes de Testes Opostos ─────────────────────
+	game.settings.register(MOD, "opposedChecksData", {
+		scope: "world",
+		config: false,
+		type: Array,
+		default: DEFAULT_OPPOSED_CHECKS_DATA
+	});
+
+	const { OpposedChecksConfig } = await import("./apps/opposed-checks-config.mjs");
+	game.settings.registerMenu(MOD, "opposedChecksConfig", {
+		name: "Configuracao de Testes Opostos",
+		hint: "Gerenciar regras de testes opostos (triggers, habilidades, modo).",
+		label: "Configurar",
+		icon: "fas fa-cog",
+		type: OpposedChecksConfig,
+		restricted: true
+	});
 
 	// ── Régua de Viagem (deve rodar em init, antes do canvas) ────
 	if (game.settings.get(MOD, "travelRuler")) {

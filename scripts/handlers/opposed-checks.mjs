@@ -1,8 +1,8 @@
 /* ============================================================
    T20 Automações — Handler: Testes Opostos (Engine Genérica)
 
-   Substitui 3 scripts (enganação, furtividade auto, intimidação)
-   com uma engine data-driven que lê as definições de OPPOSED_CHECKS.
+   Engine data-driven que lê as regras de "opposedChecksData" (world setting).
+   As regras são configuráveis via Settings → Configurar Testes Opostos.
 
    Modos de defesa:
      "choice" — GM escolhe entre skills (Enganação → Perc ou Intu)
@@ -10,7 +10,7 @@
      "auto"   — rola todos os tokens do canvas automaticamente
    ============================================================ */
 
-import { OPPOSED_CHECKS } from "../config.mjs";
+import { buildRuntimeChecks } from "../config.mjs";
 import { openActorPicker } from "../utils/actor-picker.mjs";
 import { buildResultTable, postGMMessage } from "../utils/chat.mjs";
 import { rollSkillCheck } from "../utils/rolls.mjs";
@@ -142,7 +142,7 @@ async function rollAllCanvasTokens(message, defenseKey, attackerTotal, attackerN
 
 /**
  * Handler de createChatMessage para testes opostos.
- * Itera sobre OPPOSED_CHECKS e processa o primeiro match.
+ * Itera sobre buildRuntimeChecks() e processa o primeiro match.
  * GM only (guard interno).
  */
 export async function handleOpposedChecks(message) {
@@ -151,7 +151,7 @@ export async function handleOpposedChecks(message) {
 
 	const content = message.content ?? "";
 
-	for (const check of OPPOSED_CHECKS) {
+	for (const check of buildRuntimeChecks()) {
 		const matches = check.triggers.some((t) => content.includes(t));
 		if (!matches) continue;
 

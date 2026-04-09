@@ -4,6 +4,14 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
+## [0.1.4] — 2026-04-09
+
+### Adicionado
+
+- **Configuração persistente de Testes Opostos** — as regras de testes opostos (Enganação, Furtividade, Intimidação) agora são configuráveis pelo GM via Settings → "Configurar" ao lado de "Testes Opostos". A janela CRUD permite adicionar, editar e excluir regras. Cada regra define triggers de chat, perícia de ataque, modo (`auto`/`fixed`/`choice`) e perícias de defesa. As configurações persistem como world setting entre sessões e há botão "Restaurar Padrão" para voltar às 3 regras originais.
+
+---
+
 ## [0.1.3] — 2026-04-09
 
 ### Adicionado
