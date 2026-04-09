@@ -66,17 +66,17 @@ async function promptSkillChoice(check, attackerName, attackerTotal) {
 
 /**
  * Determina se o defensor passou no teste oposto,
- * levando em conta 20 natural do atacante e do defensor.
+ * levando em conta 20 natural e 1 natural do atacante e do defensor.
  *
+ * - Atacante nat 1  → falha automática (defensor passa), mesmo se defensor também tirar 1
+ * - Defensor nat 1  → falha automática (defensor falha), mesmo se atacante também tirar 1
  * - Atacante nat 20 → sucesso automático, EXCETO se defensor também nat 20
- * - Defensor nat 20 vs atacante não-nat-20 → defensor vence (comparação normal já favorece)
- * - Caso contrário → comparação de totais
+ * - Caso contrário  → comparação de totais
  */
 function resolveOpposed(attackerTotal, attackerNat, defenderTotal, defenderNat) {
-	if (attackerNat === 20) {
-		// Atacante nat 20: defensor só "ganha" se também tirar nat 20
-		return defenderNat === 20;
-	}
+	if (attackerNat === 1)  return false; // Atacante nat 1 → falha automática
+	if (defenderNat === 1)  return false; // Defensor  nat 1 → falha automática
+	if (attackerNat === 20) return defenderNat !== 20; // Atacante nat 20, exceto defensor tb nat 20
 	return defenderTotal >= attackerTotal;
 }
 
@@ -218,10 +218,7 @@ export async function handleOpposedChecks(message) {
 			results
 		});
 
-		await postGMMessage({
-			content: html,
-			flavor: `${check.attackLabel} de ${attackerName} vs ${defenseLabel}`
-		});
+		await postGMMessage({ content: html });
 
 		return; // Processa apenas o primeiro match
 	}

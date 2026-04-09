@@ -105,10 +105,13 @@ export async function openActorPicker({
           if (data.type === "Actor") {
             const actor = await fromUuid(data.uuid);
             if (actor) addActor(actor);
+          } else if (data.type === "Token") {
+            const tokenDoc = await fromUuid(data.uuid);
+            if (tokenDoc?.actor) addActor(tokenDoc.actor);
           }
         });
       }
-    }, { width: 420, classes: ["tormenta20"] });
+    }, { width: 420, classes: ["tormenta20"], resizable: true });
     d.render(true);
   });
 }
