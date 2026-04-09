@@ -110,10 +110,14 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 		}
 	);
 
+	const visibility = originalMessage
+		? { whisper: [...(originalMessage.whisper ?? [])], blind: originalMessage.blind ?? false }
+		: {};
 	await ChatMessage.create({
 		speaker: ChatMessage.getSpeaker({ actor, token: token.document ?? token }),
 		rolls: [roll],
-		content
+		content,
+		...visibility
 	});
 
 	// Em caso de FALHA: aplica efeitos automaticamente se o alvo estiver vivo

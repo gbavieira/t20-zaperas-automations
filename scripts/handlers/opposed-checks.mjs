@@ -218,7 +218,7 @@ export async function handleOpposedChecks(message) {
 			results
 		});
 
-		await postGMMessage({ content: html });
+		await postGMMessage({ content: html, sourceMessage: message });
 
 		return; // Processa apenas o primeiro match
 	}

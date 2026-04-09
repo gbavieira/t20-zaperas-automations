@@ -59,19 +59,26 @@ export async function buildResultTable({
 }
 
 /**
- * Posta mensagem de sistema no chat, visível apenas para o GM.
+ * Posta mensagem de sistema no chat.
+ * Se `sourceMessage` for fornecida, herda sua visibilidade (whisper + blind),
+ * propagando o roll mode original (público, privado GM, cego GM, pessoal).
+ * Sem sourceMessage, assume GM-only por padrão.
  *
  * @param {object} opts
- * @param {string} opts.content  HTML da mensagem
- * @param {string} opts.flavor   texto de flavor (aparece acima do conteúdo)
+ * @param {string} opts.content          HTML da mensagem
+ * @param {string} [opts.flavor]         texto de flavor (aparece acima do conteúdo)
+ * @param {ChatMessage} [opts.sourceMessage]  mensagem original cujo roll mode será propagado
  * @returns {Promise<ChatMessage>}
  */
-export async function postGMMessage({ content, flavor }) {
+export async function postGMMessage({ content, flavor, sourceMessage }) {
+  const visibility = sourceMessage
+    ? { whisper: [...(sourceMessage.whisper ?? [])], blind: sourceMessage.blind ?? false }
+    : { whisper: ChatMessage.getWhisperRecipients("GM") };
   return ChatMessage.create({
     user: game.user.id,
     content,
-    whisper: ChatMessage.getWhisperRecipients("GM"),
     speaker: { alias: "⚔️ Sistema" },
-    flavor
+    flavor,
+    ...visibility
   });
 }
