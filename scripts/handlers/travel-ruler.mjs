@@ -32,12 +32,15 @@ const MODOS = [
 		icon: "fa-person-walking",
 		getWalk(pcs) {
 			if (!pcs.length) return 9;
-			return Math.min(...pcs.map((a) => a.system?.attributes?.movement?.walk || 9));
+			// movement.walk é { base, bonus, value } — usar .value (com modificadores) ou .base como fallback
+			const speeds = pcs.map((a) => {
+				const walk = a.system?.attributes?.movement?.walk;
+				return walk?.value ?? walk?.base ?? 0;
+			}).filter((v) => v > 0);
+			return speeds.length ? Math.min(...speeds) : 9;
 		}
 	},
-	{ label: "Carroça", icon: "fa-caravan",  getWalk: () => 9  },
-	{ label: "Cavalo",  icon: "fa-horse",    getWalk: () => 12 },
-	{ label: "Veloz",   icon: "fa-bolt",     getWalk: () => 15 }
+	{ label: "Carroça", icon: "fa-caravan", getWalk: () => 9 }
 ];
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -109,13 +112,14 @@ export function registerRulerPatch() {
 
 		const modes = MODOS.map((modo) => {
 			const walkM = modo.getWalk(pcs);
-			const kmPorDia = walkM * 4;
+			const kmPorHora = walkM * 0.5;
+			const kmPorDia  = kmPorHora * 8;
 			const dias = kmPorDia > 0 ? distKm / kmPorDia : 0;
 			const racoes = Math.ceil(dias) * numPCs;
 			return {
 				label: modo.label,
 				icon: modo.icon,
-				speed: `${kmPorDia} km/dia`,
+				speed: `${kmPorDia.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km/dia`,
 				days: formatDias(dias),
 				rations: `${racoes} rações`
 			};
