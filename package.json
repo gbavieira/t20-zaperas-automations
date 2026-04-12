@@ -1,12 +1,16 @@
 {
+  "type": "module",
   "name": "t20-zaperas-automations",
   "version": "0.1.0",
   "description": "T20 Zapera's Automations — módulo de automações para Tormenta20",
   "scripts": {
     "pack": "fvtt package pack -n zaperas-macros --in src/packs/zaperas-macros --out packs",
-    "unpack": "fvtt package unpack -n zaperas-macros --in packs --out src/packs/zaperas-macros"
+    "unpack": "fvtt package unpack -n zaperas-macros --in packs --out src/packs/zaperas-macros",
+    "lint": "eslint scripts/",
+    "lint:fix": "eslint scripts/ --fix"
   },
   "devDependencies": {
-    "@foundryvtt/foundryvtt-cli": "^3.0.0"
+    "@foundryvtt/foundryvtt-cli": "^3.0.0",
+    "eslint": "^10.2.0"
   }
 }
