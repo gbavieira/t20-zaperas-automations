@@ -18,11 +18,11 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ### Visual
 
-- **Interface de seleção de perícias de defesa redenhada** — removido o scroll vertical (max-height com overflow); agora exibe **todas** as perícias em uma grid de 2 colunas fixas. A janela de edição ajusta o tamanho automaticamente para mostrar tudo sem sobrecarga.
+- **Interface de seleção de perícias de defesa redesenhada** — removido o scroll vertical (max-height com overflow); agora exibe **todas** as perícias em uma grid de 2 colunas fixas. A janela de edição ajusta o tamanho automaticamente para mostrar tudo sem sobrecarga.
 
 - **Comportamento inteligente de checkboxes** — nos modos `auto` e `fixed`, ao marcar 1 perícia de defesa, as demais ficam desabilitadas (cinzas e não-clicáveis); desmarcar a selecionada reabilita todas. No modo `choice`, todas permanecem habilitadas sempre (permite selecionar 2 ou mais).
 
-- **Botão "Configurar" posicionado corretamente** — o botão agora aparece indentado e logo abaixo do toggle "Testes Opostos" no menu de configurações do módulo, refletindo que é uma ação relacionada.
+- **Botão "Configurar" posicionado corretamente** — o botão agora aparece indentado e imediatamente abaixo do toggle "Testes Opostos" no menu de configurações do módulo, refletindo que é uma ação relacionada.
 
 ---
 

@@ -116,7 +116,7 @@ Hooks.once("init", async () => {
 	});
 
 	game.settings.registerMenu(MOD, "opposedChecksConfig", {
-		name: "Configuracao de Testes Opostos",
+		name: "Configuração de Testes Opostos",
 		hint: "Gerenciar regras de testes opostos (triggers, habilidades, modo).",
 		label: "Configurar",
 		icon: "fas fa-cog",
@@ -226,7 +226,8 @@ Hooks.on("renderSettingsConfig", (app, html) => {
 
 	const menuBtn = root.querySelector(`button[data-key="${MOD}.opposedChecksConfig"]`);
 	const menuRow = menuBtn?.closest(".form-group");
-	const toggleRow = root.querySelector(`.form-group[data-field-name="${MOD}.opposedChecks"]`);
+	const toggleCheckbox = root.querySelector(`input[name="${MOD}.opposedChecks"]`);
+	const toggleRow = toggleCheckbox?.closest(".form-group");
 
 	if (!menuRow || !toggleRow) return;
 
