@@ -4,7 +4,29 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
-## [0.1.4] — 2026-04-09
+## [0.1.4] — 2026-04-12
+
+### Corrigido
+
+- **Botão "Configurar Testes Opostos" não funcionava** — o botão não aparecia ou não abria a janela de configuração. Problema era um `await import()` dinâmico dentro do hook `init` (que não é awaited pelo Foundry), causando timing incorreto. Convertido para static import no topo do arquivo.
+
+### Alterado
+
+- **ID de regras agora é derivado automaticamente** — em vez de digitar manualmente o ID ao criar uma regra, o sistema deriva automaticamente do campo "Perícia de Ataque" (sempre 4 letras: `"enga"` de Enganação, `"furt"` de Furtividade, etc.). O campo ID foi removido do editor de regras.
+
+- **Emojis removidos de toda a automação** — os emojis (`🎭`, `🔍`, `😤`) que apareciam nas regras padrão e nos headers das tabelas de chat foram removidos. O campo "Emoji" foi excluído do editor de regras, dos dados padrão e das mensagens de chat.
+
+### Visual
+
+- **Interface de seleção de perícias de defesa redenhada** — removido o scroll vertical (max-height com overflow); agora exibe **todas** as perícias em uma grid de 2 colunas fixas. A janela de edição ajusta o tamanho automaticamente para mostrar tudo sem sobrecarga.
+
+- **Comportamento inteligente de checkboxes** — nos modos `auto` e `fixed`, ao marcar 1 perícia de defesa, as demais ficam desabilitadas (cinzas e não-clicáveis); desmarcar a selecionada reabilita todas. No modo `choice`, todas permanecem habilitadas sempre (permite selecionar 2 ou mais).
+
+- **Botão "Configurar" posicionado corretamente** — o botão agora aparece indentado e logo abaixo do toggle "Testes Opostos" no menu de configurações do módulo, refletindo que é uma ação relacionada.
+
+---
+
+## [0.1.3] — 2026-04-09
 
 ### Adicionado
 

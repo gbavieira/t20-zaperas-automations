@@ -31,11 +31,9 @@ export async function openRuleEditor(rule) {
 
 	const isNew = !rule;
 	const r = rule ?? {
-		id: "",
 		defenseMode: "auto",
 		attackSkillKey: skillEntries[0]?.[0] ?? "",
-		defenseSkillKeys: [],
-		emoji: "⚔️"
+		defenseSkillKeys: []
 	};
 
 	function skillOptions(selectedKey) {
@@ -52,7 +50,7 @@ export async function openRuleEditor(rule) {
 			.map(([key, v]) => {
 				const label = game.i18n.localize(v.label) ?? key;
 				const checked = r.defenseSkillKeys.includes(key) ? "checked" : "";
-				return `<label style="display:flex;align-items:center;gap:6px;margin:2px 0;cursor:pointer;">
+				return `<label style="display:flex;align-items:center;gap:6px;margin:4px 0;cursor:pointer;">
 					<input type="checkbox" name="defenseChoice" value="${key}" ${checked}>
 					${label}
 				</label>`;
@@ -63,13 +61,6 @@ export async function openRuleEditor(rule) {
 	const content = `
 <form id="rule-editor-form" style="display:grid;gap:10px;padding:4px 2px;">
   <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;">
-    <label style="font-weight:bold;">Emoji:</label>
-    <input type="text" name="emoji" value="${r.emoji}" maxlength="4" style="width:64px;">
-
-    <label style="font-weight:bold;">ID:</label>
-    <input type="text" name="id" value="${r.id}"
-      ${!isNew ? `readonly style="opacity:0.6;background:#f5f5f5;"` : `placeholder="ex: enganacao"`}>
-
     <label style="font-weight:bold;">Perícia de Ataque:</label>
     <select name="attackSkillKey">${skillOptions(r.attackSkillKey)}</select>
 
@@ -83,7 +74,7 @@ export async function openRuleEditor(rule) {
 
   <fieldset style="border:1px solid #ccc;padding:8px 12px;border-radius:4px;margin:0;">
     <legend style="font-weight:bold;padding:0 4px;">Perícias de Defesa</legend>
-    <div style="columns:2;max-height:180px;overflow-y:auto;padding:2px;">
+    <div id="defense-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:2px;">
       ${defenseCheckboxes()}
     </div>
     <small style="color:#888;margin-top:6px;display:block;">
@@ -92,6 +83,33 @@ export async function openRuleEditor(rule) {
   </fieldset>
 </form>`;
 
+	// Set up intelligent checkbox disable behavior after dialog renders
+	Hooks.once("renderDialogV2", (_app, dialogHtml) => {
+		const root = dialogHtml instanceof HTMLElement ? dialogHtml : dialogHtml[0] ?? dialogHtml;
+		const modeSelect = root.querySelector("[name=defenseMode]");
+		const container = root.querySelector("#defense-checkboxes");
+		if (!modeSelect || !container) return;
+
+		function updateDisableState() {
+			const mode = modeSelect.value;
+			const checkboxes = [...container.querySelectorAll("input[type=checkbox]")];
+			if (mode === "choice") {
+				// Modo Escolha: todos habilitados
+				checkboxes.forEach(cb => { cb.disabled = false; });
+				return;
+			}
+			// Modo Auto ou Fixo: desabilita todos se 1 está marcado
+			const checkedCount = checkboxes.filter(cb => cb.checked).length;
+			checkboxes.forEach(cb => {
+				cb.disabled = checkedCount >= 1 && !cb.checked;
+			});
+		}
+
+		modeSelect.addEventListener("change", updateDisableState);
+		container.addEventListener("change", updateDisableState);
+		updateDisableState(); // estado inicial
+	});
+
 	return DialogV2.wait({
 		window: {
 			title: isNew ? "Adicionar Regra" : `Editar — ${r.id}`,
@@ -99,27 +117,22 @@ export async function openRuleEditor(rule) {
 		},
 		content,
 		rejectClose: false,
+		position: { width: 480 },
 		buttons: [
 			{
 				action: "confirm",
 				icon: "fas fa-check",
 				label: "Confirmar",
-				callback: (_ev, _button, dialog) => {
-					const form = dialog.querySelector("#rule-editor-form");
+				callback: (_ev, button) => {
+					const form = button.form;
 					if (!form) return null;
 
-					const emoji = form.querySelector("[name=emoji]").value.trim() || "⚔️";
-					const id = form.querySelector("[name=id]").value.trim();
 					const attackSkillKey = form.querySelector("[name=attackSkillKey]").value;
 					const defenseMode = form.querySelector("[name=defenseMode]").value;
 					const defenseSkillKeys = [...form.querySelectorAll("[name=defenseChoice]:checked")].map(
 						(cb) => cb.value
 					);
 
-					if (!id) {
-						ui.notifications.warn("ID é obrigatório.");
-						return null;
-					}
 					if (defenseMode === "choice" && defenseSkillKeys.length < 2) {
 						ui.notifications.warn("Modo 'Escolha' requer pelo menos 2 perícias de defesa.");
 						return null;
@@ -130,8 +143,7 @@ export async function openRuleEditor(rule) {
 					}
 
 					return {
-						id,
-						emoji,
+						id: attackSkillKey,
 						defenseMode,
 						attackSkillKey,
 						defenseSkillKeys,
@@ -154,9 +166,11 @@ export async function openRuleEditor(rule) {
 export class OpposedChecksConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	constructor(options = {}) {
 		super(options);
-		this.rules = foundry.utils.deepClone(
-			game.settings.get(MOD, "opposedChecksData") ?? DEFAULT_OPPOSED_CHECKS_DATA
-		);
+		const raw = game.settings.get(MOD, "opposedChecksData") ?? DEFAULT_OPPOSED_CHECKS_DATA;
+		this.rules = foundry.utils.deepClone(raw).map(r => ({
+			defenseSkillKeys: [],
+			...r
+		}));
 	}
 
 	static DEFAULT_OPTIONS = {
@@ -194,7 +208,7 @@ export class OpposedChecksConfig extends HandlebarsApplicationMixin(ApplicationV
 			rules: this.rules.map((r) => ({
 				...r,
 				attackLabel: getLabel(r.attackSkillKey),
-				defenseLabels: r.defenseSkillKeys.map(getLabel).join(", "),
+				defenseLabels: (r.defenseSkillKeys ?? []).map(getLabel).join(", "),
 				modeLabel: modeLabel[r.defenseMode] ?? r.defenseMode
 			}))
 		};

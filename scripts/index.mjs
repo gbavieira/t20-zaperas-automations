@@ -18,6 +18,7 @@
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
 import { DEFAULT_OPPOSED_CHECKS_DATA } from "./config.mjs";
+import { OpposedChecksConfig } from "./apps/opposed-checks-config.mjs";
 
 const MOD = "t20-zaperas-automations";
 
@@ -114,7 +115,6 @@ Hooks.once("init", async () => {
 		default: DEFAULT_OPPOSED_CHECKS_DATA
 	});
 
-	const { OpposedChecksConfig } = await import("./apps/opposed-checks-config.mjs");
 	game.settings.registerMenu(MOD, "opposedChecksConfig", {
 		name: "Configuracao de Testes Opostos",
 		hint: "Gerenciar regras de testes opostos (triggers, habilidades, modo).",
@@ -216,4 +216,20 @@ Hooks.once("ready", async () => {
 
 	console.log("T20 Zapera | Scripts de automação registrados");
 	ui.notifications.info("T20 Zapera | Automações ativadas");
+});
+
+
+// ── Reposiciona o botão "Configurar Testes Opostos" logo após o toggle ──
+Hooks.on("renderSettingsConfig", (app, html) => {
+	const root = html instanceof HTMLElement ? html : html[0] ?? html;
+	if (!root) return;
+
+	const menuBtn = root.querySelector(`button[data-key="${MOD}.opposedChecksConfig"]`);
+	const menuRow = menuBtn?.closest(".form-group");
+	const toggleRow = root.querySelector(`.form-group[data-field-name="${MOD}.opposedChecks"]`);
+
+	if (!menuRow || !toggleRow) return;
+
+	toggleRow.insertAdjacentElement("afterend", menuRow);
+	menuRow.style.marginLeft = "1.5rem";
 });

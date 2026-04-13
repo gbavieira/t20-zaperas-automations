@@ -28,26 +28,23 @@ const SKILL_ICONS = {
  */
 export const DEFAULT_OPPOSED_CHECKS_DATA = [
 	{
-		id: "enganacao",
+		id: "enga",
 		defenseMode: "choice",
 		attackSkillKey: "enga",
-		defenseSkillKeys: ["perc", "intu"],
-		emoji: "🎭"
+		defenseSkillKeys: ["perc", "intu"]
 	},
 	{
-		id: "furtividade",
+		id: "furt",
 		defenseMode: "auto",
 		attackSkillKey: "furt",
 		defenseSkillKeys: ["perc"],
-		emoji: "🔍",
 		tokenLinkClass: "t20-perc-token"
 	},
 	{
-		id: "intimidacao",
+		id: "inti",
 		defenseMode: "fixed",
 		attackSkillKey: "inti",
-		defenseSkillKeys: ["vont"],
-		emoji: "😤"
+		defenseSkillKeys: ["vont"]
 	}
 ];
 
@@ -86,7 +83,6 @@ function _buildRuntimeCheck(rule) {
 		id: rule.id,
 		triggers: [attackLabel], // derivado automaticamente do label da perícia de ataque
 		defenseMode: rule.defenseMode,
-		emoji: rule.emoji,
 		attackLabel,
 		tokenLinkClass: rule.tokenLinkClass ?? "t20-contest-token"
 	};

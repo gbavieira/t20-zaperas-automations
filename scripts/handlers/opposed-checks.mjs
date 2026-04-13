@@ -206,7 +206,6 @@ export async function handleOpposedChecks(message) {
 		const headerText = check.headerText(defenseAbbr);
 
 		const html = await buildResultTable({
-			emoji: check.emoji,
 			headerText,
 			attackerName,
 			attackerTotal,

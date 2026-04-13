@@ -6,7 +6,6 @@
  * Constrói a tabela HTML de resultados de teste oposto.
  *
  * @param {object} opts
- * @param {string} opts.emoji       ex: "🎭", "🔍", "😤"
  * @param {string} opts.headerText  ex: "Perc vs Furt"
  * @param {string} opts.attackerName
  * @param {number} opts.attackerTotal
@@ -19,7 +18,6 @@
  * @returns {string} HTML
  */
 export async function buildResultTable({
-  emoji,
   headerText,
   attackerName,
   attackerTotal,
@@ -43,7 +41,6 @@ export async function buildResultTable({
   return renderTemplate(
     `modules/t20-zaperas-automations/templates/opposed-checks/result-table.hbs`,
     {
-      emoji,
       headerText,
       attackerName,
       attackerTotal,
