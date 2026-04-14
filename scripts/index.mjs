@@ -17,8 +17,9 @@
    ============================================================ */
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
-import { DEFAULT_OPPOSED_CHECKS_DATA } from "./config.mjs";
+import { DEFAULT_OPPOSED_CHECKS_DATA, DEFAULT_LIFE_DRAIN_SPELLS } from "./config.mjs";
 import { OpposedChecksConfig } from "./apps/opposed-checks-config.mjs";
+import { LifeDrainConfig } from "./apps/life-drain-config.mjs";
 
 const MOD = "t20-zaperas-automations";
 
@@ -42,6 +43,7 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/actor-picker/dialog.hbs`,
 	`modules/${MOD}/templates/actor-picker/row.hbs`,
 	`modules/${MOD}/templates/opposed-checks-config/main.hbs`,
+	`modules/${MOD}/templates/life-drain-config/main.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
@@ -121,6 +123,23 @@ Hooks.once("init", async () => {
 		label: "Configurar",
 		icon: "fas fa-cog",
 		type: OpposedChecksConfig,
+		restricted: true
+	});
+
+	// ── Dados persistentes de Dreno de Vida ──────────────────────
+	game.settings.register(MOD, "lifeDrainSpells", {
+		scope: "world",
+		config: false,
+		type: Array,
+		default: DEFAULT_LIFE_DRAIN_SPELLS
+	});
+
+	game.settings.registerMenu(MOD, "lifeDrainConfig", {
+		name: "Configuração de Dreno de Vida",
+		hint: "Gerenciar quais magias ativam o Dreno de Vida e o percentual de cura.",
+		label: "Configurar",
+		icon: "fas fa-droplet",
+		type: LifeDrainConfig,
 		restricted: true
 	});
 
@@ -219,18 +238,28 @@ Hooks.once("ready", async () => {
 });
 
 
-// ── Reposiciona o botão "Configurar Testes Opostos" logo após o toggle ──
-Hooks.on("renderSettingsConfig", (app, html) => {
+// ── Reposiciona os botões "Configurar" logo após seus toggles ──
+Hooks.on("renderSettingsConfig", (_app, html) => {
 	const root = html instanceof HTMLElement ? html : html[0] ?? html;
 	if (!root) return;
 
-	const menuBtn = root.querySelector(`button[data-key="${MOD}.opposedChecksConfig"]`);
-	const menuRow = menuBtn?.closest(".form-group");
-	const toggleCheckbox = root.querySelector(`input[name="${MOD}.opposedChecks"]`);
-	const toggleRow = toggleCheckbox?.closest(".form-group");
+	// Testes Opostos
+	const ocMenuBtn = root.querySelector(`button[data-key="${MOD}.opposedChecksConfig"]`);
+	const ocMenuRow = ocMenuBtn?.closest(".form-group");
+	const ocToggleCheckbox = root.querySelector(`input[name="${MOD}.opposedChecks"]`);
+	const ocToggleRow = ocToggleCheckbox?.closest(".form-group");
+	if (ocMenuRow && ocToggleRow) {
+		ocToggleRow.insertAdjacentElement("afterend", ocMenuRow);
+		ocMenuRow.style.marginLeft = "1.5rem";
+	}
 
-	if (!menuRow || !toggleRow) return;
-
-	toggleRow.insertAdjacentElement("afterend", menuRow);
-	menuRow.style.marginLeft = "1.5rem";
+	// Dreno de Vida
+	const ldMenuBtn = root.querySelector(`button[data-key="${MOD}.lifeDrainConfig"]`);
+	const ldMenuRow = ldMenuBtn?.closest(".form-group");
+	const ldToggleCheckbox = root.querySelector(`input[name="${MOD}.lifeDrain"]`);
+	const ldToggleRow = ldToggleCheckbox?.closest(".form-group");
+	if (ldMenuRow && ldToggleRow) {
+		ldToggleRow.insertAdjacentElement("afterend", ldMenuRow);
+		ldMenuRow.style.marginLeft = "1.5rem";
+	}
 });

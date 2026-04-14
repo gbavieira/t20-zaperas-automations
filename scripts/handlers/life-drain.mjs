@@ -11,7 +11,7 @@
    Hook: renderChatMessageHTML (roda APÓS hooks.mjs criar botões)
    ============================================================ */
 
-import { LIFE_DRAIN_SPELLS } from "../config.mjs";
+import { getLifeDrainSpells } from "../config.mjs";
 import { normalizeText } from "../utils/text.mjs";
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -20,7 +20,8 @@ import { normalizeText } from "../utils/text.mjs";
 function findDrainConfig(itemName) {
 	if (!itemName) return null;
 	const normalized = normalizeText(itemName);
-	return LIFE_DRAIN_SPELLS.find((s) => normalizeText(s.name) === normalized) ?? null;
+	const spells = getLifeDrainSpells();
+	return spells.find((s) => normalizeText(s.name) === normalized) ?? null;
 }
 
 /**
@@ -75,26 +76,23 @@ async function handleDrainClick(event, message, config, multiplier) {
 		return;
 	}
 
-	// 4) Cura o atacante (sem ultrapassar PV máximo)
+	// 4) Aplica cura ou PV temporário no atacante
 	const pv = attackerActor.system.attributes.pv;
-	const newPV = Math.min(pv.value + healing, pv.max);
-	await attackerActor.update({ "system.attributes.pv.value": newPV });
-
-	// 5) Efeito visual via Sequencer (se disponível)
-	if (game.modules.get("sequencer")?.active && attackerToken) {
-		for (const target of targets) {
-			new Sequence()
-				.effect()
-				.atLocation(target)
-				.stretchTo(attackerToken)
-				.file(config.sequencerFile ?? "jb2a.energy_beam.normal.dark_red")
-				.play();
-		}
+	if (config.tempHP) {
+		// Concede PV temporário (aditivo)
+		const currentTemp = pv.temp ?? 0;
+		const newTemp = currentTemp + healing;
+		await attackerActor.update({ "system.attributes.pv.temp": newTemp });
+	} else {
+		// Cura PV normal (sem ultrapassar máximo)
+		const newPV = Math.min(pv.value + healing, pv.max);
+		await attackerActor.update({ "system.attributes.pv.value": newPV });
 	}
 
-	// 6) Notificação
+	// 5) Notificação
 	const attackerName = attackerToken?.name ?? attackerActor.name;
-	ui.notifications.info(`${attackerName} curou ${healing} PV com ${config.name}!`);
+	const curationType = config.tempHP ? "PV temporário" : "PV";
+	ui.notifications.info(`${attackerName} ganhou ${healing} ${curationType} com ${config.name}!`);
 }
 
 // ── Render hook ──────────────────────────────────────────────

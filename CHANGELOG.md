@@ -4,6 +4,24 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
+## [0.1.5] — 2026-04-14
+
+### Adicionado
+
+- **Configuração persistente de Dreno de Vida** — magias e poderes que ativam o Dreno de Vida agora são configuráveis pelo GM via Settings → "Configurar" ao lado de "Dreno de Vida". A janela CRUD permite adicionar, editar e remover magias/poderes. Para cada entrada, o GM configura o nome (via drag-drop de item do tipo magia ou poder), percentual de cura (0–100), e se concede PV temporário ou cura normal. As configurações persistem entre sessões com botão "Restaurar Padrão".
+
+### Alterado
+
+- **Dreno de Vida agora aceita poderes além de magias** — o sistema detecta tanto itens do tipo `"magia"` quanto `"poderes"` ao processar ataques com efeito de drenagem. Permite poderes vampíricos serem configurados com o mesmo sistema.
+
+- **PV Temporário como alternativa de cura** — cada magia/poder configurado pode conceder PV temporário (aditivo) em vez de curar PV normal. Quando ativo, o dano não restaura PV até o máximo, mas sim incrementa o escudo de PV temporário do atacante, permitindo poder à prova de dano sem inflar os pontos de vida.
+
+### Removido
+
+- **Campo "Efeito Sequencer" removido da configuração** — a integração com animações JB2A foi descontinuada na configuração de Dreno de Vida. O sistema agora foca apenas na mecânica de cura/dano, deixando efeitos visuais para integração futura se necessário.
+
+---
+
 ## [0.1.4] — 2026-04-12
 
 ### Corrigido

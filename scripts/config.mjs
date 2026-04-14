@@ -130,10 +130,18 @@ export const ZERO_PV_FLAG_STATUS = "t20AutoZeroPVStatus";
  * healPercent   — porcentagem de cura (ex: 50 = metade do dano)
  * sequencerFile — arquivo de efeito do Sequencer/JB2A (opcional)
  */
-export const LIFE_DRAIN_SPELLS = [
+export const DEFAULT_LIFE_DRAIN_SPELLS = [
 	{
 		name: "Toque Vampírico",
 		healPercent: 50,
-		sequencerFile: "jb2a.energy_beam.normal.dark_red"
+		tempHP: false
 	}
 ];
+
+/**
+ * Obtém a lista de magias de Dreno de Vida do world setting,
+ * ou usa os padrões se não configurado.
+ */
+export function getLifeDrainSpells() {
+	return game.settings.get("t20-zaperas-automations", "lifeDrainSpells") ?? DEFAULT_LIFE_DRAIN_SPELLS;
+}

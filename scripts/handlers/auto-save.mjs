@@ -231,10 +231,10 @@ export async function handleAutoSave(message) {
 	const saveType = parseSaveType(resistTxt);
 	if (!saveType) return;
 
-	let cd = Number(itemData?.resistencia?.cd);
-	if (!cd || isNaN(cd)) {
-		cd = extractCD(content);
-	}
+	// Prioridade: CD do HTML renderizado (valor final com todos os bônus aplicados pelo sistema)
+	// Fallback: CD da flag do item (valor base, pode não refletir poderes ou atributo customizado)
+	let cd = extractCD(content);
+	if (!cd) cd = Number(itemData?.resistencia?.cd) || null;
 	if (!cd) return;
 
 	const authorId = message.author?.id ?? message.user;
