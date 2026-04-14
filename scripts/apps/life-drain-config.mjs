@@ -85,7 +85,7 @@ export async function openSpellEditor(spell) {
 				return;
 			}
 
-			if (item.type !== "magia" && item.type !== "poderes") {
+			if (item.type !== "magia" && item.type !== "poder") {
 				ui.notifications.warn("Apenas itens do tipo Magia ou Poder são aceitos.");
 				return;
 			}
