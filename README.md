@@ -148,7 +148,7 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 | **Baú (Item Piles)** | Transforma tokens selecionados em pilhas de loot (baú, corpo ou mantém a imagem original). Requer o módulo Item Piles. |
 | **Visão do Token** | Configura rapidamente a visão no escuro e fontes de luz (tocha, luz mágica, escuridão, olho do beholder) para os tokens selecionados. |
 | **Dano de Queda** | Calcula e rola o dano de queda conforme as regras do Tormenta20, com suporte a quedas na água e objetos pesados. |
-| **Relógio de Tibares** | Aplica a regra de Custo de Vida diário, descontando moedas automaticamente de cada personagem conforme o estilo de vida escolhido. |
+| **Relógio de Tibares** | Aplica a regra de Custo de Vida, descontando moedas automaticamente de cada personagem. O GM seleciona o estilo de vida (Pobre, Médio, Rico, Luxuoso) e o período (dia ou mês) individualmente para cada PJ em uma única tela de configuração. |
 | **Limpar Réguas** | Remove todas as réguas de medição do cenário atual com um clique. |
 
 ---

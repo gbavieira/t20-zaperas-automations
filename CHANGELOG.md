@@ -12,6 +12,10 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 - **Configuração de atores para Travel Ruler** — o cálculo de "menor deslocamento" no Mapa de Viagem agora permite escolher quais atores (personagens de jogador) devem ser considerados. Novo sistema CRUD em Settings → "Mapa de Viagem Interativo" → "Configurar". Arraste personagens via drag-drop para adicioná-los à lista. Se nenhum ator estiver configurado, o sistema usa automaticamente todos os PCs (fallback inteligente).
 
+### Corrigido
+
+- **Macro Relógio de Tibares — cálculo de desconto por período** — os descontos eram multiplicados incorretamente quando o período era "mês", resultando em 30× o custo esperado. Agora usa o valor correto do período selecionado (mensal ou diário) para cada ator individualmente.
+
 ### Alterado
 
 - **Dreno de Vida agora aceita poderes além de magias** — o sistema detecta tanto itens do tipo `magia` quanto `poder` ao processar ataques com efeito de drenagem.
