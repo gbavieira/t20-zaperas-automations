@@ -4,7 +4,7 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
-## [0.1.5] — 2026-04-14
+## [0.2.0] — 2026-04-15
 
 ### Adicionado
 
@@ -18,6 +18,8 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
   - "Mostrar Contador de Sustento de Magia para os Jogadores?" — determina se prompts de sustentação aparecem no chat público ou apenas para GM.
   - "Mostrar Verificador de Defesa para os Jogadores?" — determina se o resultado acertou/errou fica visível a todos ou apenas GM.
 
+- **Macro Ração de Viagem** — nova macro para descontar rações automaticamente de cada personagem. Abre um dialog onde o GM seleciona quantas rações consumir, lê a quantidade atual do item em tempo real (evitando valores obsoletos) e desconta individualmente para cada PJ. Suporta múltiplos nomes de campo (`system.quantity`, `system.qtd`, `system.uses.value`) com fallback inteligente.
+
 ### Corrigido
 
 - **Macro Relógio de Tibares — cálculo de desconto por período** — os descontos eram multiplicados incorretamente quando o período era "mês", resultando em 30× o custo esperado. Agora usa o valor correto do período selecionado (mensal ou diário) para cada ator individualmente.
@@ -25,8 +27,6 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 - **Verificador de Defesa — sobreposição visual** — o banner de resultado (acertou/errou) estava sendo renderizado dentro do bloco de rolagem de dados, ficando sobreposto ao dado de dano. Agora é inserido corretamente abaixo do bloco de rolagem completo.
 
 - **Verificador de Defesa — regras críticas** — implementadas regras de crítico e falha crítica: Nat 20 agora é acerto automático e Nat 1 é falha automática, independente da defesa do alvo.
-
-- **Macro Ração de Viagem — deducção de quantidade** — a macro agora lê corretamente a quantidade atual do item após o dialog (antes usava valor estale armazenado). Suporta múltiplos nomes de campo (`system.quantity`, `system.qtd`, `system.uses.value`) com fallback inteligente. Agora desconta corretamente a quantidade em cada personagem individualmente.
 
 ### Alterado
 

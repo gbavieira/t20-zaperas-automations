@@ -3,7 +3,7 @@
 > Módulo para FoundryVTT para automações que um mestre sente falta no sistema Tormenta20.
 
 **Autor:** Zapera
-**Versão:** 0.1.5
+**Versão:** 0.2.0
 **Última atualização:** 2026-04-15
 **Compatibilidade:** FoundryVTT v13 + Sistema Tormenta20
 
@@ -173,6 +173,7 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 | **Visão do Token** | Configura rapidamente a visão no escuro e fontes de luz (tocha, luz mágica, escuridão, olho do beholder) para os tokens selecionados. |
 | **Dano de Queda** | Calcula e rola o dano de queda conforme as regras do Tormenta20, com suporte a quedas na água e objetos pesados. |
 | **Relógio de Tibares** | Aplica a regra de Custo de Vida, descontando moedas automaticamente de cada personagem. O GM seleciona o estilo de vida (Pobre, Médio, Rico, Luxuoso) e o período (dia ou mês) individualmente para cada PJ em uma única tela de configuração. |
+| **Ração de Viagem** | Desconta rações automaticamente de cada personagem. Abre um dialog onde o GM seleciona quantas rações consumir, lê a quantidade atual do item em tempo real e desconta individualmente para cada PJ. Suporta múltiplos nomes de campo com fallback inteligente. |
 | **Limpar Réguas** | Remove todas as réguas de medição do cenário atual com um clique. |
 
 ---
