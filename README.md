@@ -3,7 +3,8 @@
 > Módulo para FoundryVTT para automações que um mestre sente falta no sistema Tormenta20.
 
 **Autor:** Zapera
-**Versão:** 0.1
+**Versão:** 0.1.5
+**Última atualização:** 2026-04-14
 **Compatibilidade:** FoundryVTT v13 + Sistema Tormenta20
 
 ---
@@ -40,17 +41,20 @@ Para magias de área: quando o conjurador coloca o template no mapa, os alvos de
 
 ---
 
-### 2. Testes Opostos
+### 2. Testes Opostos (Configurável)
 
-**O que faz:** Automatiza os testes opostos mais comuns do Tormenta20:
+**O que faz:** Automatiza testes opostos como Enganação, Furtividade e Intimidação. O GM pode configurar quais perícias disparam testes opostos, o modo (automático, escolha do GM, ou atores específicos) e qual perícia de defesa é usada.
 
-| Perícia usada | Defesa automática |
-| --- | --- |
-| **Enganação** | O GM escolhe se a defesa é Percepção ou Intuição |
-| **Furtividade** | Rola Percepção automaticamente para todos os tokens no mapa |
-| **Intimidação** | Rola Vontade automaticamente para os alvos |
+**Configuração padrão:**
+| Perícia usada | Defesa | Modo |
+| --- | --- | --- |
+| **Enganação** | Percepção ou Intuição | O GM escolhe |
+| **Furtividade** | Percepção | Automático para todos no mapa |
+| **Intimidação** | Vontade | Automático para alvos |
 
-**Como usar:** Basta rolar a perícia normalmente pela ficha do personagem. Ao aparecer o resultado no chat, o módulo exibe os resultados de defesa ao lado, mostrando quem passou e quem falhou. Um 20 natural no ataque é sempre sucesso (a menos que o defensor também tire 20).
+**Como customizar:** Vá em **Configurações → Testes Opostos → Configurar**. Você pode adicionar novas regras, editar triggers, escolher perícias de defesa e o modo de funcionamento.
+
+**Como usar:** Lance a perícia normalmente pelo sistema. Ao aparecer no chat, o módulo automaticamente rola os testes de defesa.
 
 ---
 
@@ -78,15 +82,21 @@ Quando o personagem recupera pelo menos 1 PV, as condições são removidas auto
 
 ---
 
-### 5. Dreno de Vida
+### 5. Dreno de Vida (Configurável)
 
-**O que faz:** Para magias que drenam vida (como o **Toque Vampírico**), o módulo substitui os botões normais de dano por botões especiais que fazem as duas coisas ao mesmo tempo: aplicam o dano no alvo e curam o atacante por uma porcentagem desse dano.
+**O que faz:** Para magias e poderes que drenam vida (como **Toque Vampírico**), o módulo substitui os botões normais de dano por botões especiais que simultaneamente aplicam o dano no alvo e curam o atacante por uma porcentagem do dano causado.
 
-- **Toque Vampírico** cura o atacante em 50% do dano causado
+Você pode configurar:
+- **Quais magias/poderes** disparam o efeito de dreno
+- **Percentual de cura** (ex: 50% do dano = 50 pontos de cura para 100 de dano)
+- **Tipo de cura**: PV normal (até o máximo) ou PV temporário (aditivo)
 
-Se o módulo **Sequencer** estiver instalado, um efeito visual de raio de energia é exibido automaticamente.
+**Exemplo padrão:**
+- **Toque Vampírico** → cura o atacante em 50% do dano, como PV normal
 
-**Como usar:** Lance a magia normalmente. Os botões de dano no chat serão substituídos pelos botões de dreno. Basta clicar.
+**Como customizar:** Vá em **Configurações → Dreno de Vida → Configurar**. Arraste magias/poderes do tipo "magia" ou "poder" para adicionar à lista, configure o percentual e se deve ser PV temporário ou normal.
+
+**Como usar:** Lance a magia/poder normalmente. Os botões de dano no chat serão substituídos automaticamente por botões de dreno. Clique para aplicar dano e cura simultaneamente.
 
 ---
 
@@ -111,18 +121,21 @@ Se o módulo **Sequencer** estiver instalado, um efeito visual de raio de energi
 
 ---
 
-### 8. Mapa de Viagem Interativo (Em Desenvolvimento)
+### 8. Mapa de Viagem Interativo
 
-**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado para dois modos de viagem, incluindo rações necessárias:
+**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado e rações necessárias para dois modos de viagem:
 
 | Modo | Velocidade |
 | --- | --- |
-| A pé | Caminhada normal (personagem mais lento do grupo configurado) |
-| Carroça | 9m de deslocamento (36 km/dia) |
+| **A pé** | Caminhada normal (usa o personagem mais lento do grupo) |
+| **Carroça** | 9m de deslocamento por rodada (36 km/dia) |
 
-O módulo usa os personagens configurados em **Configurações → T20 Zapera's Automations → Atores da Régua de Viagem** para calcular a velocidade. Se nenhum personagem estiver configurado, usa todos os personagens controlados por jogadores como fallback.
+**Como configurar:** O módulo usa todos os personagens controlados por jogadores para calcular a velocidade do grupo. Se você quiser considerar **apenas alguns personagens** (ex: em uma viagem splitparty), vá em **Configurações → Mapa de Viagem Interativo → Configurar** e arraste os atores que devem entrar no cálculo. O sistema automaticamente usa os atores configurados e faz fallback para "todos os PCs" se nenhum estiver configurado.
 
-**Como usar:** Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos). Configure os atores que devem ser considerados em Configurações do módulo. Depois, ao usar a régua de medição no mapa, as informações de viagem aparecem automaticamente no label do último ponto da régua.
+**Como usar:**
+1. Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos)
+2. Configure os atores (opcional) em **Configurações do módulo**
+3. Use a régua de medição no mapa — as informações de viagem aparecem automaticamente no label do último ponto da régua
 
 ---
 
@@ -143,13 +156,7 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 ## Bugs Conhecidos
 
 ### 1. Testes de Resistência Automáticos
--- Aqui quando um poder/magia tem algum efeito que vai para o chat, mesmo as vezes sendo proveniente de um aprimoramento de magia não usado, o efeito é aplicado automaticamente no token alvo se ele falhar na resistência.
-
-### 4. Verificador de Defesa (Não funcional ainda)
--- Ainda tem bugs, não está identificando um "ataque".
-
-### 8. Mapa de Viagem Interativo
--- O front ainda está em desenvolvimento, com alguns bugs visuais
+- Quando uma magia tem efeitos adicionais (mesmo não utilizados), esses efeitos são aplicados automaticamente no alvo se ele falhar na resistência.
 
 ---
 
