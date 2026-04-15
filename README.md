@@ -74,11 +74,18 @@ Quando o personagem recupera pelo menos 1 PV, as condições são removidas auto
 
 ---
 
-### 4. Verificador de Defesa (Não funcional ainda)
+### 4. Verificador de Defesa
 
 **O que faz:** Ao rolar um ataque com um alvo selecionado, o módulo compara automaticamente o total do dado com a Defesa do alvo e mostra no card do chat se o ataque **acertou** ou **errou**, com destaque visual.
 
-**Como usar:** Selecione um token como alvo antes de rolar o ataque (usando o botão de alvo no FoundryVTT). O resultado aparece automaticamente no card do ataque no chat.
+**Regras críticas implementadas:**
+- **Nat 20** = acerto automático, independente da defesa
+- **Nat 1** = falha automática, independente do total
+- Resultado normal = total vs defesa do alvo
+
+**Configuração:** O resultado é exibido apenas para o GM por padrão. Vá em **Configurações → Verificador de Defesa → "Mostrar Verificador de Defesa para os Jogadores?"** para tornar o resultado visível a todos.
+
+**Como usar:** Selecione um token como alvo antes de rolar o ataque (usando o botão de alvo no FoundryVTT). O resultado aparece automaticamente no card do ataque no chat, abaixo do bloco de rolagem.
 
 ---
 

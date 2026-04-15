@@ -49,6 +49,10 @@ export async function handleDefenseCheck(message) {
 	const attackTotal = attackRoll.total;
 	if (!attackTotal && attackTotal !== 0) return;
 
+	// Captura o valor natural do d20 (crítico/falha crítica)
+	const d20Term = attackRoll.dice?.find(d => d.faces === 20);
+	const naturalRoll = d20Term?.results?.[0]?.result ?? null;
+
 	// Obtém os targets do autor
 	const author = game.users.get(authorId);
 	if (!author?.targets?.size) return;
@@ -76,7 +80,8 @@ export async function handleDefenseCheck(message) {
 	await message.update({
 		[`flags.tormenta20.${DEFENSE_CHECK_FLAG}`]: {
 			targets,
-			attackTotal
+			attackTotal,
+			naturalRoll
 		}
 	});
 }
@@ -99,15 +104,23 @@ export async function renderDefenseCheck(message, html) {
 	// Evita re-injeção em re-renders
 	if (el.querySelector(`.${DEFENSE_CHECK_CLASS}`)) return;
 
-	const { targets, attackTotal } = data;
+	const { targets, attackTotal, naturalRoll } = data;
 
-	const processedTargets = targets.map((t) => ({
-		...t,
-		hit: attackTotal >= t.defense,
-		icon: attackTotal >= t.defense ? "✓" : "✗",
-		label: attackTotal >= t.defense ? "ACERTOU!" : "ERROU!",
-		cssClass: attackTotal >= t.defense ? "success" : "failure"
-	}));
+	const processedTargets = targets.map((t) => {
+		let hit;
+		if (naturalRoll === 20) hit = true;          // nat 20 = acerto automático
+		else if (naturalRoll === 1) hit = false;     // nat 1 = falha automática
+		else hit = attackTotal >= t.defense;         // regra normal
+
+		return {
+			...t,
+			hit,
+			icon: hit ? "✓" : "✗",
+			label: hit ? "ACERTOU!" : "ERROU!",
+			cssClass: hit ? "success" : "failure",
+			naturalRoll
+		};
+	});
 
 	const defenseHTML = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/defense-check/banner.hbs`,
@@ -118,16 +131,13 @@ export async function renderDefenseCheck(message, html) {
 	wrapper.className = DEFENSE_CHECK_CLASS;
 	wrapper.innerHTML = defenseHTML;
 
-	// Encontra onde inserir: após o último roll de ataque (não-dano)
-	// A estrutura do card é: .roll (ataque), .roll.roll--dano (dano), footer
-	const rolls = el.querySelectorAll(".roll:not(.roll--dano)");
-	if (rolls.length) {
-		// Insere após o último roll de ataque
-		const lastAttackRoll = rolls[rolls.length - 1];
-		lastAttackRoll.insertAdjacentElement("afterend", wrapper);
+	// Insere após o bloco .dice-roll completo (container raiz da rolagem),
+	// garantindo que o banner fique fora do <ol class="dice-rolls">
+	const messageContent = el.querySelector(".message-content") ?? el;
+	const diceRollBlock = messageContent.querySelector(".dice-roll");
+	if (diceRollBlock) {
+		diceRollBlock.insertAdjacentElement("afterend", wrapper);
 	} else {
-		// Fallback: insere no fim do message-content
-		const content = el.querySelector(".message-content") ?? el;
-		content.appendChild(wrapper);
+		messageContent.appendChild(wrapper);
 	}
 }

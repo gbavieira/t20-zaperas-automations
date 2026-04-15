@@ -16,6 +16,10 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 - **Macro Relógio de Tibares — cálculo de desconto por período** — os descontos eram multiplicados incorretamente quando o período era "mês", resultando em 30× o custo esperado. Agora usa o valor correto do período selecionado (mensal ou diário) para cada ator individualmente.
 
+- **Verificador de Defesa — sobreposição visual** — o banner de resultado (acertou/errou) estava sendo renderizado dentro do bloco de rolagem de dados, ficando sobreposto ao dado de dano. Agora é inserido corretamente abaixo do bloco de rolagem completo.
+
+- **Verificador de Defesa — regras críticas** — implementadas regras de crítico e falha crítica: Nat 20 agora é acerto automático e Nat 1 é falha automática, independente da defesa do alvo.
+
 ### Alterado
 
 - **Dreno de Vida agora aceita poderes além de magias** — o sistema detecta tanto itens do tipo `magia` quanto `poder` ao processar ataques com efeito de drenagem.
