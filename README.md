@@ -4,7 +4,7 @@
 
 **Autor:** Zapera
 **Versão:** 0.1.5
-**Última atualização:** 2026-04-14
+**Última atualização:** 2026-04-15
 **Compatibilidade:** FoundryVTT v13 + Sistema Tormenta20
 
 ---
@@ -143,6 +143,23 @@ Você pode configurar:
 1. Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos)
 2. Configure os atores (opcional) em **Configurações do módulo**
 3. Use a régua de medição no mapa — as informações de viagem aparecem automaticamente no label do último ponto da régua
+
+---
+
+### 9. Cura Acelerada
+
+**O que faz:** Para ameaças (NPCs) que possuem "cura acelerada X" no campo de resistências da ficha, o módulo detecta isso automaticamente quando o NPC entra em combate. A cada turno da ameaça, o GM recebe um prompt whisper perguntando se deseja regenerar os PV correspondentes.
+
+**Como usar:**
+1. Na ficha da ameaça, no campo **Resistências** (aba Detalhes), adicione o texto `cura acelerada 15` (ou o valor desejado)
+2. Inicie combate com a ameaça
+3. Quando chegar o turno da ameaça, o GM verá um prompt no chat perguntando se deseja regenerar os PV
+4. Clique **Sim** para regenerar, ou **Não** para não usar a cura naquele turno
+5. O prompt aparece novamente a cada turno automaticamente
+
+**Exemplo:** Uma ameaça com "Resistências: imunidade a veneno, cura acelerada 8" regenerará 8 PV a cada turno de combate (se o GM desejar).
+
+**Nota importante — múltiplos tokens do mesmo NPC:** Se você tiver dois tokens do mesmo NPC no mapa (ex: dois Trolls), a cura acelerada funciona corretamente para cada um — o prompt identifica qual token específico está em turno e aplica a cura no token correto, não no outro.
 
 ---
 

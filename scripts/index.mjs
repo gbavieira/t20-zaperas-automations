@@ -46,6 +46,7 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/opposed-checks-config/main.hbs`,
 	`modules/${MOD}/templates/life-drain-config/main.hbs`,
 	`modules/${MOD}/templates/travel-ruler-config/main.hbs`,
+	`modules/${MOD}/templates/cura-acelerada/prompt.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
@@ -96,6 +97,11 @@ Hooks.once("init", async () => {
 			key: "travelRuler",
 			name: "Mapa de Viagem Interativo",
 			hint: "Exibe painel de tempo de viagem ao usar a régua em cenas marcadas como 'Mapa de Viagem' (configuração da cena)."
+		},
+		{
+			key: "curaAcelerada",
+			name: "Cura Acelerada",
+			hint: "A cada turno de uma ameaça com 'cura acelerada' no texto de resistências, pergunta ao GM se deseja regenerar os PV correspondentes."
 		}
 	];
 
@@ -245,6 +251,10 @@ Hooks.once("ready", async () => {
 		const { renderSortudo } = await import("./handlers/sortudo.mjs");
 		renderChatHandlers.push(renderSortudo);
 	}
+	if (enabled("curaAcelerada")) {
+		const { renderCuraAceleradaPrompt } = await import("./handlers/cura-acelerada.mjs");
+		renderChatHandlers.push(renderCuraAceleradaPrompt);
+	}
 	if (renderChatHandlers.length) {
 		Hooks.on("renderChatMessageHTML", async (message, html) => {
 			for (const handler of renderChatHandlers) {
@@ -259,6 +269,10 @@ Hooks.once("ready", async () => {
 	if (enabled("sustainedSpell")) {
 		const { handleSustainTurn } = await import("./handlers/sustained-spell.mjs");
 		Hooks.on("updateCombat", handleSustainTurn);
+	}
+	if (enabled("curaAcelerada")) {
+		const { handleCuraAceleradaTurn } = await import("./handlers/cura-acelerada.mjs");
+		Hooks.on("updateCombat", handleCuraAceleradaTurn);
 	}
 
 	// ── updateActor ──────────────────────────────────────────

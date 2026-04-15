@@ -1,0 +1,21 @@
+<div class="t20-sustain-prompt {{promptClass}}">
+  <div class="t20-sustain-title">
+    <i class="fas fa-heart"></i>
+    Cura Acelerada: {{actorName}}
+  </div>
+  <div class="t20-sustain-body">
+    Deseja regenerar <b>{{healAmount}} PV</b> para <b>{{actorName}}</b>?
+  </div>
+  <div class="t20-sustain-actions">
+    <button class="sustain-yes"
+        data-actor-id="{{actorId}}"
+        data-token-id="{{tokenId}}"
+        data-heal-amount="{{healAmount}}">
+      <i class="fas fa-heart"></i> Sim, curar {{healAmount}} PV
+    </button>
+    <button class="sustain-no"
+        data-actor-id="{{actorId}}">
+      <i class="fas fa-times"></i> Não
+    </button>
+  </div>
+</div>

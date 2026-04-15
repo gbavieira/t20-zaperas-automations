@@ -12,6 +12,12 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 - **Configuração de atores para Travel Ruler** — o cálculo de "menor deslocamento" no Mapa de Viagem agora permite escolher quais atores (personagens de jogador) devem ser considerados. Novo sistema CRUD em Settings → "Mapa de Viagem Interativo" → "Configurar". Arraste personagens via drag-drop para adicioná-los à lista. Se nenhum ator estiver configurado, o sistema usa automaticamente todos os PCs (fallback inteligente).
 
+- **Cura Acelerada** — nova automação que detecta ameaças com "cura acelerada X" no campo de resistências da ficha NPC. A cada turno do combate, pergunta ao GM (via prompt whisper) se deseja regenerar os PV correspondentes. Ativável em Settings → "Cura Acelerada".
+
+- **Visibilidade de prompts para jogadores** — dois novos checkboxes em Settings:
+  - "Mostrar Contador de Sustento de Magia para os Jogadores?" — determina se prompts de sustentação aparecem no chat público ou apenas para GM.
+  - "Mostrar Verificador de Defesa para os Jogadores?" — determina se o resultado acertou/errou fica visível a todos ou apenas GM.
+
 ### Corrigido
 
 - **Macro Relógio de Tibares — cálculo de desconto por período** — os descontos eram multiplicados incorretamente quando o período era "mês", resultando em 30× o custo esperado. Agora usa o valor correto do período selecionado (mensal ou diário) para cada ator individualmente.
@@ -20,11 +26,17 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 - **Verificador de Defesa — regras críticas** — implementadas regras de crítico e falha crítica: Nat 20 agora é acerto automático e Nat 1 é falha automática, independente da defesa do alvo.
 
+- **Macro Ração de Viagem — deducção de quantidade** — a macro agora lê corretamente a quantidade atual do item após o dialog (antes usava valor estale armazenado). Suporta múltiplos nomes de campo (`system.quantity`, `system.qtd`, `system.uses.value`) com fallback inteligente. Agora desconta corretamente a quantidade em cada personagem individualmente.
+
 ### Alterado
 
 - **Dreno de Vida agora aceita poderes além de magias** — o sistema detecta tanto itens do tipo `magia` quanto `poder` ao processar ataques com efeito de drenagem.
 
 - **PV Temporário como alternativa de cura no Dreno de Vida** — cada magia/poder configurado pode conceder PV temporário (aditivo) em vez de curar PV normal, permitindo poder à prova de dano sem inflar os pontos de vida máximos.
+
+### Visual
+
+- **Card de Cura Acelerada alinhado ao padrão T20** — template do prompt de Cura Acelerada agora usa as classes CSS já existentes (`t20-sustain-prompt`, `sustain-yes`/`sustain-no`), garantindo consistência visual com outros prompts do módulo. Botões herdam cores padrão do sistema (verde para confirmar, vermelho para rejeitar).
 
 ### Removido
 
