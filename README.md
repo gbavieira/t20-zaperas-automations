@@ -113,16 +113,16 @@ Se o módulo **Sequencer** estiver instalado, um efeito visual de raio de energi
 
 ### 8. Mapa de Viagem Interativo (Em Desenvolvimento)
 
-**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado para quatro modos de viagem, incluindo rações necessárias:
+**O que faz:** Em cenas marcadas como "Mapa de Viagem", exibe informações de tempo de viagem diretamente no label da régua de medição do Foundry (no último waypoint). Mostra o tempo estimado para dois modos de viagem, incluindo rações necessárias:
 
 | Modo | Velocidade |
 | --- | --- |
-| A pé | Caminhada normal (personagem mais lento do grupo) |
+| A pé | Caminhada normal (personagem mais lento do grupo configurado) |
 | Carroça | 9m de deslocamento (36 km/dia) |
-| Cavalo | 12m de deslocamento (48 km/dia) |
-| Veloz | 15m de deslocamento (60 km/dia) |
 
-**Como usar:** Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos). Depois, ao usar a régua de medição no mapa, as informações de viagem aparecem automaticamente no label do último ponto da régua.
+O módulo usa os personagens configurados em **Configurações → T20 Zapera's Automations → Atores da Régua de Viagem** para calcular a velocidade. Se nenhum personagem estiver configurado, usa todos os personagens controlados por jogadores como fallback.
+
+**Como usar:** Na configuração da cena, ative a opção **"Mapa de Viagem"** (aba Básicos). Configure os atores que devem ser considerados em Configurações do módulo. Depois, ao usar a régua de medição no mapa, as informações de viagem aparecem automaticamente no label do último ponto da régua.
 
 ---
 

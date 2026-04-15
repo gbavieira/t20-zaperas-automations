@@ -20,6 +20,7 @@ import { handleTokenLinks } from "./utils/token-links.mjs";
 import { DEFAULT_OPPOSED_CHECKS_DATA, DEFAULT_LIFE_DRAIN_SPELLS } from "./config.mjs";
 import { OpposedChecksConfig } from "./apps/opposed-checks-config.mjs";
 import { LifeDrainConfig } from "./apps/life-drain-config.mjs";
+import { TravelRulerActorConfig } from "./apps/travel-ruler-config.mjs";
 
 const MOD = "t20-zaperas-automations";
 
@@ -44,6 +45,7 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/actor-picker/row.hbs`,
 	`modules/${MOD}/templates/opposed-checks-config/main.hbs`,
 	`modules/${MOD}/templates/life-drain-config/main.hbs`,
+	`modules/${MOD}/templates/travel-ruler-config/main.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
@@ -140,6 +142,23 @@ Hooks.once("init", async () => {
 		label: "Configurar",
 		icon: "fas fa-droplet",
 		type: LifeDrainConfig,
+		restricted: true
+	});
+
+	// ── Dados persistentes de Travel Ruler ───────────────────
+	game.settings.register(MOD, "travelRulerActors", {
+		scope: "world",
+		config: false,
+		type: Array,
+		default: []
+	});
+
+	game.settings.registerMenu(MOD, "travelRulerConfig", {
+		name: "Configuração de Atores para Viagem",
+		hint: "Escolha quais personagens devem ser considerados no cálculo de menor deslocamento.",
+		label: "Configurar",
+		icon: "fas fa-users",
+		type: TravelRulerActorConfig,
 		restricted: true
 	});
 
@@ -261,5 +280,15 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
 	if (ldMenuRow && ldToggleRow) {
 		ldToggleRow.insertAdjacentElement("afterend", ldMenuRow);
 		ldMenuRow.style.marginLeft = "1.5rem";
+	}
+
+	// Travel Ruler Actors Config
+	const trMenuBtn = root.querySelector(`button[data-key="${MOD}.travelRulerConfig"]`);
+	const trMenuRow = trMenuBtn?.closest(".form-group");
+	const trToggleCheckbox = root.querySelector(`input[name="${MOD}.travelRuler"]`);
+	const trToggleRow = trToggleCheckbox?.closest(".form-group");
+	if (trMenuRow && trToggleRow) {
+		trToggleRow.insertAdjacentElement("afterend", trMenuRow);
+		trMenuRow.style.marginLeft = "1.5rem";
 	}
 });

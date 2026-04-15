@@ -66,6 +66,24 @@ function formatKm(km) {
 }
 
 function getPCs() {
+	const configured = game.settings.get(MOD, "travelRulerActors") ?? [];
+
+	// If configured and non-empty, resolve UUIDs
+	if (configured.length > 0) {
+		const resolved = configured
+			.map(uuid => {
+				try {
+					const actor = game.actors?.get(uuid.replace(/^Actor\./, ""));
+					return actor?.type === "character" ? actor : null;
+				} catch {
+					return null;
+				}
+			})
+			.filter(a => a);
+		if (resolved.length > 0) return resolved;
+	}
+
+	// Fallback: all player-controlled characters
 	return game.actors?.filter((a) => a.type === "character" && a.hasPlayerOwner) ?? [];
 }
 
