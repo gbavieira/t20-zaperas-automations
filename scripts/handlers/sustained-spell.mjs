@@ -138,7 +138,9 @@ export async function handleSustainTurn(combat, data, options, userId) {
 		await ChatMessage.create({
 			content,
 			speaker: ChatMessage.getSpeaker({ actor }),
-			whisper: ChatMessage.getWhisperRecipients("GM"),
+			...(game.settings.get("t20-zaperas-automations", "sustainedSpellPublic")
+				? {}
+				: { whisper: ChatMessage.getWhisperRecipients("GM") }),
 			flags: {
 				tormenta20: {
 					[SUSTAIN_PROMPT_FLAG]: true,
@@ -168,10 +170,11 @@ export function renderSustainPrompt(message, html) {
 	const noBtn = html.querySelector(".sustain-no");
 	if (!yesBtn && !noBtn) return;
 
-	// Só o GM pode interagir com o prompt
+	// GM ou dono do personagem podem interagir com o prompt
 	const actorId = message.flags.tormenta20.actorId;
 	const actor = game.actors.get(actorId);
-	if (!game.user.isGM) {
+	const canInteract = game.user.isGM || actor?.testUserPermission(game.user, "OWNER");
+	if (!canInteract) {
 		if (yesBtn) yesBtn.disabled = true;
 		if (noBtn) noBtn.disabled = true;
 		return;

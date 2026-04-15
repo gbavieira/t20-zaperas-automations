@@ -91,6 +91,9 @@ export async function renderDefenseCheck(message, html) {
 	const data = message.flags?.tormenta20?.[DEFENSE_CHECK_FLAG];
 	if (!data?.targets?.length) return;
 
+	const isPublic = game.settings.get("t20-zaperas-automations", "defenseCheckPublic");
+	if (!isPublic && !game.user.isGM) return;
+
 	const el = html instanceof HTMLElement ? html : (html[0] ?? html);
 
 	// Evita re-injeção em re-renders

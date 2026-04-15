@@ -111,6 +111,27 @@ Hooks.once("init", async () => {
 		});
 	}
 
+	// ── Visibilidade para jogadores ───────────────────────────────
+	game.settings.register(MOD, "sustainedSpellPublic", {
+		name: "Mostrar Contador de Sustento de Magia para os Jogadores?",
+		hint: "Se marcado, o prompt de sustentação aparece no chat público. Se desmarcado, somente o GM vê.",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: false,
+		requiresReload: false,
+	});
+
+	game.settings.register(MOD, "defenseCheckPublic", {
+		name: "Mostrar Verificador de Defesa para os Jogadores?",
+		hint: "Se marcado, o resultado acertou/errou aparece para todos os jogadores. Se desmarcado, somente o GM vê.",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: false,
+		requiresReload: false,
+	});
+
 	// ── Dados persistentes de Testes Opostos ─────────────────────
 	game.settings.register(MOD, "opposedChecksData", {
 		scope: "world",
@@ -261,6 +282,26 @@ Hooks.once("ready", async () => {
 Hooks.on("renderSettingsConfig", (_app, html) => {
 	const root = html instanceof HTMLElement ? html : html[0] ?? html;
 	if (!root) return;
+
+	// Verificador de Defesa — checkbox de visibilidade
+	const dcPublicCheckbox = root.querySelector(`input[name="${MOD}.defenseCheckPublic"]`);
+	const dcPublicRow = dcPublicCheckbox?.closest(".form-group");
+	const dcToggleCheckbox = root.querySelector(`input[name="${MOD}.defenseCheck"]`);
+	const dcToggleRow = dcToggleCheckbox?.closest(".form-group");
+	if (dcPublicRow && dcToggleRow) {
+		dcToggleRow.insertAdjacentElement("afterend", dcPublicRow);
+		dcPublicRow.style.marginLeft = "1.5rem";
+	}
+
+	// Contador de Magia Sustentada — checkbox de visibilidade
+	const ssPublicCheckbox = root.querySelector(`input[name="${MOD}.sustainedSpellPublic"]`);
+	const ssPublicRow = ssPublicCheckbox?.closest(".form-group");
+	const ssToggleCheckbox = root.querySelector(`input[name="${MOD}.sustainedSpell"]`);
+	const ssToggleRow = ssToggleCheckbox?.closest(".form-group");
+	if (ssPublicRow && ssToggleRow) {
+		ssToggleRow.insertAdjacentElement("afterend", ssPublicRow);
+		ssPublicRow.style.marginLeft = "1.5rem";
+	}
 
 	// Testes Opostos
 	const ocMenuBtn = root.querySelector(`button[data-key="${MOD}.opposedChecksConfig"]`);
