@@ -68,15 +68,26 @@ async function promptSkillChoice(check, attackerName, attackerTotal) {
  * Determina se o defensor passou no teste oposto,
  * levando em conta 20 natural e 1 natural do atacante e do defensor.
  *
- * - Atacante nat 1  → falha automática (defensor passa), mesmo se defensor também tirar 1
- * - Defensor nat 1  → falha automática (defensor falha), mesmo se atacante também tirar 1
- * - Atacante nat 20 → sucesso automático, EXCETO se defensor também nat 20
- * - Caso contrário  → comparação de totais
+ * - Atacante nat 1  → defensor vence sempre, EXCETO se defensor também nat 1 (compara totais)
+ * - Atacante nat 20 → atacante vence sempre, EXCETO se defensor também nat 20 (compara totais)
+ * - Atacante 2–19   → defensor nat 20 vence sempre; defensor nat 1 perde sempre; senão compara totais
+ * - Empate de totais → defensor vence
  */
 function resolveOpposed(attackerTotal, attackerNat, defenderTotal, defenderNat) {
-	if (attackerNat === 1)  return false; // Atacante nat 1 → falha automática
-	if (defenderNat === 1)  return false; // Defensor  nat 1 → falha automática
-	if (attackerNat === 20) return defenderNat !== 20; // Atacante nat 20, exceto defensor tb nat 20
+	// Atacante nat 1: defensor vence, exceto se defensor também nat 1 (compara totais)
+	if (attackerNat === 1) {
+		if (defenderNat === 1) return defenderTotal >= attackerTotal;
+		return true;
+	}
+	// Atacante nat 20: atacante vence, exceto se defensor também nat 20 (compara totais)
+	if (attackerNat === 20) {
+		if (defenderNat === 20) return defenderTotal >= attackerTotal;
+		return false;
+	}
+	// Atacante 2–19: nat do defensor tem prioridade sobre total
+	if (defenderNat === 20) return true;  // defensor nat 20 sempre vence
+	if (defenderNat === 1)  return false; // defensor nat 1 sempre perde
+	// Comparação normal de totais (empate → defensor vence)
 	return defenderTotal >= attackerTotal;
 }
 

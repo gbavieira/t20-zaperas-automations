@@ -4,6 +4,14 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
+## [0.2.1] — 2026-04-16
+
+### Corrigido
+
+- **Testes Opostos — lógica de nat 1 e nat 20** — a função que determina vitória/derrota nos testes opostos tinha a lógica de críticos completamente invertida: atacante com nat 20 fazia todos os defensores vencerem (ao invés de perderem), e atacante com nat 1 fazia todos os defensores perderem (ao invés de vencerem). Reescrita com as regras corretas: nat 1 do atacante → defensor sempre vence (exceto se defensor também tirar nat 1, comparando totais); nat 20 do atacante → atacante sempre vence (exceto se defensor também tirar nat 20, comparando totais); para valores entre 2–19, nat 20 do defensor vence sempre e nat 1 do defensor perde sempre, independente de totais. Empate de totais sempre favorece o defensor.
+
+---
+
 ## [0.2.0] — 2026-04-15
 
 ### Adicionado
