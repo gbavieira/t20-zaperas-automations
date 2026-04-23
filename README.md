@@ -35,7 +35,7 @@
 **Padrão:**
 
 | Perícia usada | Defesa usada | Como funciona |
-|---|---|---|
+| --- | --- | --- |
 | **Enganação** | Percepção ou Intuição | O mestre escolhe quem defende |
 | **Furtividade** | Percepção | Todos no mapa rolam automaticamente |
 | **Intimidação** | Vontade | Apenas os alvos selecionados rolam |
@@ -54,7 +54,7 @@
 
 ---
 
-### 3️⃣ Condições em 0 PV ⚙️ Configurável
+### 3️⃣ Condições em 0 PV — Sem Configuração
 
 **O que faz:** Quando um personagem chega a 0 pontos de vida, o módulo aplica automaticamente todas as condições previstas pelas regras: **Sangrando, Indefeso, Desprevenido, Caído e Inconsciente**. Quando o personagem recupera pelo menos 1 PV, as condições são removidas automaticamente (exceto Caído, que o personagem precisa se levantar por conta própria).
 
@@ -118,7 +118,7 @@
 
 ---
 
-### 7️⃣ Poder Sortudo
+### 7️⃣ Poder Sortudo — Sem Configuração
 
 **O que faz:** Para personagens com o poder **Sortudo**, o módulo adiciona automaticamente um botão de rerolar em testes de perícia no chat. O custo é 3 PM (descontado automaticamente ao clicar). Você rola novamente e fica com o resultado que preferir (exatamente como a regra do livro).
 
@@ -139,7 +139,7 @@
 **Modos disponíveis:**
 
 | Modo | Velocidade |
-|---|---|
+| --- | --- |
 | **A pé** | Caminhada normal (usa o personagem mais lento do grupo) |
 | **Carroça** | 9m por rodada (36 km/dia) |
 
@@ -155,7 +155,7 @@
 
 ---
 
-### 9️⃣ Cura Acelerada ⚙️ Configurável
+### 9️⃣ Cura Acelerada — Sem Configuração
 
 **O que faz:** Para ameaças (NPCs) que possuem "cura acelerada X" no campo de resistências da ficha, o módulo detecta automaticamente quando o NPC entra em combate. A cada turno da ameaça, o mestre recebe um prompt perguntando se deseja regenerar os PV correspondentes.
 
