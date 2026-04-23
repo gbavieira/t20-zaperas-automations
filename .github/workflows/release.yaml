@@ -20,7 +20,7 @@ jobs:
           jq \
             --arg version "$VERSION" \
             --arg url "https://github.com/${{ github.repository }}" \
-            --arg manifest "https://github.com/${{ github.repository }}/releases/latest/download/module.json" \
+            --arg manifest "https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.json" \
             --arg download "https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip" \
             '.version = $version | .url = $url | .manifest = $manifest | .download = $download' \
             module.json > module.json.tmp && mv module.json.tmp module.json
