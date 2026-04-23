@@ -4,6 +4,22 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
+## [0.2.2] — 2026-04-16
+
+### Adicionado
+
+- **Testes Opostos — Resultado apenas para o GM** — nova checkbox nas configurações. Quando ativada, o card de resultado dos testes opostos é sempre enviado como whisper apenas para o GM, ignorando o modo de rolagem da mensagem original (público, cego, etc.).
+
+- **Testes Opostos — Rolar apenas para alvos selecionados** — nova checkbox nas configurações. Quando ativada, altera o comportamento de seleção de defensores: no modo automático, rola apenas para tokens marcados como alvo no canvas (com warning se nenhum alvo estiver selecionado); nos modos fixo/escolha, pré-popula o picker com os atores dos alvos selecionados no canvas (se houver). Pode ser combinada com a setting anterior.
+
+- **Testes de Resistência — Mostrar CD no dialog** — nova checkbox nas configurações. Quando marcada (padrão), exibe a CD do teste tanto no dialog de rolagem quanto no card de resultado. Desmarque para esconder a dificuldade dos jogadores — o dialog mostrará apenas o tipo de resistência, e o resultado mostrará somente o total rolado.
+
+### Corrigido
+
+- **Testes de Resistência — total duplicado no banner** — o card de resultado exibia o valor do teste duas vezes: uma no bloco de dados rolados (gerado automaticamente pelo Foundry) e outra no banner de Sucesso/Falha. O banner agora mostra apenas a comparação com a CD quando relevante (ex: "✓ SUCESSO (vs CD 18)"), ou somente o ícone e texto quando a CD está oculta.
+
+---
+
 ## [0.2.1] — 2026-04-16
 
 ### Corrigido

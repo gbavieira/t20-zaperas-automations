@@ -95,7 +95,6 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 	const total = roll.total;
 	const success = total >= cd;
 	const rollHTML = await roll.render();
-	const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/result.hbs`,
@@ -109,8 +108,7 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 			bannerIcon: success ? "✓" : "✗",
 			bannerText: success ? "SUCESSO" : "FALHA",
 			total,
-			cd,
-			showCD
+			cd
 		}
 	);
 
@@ -145,11 +143,9 @@ async function promptSaveRoll(token, saveType, cd, spellName, casterName, origin
 
 	const saveLabel = pericia.label || saveType;
 
-	const showCD = game.settings.get(MOD, "autoSaveShowCD");
-
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/prompt.hbs`,
-		{ casterName, spellName, actorName: actor.name, saveLabel, cd, showCD }
+		{ casterName, spellName, actorName: actor.name, saveLabel, cd }
 	);
 
 	const confirmed = await foundry.applications.api.DialogV2.wait({

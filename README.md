@@ -3,8 +3,8 @@
 > Módulo para FoundryVTT para automações que um mestre sente falta no sistema Tormenta20.
 
 **Autor:** Zapera
-**Versão:** 0.2.0
-**Última atualização:** 2026-04-15
+**Versão:** 0.2.2
+**Última atualização:** 2026-04-16
 **Compatibilidade:** FoundryVTT v13 + Sistema Tormenta20
 
 ---
@@ -36,6 +36,8 @@ Sabe aquela hora que o mestre lança uma magia de área e precisa pedir para cad
 **O que faz:** Quando um personagem lança uma magia que exige teste de resistência (como Adaga Mental), o módulo identifica automaticamente qual tipo de resistência é necessária — Fortitude, Reflexo ou Vontade — e abre o prompt de rolagem para cada jogador afetado, sem que o mestre precise pedir nada.
 
 Para magias de área: quando o conjurador coloca o template no mapa, os alvos dentro da área rolam o teste de resistência automaticamente, sem necessidade de selecionar alvos manualmente antes.
+
+**Configuração:** Por padrão, a CD do teste é exibida no dialog de rolagem e no card de resultado. Para esconder a dificuldade dos jogadores, desmarque **"Testes de Resistência — Mostrar CD no dialog"** nas configurações do módulo.
 
 **Como usar:** Lance a magia normalmente pelo sistema Tormenta20. Para magias com alvo direto, selecione os tokens como alvo antes. Para magias de área, clique em "Colocar Área de Efeito" e posicione no mapa — os testes são enviados automaticamente.
 

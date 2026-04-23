@@ -65,12 +65,16 @@ export async function buildResultTable({
  * @param {string} opts.content          HTML da mensagem
  * @param {string} [opts.flavor]         texto de flavor (aparece acima do conteúdo)
  * @param {ChatMessage} [opts.sourceMessage]  mensagem original cujo roll mode será propagado
+ * @param {boolean} [opts.forceGMOnly]   se true, ignora sourceMessage e força whisper apenas para GMs
  * @returns {Promise<ChatMessage>}
  */
-export async function postGMMessage({ content, flavor, sourceMessage }) {
-  const visibility = sourceMessage
-    ? { whisper: [...(sourceMessage.whisper ?? [])], blind: sourceMessage.blind ?? false }
-    : { whisper: ChatMessage.getWhisperRecipients("GM") };
+export async function postGMMessage({ content, flavor, sourceMessage, forceGMOnly = false }) {
+  const gmIds = game.users.filter(u => u.isGM).map(u => u.id);
+  const visibility = forceGMOnly
+    ? { whisper: gmIds, blind: false }
+    : sourceMessage
+      ? { whisper: [...(sourceMessage.whisper ?? [])], blind: sourceMessage.blind ?? false }
+      : { whisper: gmIds };
   return ChatMessage.create({
     user: game.user.id,
     content,

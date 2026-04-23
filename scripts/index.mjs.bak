@@ -138,36 +138,6 @@ Hooks.once("init", async () => {
 		requiresReload: false,
 	});
 
-
-	game.settings.register(MOD, "autoSaveShowCD", {
-		name: "Testes de Resistência — Mostrar CD no dialog",
-		hint: "Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado. Desmarque para esconder a dificuldade dos jogadores.",
-		scope: "world",
-		config: true,
-		type: Boolean,
-		default: true,
-		requiresReload: false,
-	});
-
-	game.settings.register(MOD, "opposedChecksGMOnly", {
-		name: "Testes Opostos — Resultado apenas para o GM",
-		hint: "O card de resultado dos testes opostos é enviado como whisper apenas para o GM, independente do modo de rolagem.",
-		scope: "world",
-		config: true,
-		type: Boolean,
-		default: false,
-		requiresReload: false,
-	});
-
-	game.settings.register(MOD, "opposedChecksTargetsOnly", {
-		name: "Testes Opostos — Rolar apenas para alvos selecionados",
-		hint: "Se tokens estiverem marcados como alvo, usa apenas eles. No modo automático, exige ao menos um alvo. Nos modos fixo/escolha, pré-seleciona os alvos no picker.",
-		scope: "world",
-		config: true,
-		type: Boolean,
-		default: false,
-		requiresReload: false,
-	});
 	// ── Dados persistentes de Testes Opostos ─────────────────────
 	game.settings.register(MOD, "opposedChecksData", {
 		scope: "world",
@@ -327,16 +297,6 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
 	const root = html instanceof HTMLElement ? html : html[0] ?? html;
 	if (!root) return;
 
-	// Testes de Resistência — mostrar CD
-	const asShowCDCheckbox = root.querySelector(`input[name="${MOD}.autoSaveShowCD"]`);
-	const asShowCDRow = asShowCDCheckbox?.closest(".form-group");
-	const asToggleCheckbox = root.querySelector(`input[name="${MOD}.autoSave"]`);
-	const asToggleRow = asToggleCheckbox?.closest(".form-group");
-	if (asShowCDRow && asToggleRow) {
-		asToggleRow.insertAdjacentElement("afterend", asShowCDRow);
-		asShowCDRow.style.marginLeft = "1.5rem";
-	}
-
 	// Verificador de Defesa — checkbox de visibilidade
 	const dcPublicCheckbox = root.querySelector(`input[name="${MOD}.defenseCheckPublic"]`);
 	const dcPublicRow = dcPublicCheckbox?.closest(".form-group");
@@ -367,25 +327,6 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
 		ocMenuRow.style.marginLeft = "1.5rem";
 	}
 
-
-	// Testes Opostos — checkboxes de modo
-	const ocGMOnlyCheckbox = root.querySelector(`input[name="${MOD}.opposedChecksGMOnly"]`);
-	const ocGMOnlyRow = ocGMOnlyCheckbox?.closest(".form-group");
-	const ocTargetsOnlyCheckbox = root.querySelector(`input[name="${MOD}.opposedChecksTargetsOnly"]`);
-	const ocTargetsOnlyRow = ocTargetsOnlyCheckbox?.closest(".form-group");
-	const ocToggleCheckbox2 = root.querySelector(`input[name="${MOD}.opposedChecks"]`);
-	const ocToggleRow2 = ocToggleCheckbox2?.closest(".form-group");
-	if (ocToggleRow2) {
-		if (ocGMOnlyRow) {
-			ocToggleRow2.insertAdjacentElement("afterend", ocGMOnlyRow);
-			ocGMOnlyRow.style.marginLeft = "1.5rem";
-		}
-		if (ocTargetsOnlyRow) {
-			ocGMOnlyRow?.insertAdjacentElement("afterend", ocTargetsOnlyRow) ??
-			ocToggleRow2.insertAdjacentElement("afterend", ocTargetsOnlyRow);
-			ocTargetsOnlyRow.style.marginLeft = "1.5rem";
-		}
-	}
 	// Dreno de Vida
 	const ldMenuBtn = root.querySelector(`button[data-key="${MOD}.lifeDrainConfig"]`);
 	const ldMenuRow = ldMenuBtn?.closest(".form-group");

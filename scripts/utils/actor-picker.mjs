@@ -15,6 +15,7 @@
  * @param {string} opts.defenseLabel   ex: "Percepção", "Vontade"
  * @param {string} opts.defenseAbbr    ex: "Perc", "Vont"
  * @param {string} opts.defenseKey     ex: "perc", "vont", "intu"
+ * @param {string[]} [opts.preSelectedIds] array de actor IDs pré-selecionados (ex: alvos no canvas)
  * @returns {Promise<string[]>} array de actor IDs selecionados
  */
 export async function openActorPicker({
@@ -24,7 +25,8 @@ export async function openActorPicker({
   attackLabel,
   defenseLabel,
   defenseAbbr,
-  defenseKey
+  defenseKey,
+  preSelectedIds = []
 }) {
   const id = `t20-picker-${Date.now()}`;
 
@@ -91,6 +93,14 @@ export async function openActorPicker({
           });
           dropZone.appendChild(row);
         }
+
+        // Pré-popula com atores pré-selecionados (ex: alvos no canvas)
+        (async () => {
+          for (const actorId of preSelectedIds) {
+            const actor = game.actors.get(actorId);
+            if (actor) await addActor(actor);
+          }
+        })();
 
         dropZone.addEventListener("dragover", (ev) => {
           ev.preventDefault();

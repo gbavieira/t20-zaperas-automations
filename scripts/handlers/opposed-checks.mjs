@@ -15,6 +15,8 @@ import { openActorPicker } from "../utils/actor-picker.mjs";
 import { buildResultTable, postGMMessage } from "../utils/chat.mjs";
 import { rollSkillCheck } from "../utils/rolls.mjs";
 
+const MOD = "t20-zaperas-automations";
+
 // ── Helpers ─────────────────────────────────────────────────
 
 /**
@@ -149,6 +151,29 @@ async function rollAllCanvasTokens(message, defenseKey, attackerTotal, attackerN
 	return results;
 }
 
+/**
+ * Rola defesa para tokens marcados como alvo no canvas (modo "auto" com targetsOnly).
+ * Itera um array pré-filtrado de tokens.
+ */
+async function rollTargetTokens(tokens, defenseKey, attackerTotal, attackerNat) {
+	const results = [];
+	for (const token of tokens) {
+		if (!token.actor) continue;
+
+		const result = await rollSkillCheck(token.actor, defenseKey);
+		if (!result) continue;
+
+		results.push({
+			name: token.name,
+			tokenId: token.id,
+			total: result.total,
+			nat: result.nat,
+			passed: resolveOpposed(attackerTotal, attackerNat, result.total, result.nat)
+		});
+	}
+	return results;
+}
+
 // ── Handler principal ───────────────────────────────────────
 
 /**
@@ -161,6 +186,8 @@ export async function handleOpposedChecks(message) {
 	if (!message.rolls?.length) return;
 
 	const content = message.content ?? "";
+	const gmOnly = game.settings.get(MOD, "opposedChecksGMOnly");
+	const targetsOnly = game.settings.get(MOD, "opposedChecksTargetsOnly");
 
 	for (const check of buildRuntimeChecks()) {
 		const matches = check.triggers.some((t) => content.includes(t));
@@ -174,6 +201,7 @@ export async function handleOpposedChecks(message) {
 		const attackerNat = attackRoll?.dice?.[0]?.total ?? attackRoll?.terms?.[0]?.total ?? 0;
 
 		const attackerName = message.speaker?.alias ?? "???";
+		const speakerTokenId = message.speaker?.token;
 
 		// Determina skill de defesa
 		let defenseKey, defenseLabel, defenseAbbr;
@@ -193,8 +221,30 @@ export async function handleOpposedChecks(message) {
 		// Obtém defensores e rola
 		let results;
 		if (check.defenseMode === "auto") {
-			results = await rollAllCanvasTokens(message, defenseKey, attackerTotal, attackerNat);
+			if (targetsOnly) {
+				// Rola apenas para alvos selecionados
+				const targets = [...game.user.targets].filter((t) => {
+					if (!t.actor) return false;
+					if (!t.actor.system?.pericias?.[defenseKey]) return false;
+					if (speakerTokenId && t.id === speakerTokenId) return false;
+					return true;
+				});
+				if (!targets.length) {
+					ui.notifications.warn("Testes Opostos: nenhum alvo selecionado. Selecione tokens no canvas.");
+					return;
+				}
+				results = await rollTargetTokens(targets, defenseKey, attackerTotal, attackerNat);
+			} else {
+				results = await rollAllCanvasTokens(message, defenseKey, attackerTotal, attackerNat);
+			}
 		} else {
+			// Modos "fixed" e "choice" — usar picker com pré-seleção de alvos se targetsOnly
+			const preSelectedIds = targetsOnly
+				? [...game.user.targets]
+					.filter((t) => t.id !== speakerTokenId && t.actor)
+					.map((t) => t.actor.id)
+				: [];
+
 			const actorIds = await openActorPicker({
 				title: `${defenseLabel} vs ${check.attackLabel} de ${attackerName}`,
 				attackerName,
@@ -202,7 +252,8 @@ export async function handleOpposedChecks(message) {
 				attackLabel: check.attackLabel,
 				defenseLabel,
 				defenseAbbr,
-				defenseKey
+				defenseKey,
+				preSelectedIds
 			});
 			if (!actorIds.length) return;
 			results = await rollSelectedActors(actorIds, defenseKey, attackerTotal, attackerNat);
@@ -228,7 +279,7 @@ export async function handleOpposedChecks(message) {
 			results
 		});
 
-		await postGMMessage({ content: html, sourceMessage: message });
+		await postGMMessage({ content: html, sourceMessage: message, forceGMOnly: gmOnly });
 
 		return; // Processa apenas o primeiro match
 	}

@@ -154,3 +154,4 @@ packs/*/LOG.old
 
 #local scripts
 *.bat
+*.ps1
