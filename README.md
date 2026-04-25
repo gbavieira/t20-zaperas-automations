@@ -20,7 +20,7 @@
 
 **Configurações:**
 - **Testes de Resistência — Ativada?** — Ligue/desligue a automação
-- **Testes de Resistência — Mostrar CD no dialog** — Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado. Desmarque para esconder a dificuldade dos jogadores
+- **Testes de Resistência — Mostrar CD no chat** — Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado. Desmarque para esconder a dificuldade dos jogadores
 
 **Como usar:**
 - Para magias com alvo direto: selecione os tokens como alvo antes de lançar a magia

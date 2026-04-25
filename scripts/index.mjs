@@ -147,7 +147,7 @@ Hooks.once("init", async () => {
 
 
 	game.settings.register(MOD, "autoSaveShowCD", {
-		name: "Testes de Resistência — Mostrar CD no dialog",
+		name: "Testes de Resistência — Mostrar CD no Chat",
 		hint: "Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado. Desmarque para esconder a dificuldade dos jogadores.",
 		scope: "world",
 		config: true,
