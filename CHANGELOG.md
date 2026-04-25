@@ -8,13 +8,11 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ### Adicionado
 
-- **Testes de Resistência Automáticos (Itens)** — nova automação que estende os testes de resistência para itens consumíveis (bombas alquímicas, fogo alquímico, venenos, etc.). Ao usar um item com alvos marcados ou template de área, o módulo calcula a CD automaticamente pela fórmula `10 + ⌊nível/2⌋ + modificador do atributo-chave` do aplicador. Para alquímicos, o atributo-chave é lido da descrição do item (ex: "CD + Destreza"). Para venenos, a lista é configurável via menu dedicado — venenos usam sempre Fortitude e Int como atributo-chave. Itens sem CD declarada e fora da lista de venenos são ignorados silenciosamente.
+- **Testes de Resistência Automáticos (Itens)** — nova automação que estende os testes de resistência para itens consumíveis (bombas alquímicas, fogo alquímico, venenos, etc.). Ao usar um item com alvos marcados ou template de área, o módulo calcula a CD automaticamente pela fórmula `10 + ⌊nível/2⌋ + modificador do atributo-chave` do aplicador. Para alquímicos, o atributo-chave é lido diretamente do item. Para venenos (lista configurável), o teste é sempre Fortitude com CD Int. Itens sem CD declarada e fora da lista de venenos são ignorados silenciosamente.
 
-- **Menu de configuração de Venenos** — nova tela de configuração acessível em Configurações → "Testes de Resistência (Itens)" → "Configurar". Permite ao GM gerenciar uma lista de itens consumíveis tratados como venenos via drag-drop diretamente da biblioteca de itens.
+- **Menu de configuração de Venenos** — nova tela acessível em Configurações → "Testes de Resistência (Itens)" → "Configurar". O GM gerencia a lista de itens consumíveis tratados como venenos via drag-drop diretamente da biblioteca de itens.
 
-### Refatorado
-
-- **`scripts/handlers/auto-save.mjs`** — as funções reutilizáveis (`rollSaveAndReport`, `promptSaveRoll`, `parseSaveType`, `shouldCurrentUserRoll`, `applyEffectsToActor`, `extractResistenciaTxt`, `extractItemName`, `waitForAreaTemplate`) foram extraídas para `scripts/utils/saves.mjs`. O handler de magias continua com comportamento idêntico — apenas os imports foram atualizados. Isso permite que o novo handler de itens reutilize todo o pipeline de rolagem sem duplicação.
+- **Testes de Resistência — Mostrar CD no Chat (por automação)** — a opção de esconder a CD dos jogadores agora é individual por automação: uma checkbox para magias e outra para itens. Cada uma controla independentemente se a CD aparece nos prompts e cards de resultado.
 
 ---
 

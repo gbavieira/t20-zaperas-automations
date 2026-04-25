@@ -2,7 +2,7 @@
 
 > **Módulo para FoundryVTT que adiciona automações inteligentes para o sistema Tormenta20.**
 
-**Autor:** Zapera | **Versão:** 0.2.2 | **FoundryVTT:** v13+ | **Sistema:** Tormenta20
+**Autor:** Zapera | **Versão:** 0.3.0 | **FoundryVTT:** v13+ | **Sistema:** Tormenta20
 
 ---
 
@@ -190,6 +190,7 @@
 
 **Configurações:**
 - **Testes de Resistência (Itens) — Ativada?** — Ligue/desligue a automação
+- **Testes de Resistência (Itens) — Mostrar CD no Chat** — Se marcado, exibe a CD no prompt de rolagem e no card de resultado. Independente da opção equivalente para magias
 - **Testes de Resistência (Itens) — Configurar** — Botão para gerenciar a lista de venenos. Arraste consumíveis do tipo "Veneno" para adicioná-los. Itens na lista usam sempre Fortitude + Int como CD
 
 **Como usar:**
