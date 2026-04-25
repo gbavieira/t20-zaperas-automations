@@ -139,6 +139,7 @@ export async function handleItemAutoSave(message) {
 	const author = game.users.get(authorId);
 	if (!author) return;
 	const casterName = message.speaker?.alias || "???";
+	const showCD = game.settings.get(MOD, "itemAutoSaveShowCD");
 
 	// Template de área: flags.tormenta20.template é um objeto { area, alcance } quando presente
 	const hasTemplate = flags.template;
@@ -148,7 +149,7 @@ export async function handleItemAutoSave(message) {
 				const actor = target.actor;
 				if (!actor) continue;
 				if (!shouldCurrentUserRoll(actor)) continue;
-				await promptSaveRoll(target, saveType, cd, itemName, casterName, message);
+				await promptSaveRoll(target, saveType, cd, itemName, casterName, message, showCD);
 			}
 		});
 		return;
@@ -162,6 +163,6 @@ export async function handleItemAutoSave(message) {
 		const actor = target.actor;
 		if (!actor) continue;
 		if (!shouldCurrentUserRoll(actor)) continue;
-		await promptSaveRoll(target, saveType, cd, itemName, casterName, message);
+		await promptSaveRoll(target, saveType, cd, itemName, casterName, message, showCD);
 	}
 }

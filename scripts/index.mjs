@@ -209,6 +209,16 @@ Hooks.once("init", async () => {
 		restricted: true
 	});
 
+	game.settings.register(MOD, "itemAutoSaveShowCD", {
+		name: "Testes de Resistência (Itens) — Mostrar CD no Chat",
+		hint: "Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado para itens alquímicos e venenos. Desmarque para esconder a dificuldade dos jogadores.",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: true,
+		requiresReload: false,
+	});
+
 	// ── Dados persistentes de Venenos (Item Auto-Save) ───────
 	game.settings.register(MOD, "itemAutoSavePoisons", {
 		scope: "world",
@@ -424,14 +434,22 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
 		ldMenuRow.style.marginLeft = "1.5rem";
 	}
 
-	// Item Auto-Save — menu Configurar (lista de venenos)
-	const iasMenuBtn = root.querySelector(`button[data-key="${MOD}.itemAutoSaveConfig"]`);
-	const iasMenuRow = iasMenuBtn?.closest(".form-group");
+	// Item Auto-Save — showCD checkbox + menu Configurar
 	const iasToggleCheckbox = root.querySelector(`input[name="${MOD}.itemAutoSave"]`);
 	const iasToggleRow = iasToggleCheckbox?.closest(".form-group");
-	if (iasMenuRow && iasToggleRow) {
-		iasToggleRow.insertAdjacentElement("afterend", iasMenuRow);
-		iasMenuRow.style.marginLeft = "1.5rem";
+	const iasShowCDCheckbox = root.querySelector(`input[name="${MOD}.itemAutoSaveShowCD"]`);
+	const iasShowCDRow = iasShowCDCheckbox?.closest(".form-group");
+	const iasMenuBtn = root.querySelector(`button[data-key="${MOD}.itemAutoSaveConfig"]`);
+	const iasMenuRow = iasMenuBtn?.closest(".form-group");
+	if (iasToggleRow) {
+		if (iasShowCDRow) {
+			iasToggleRow.insertAdjacentElement("afterend", iasShowCDRow);
+			iasShowCDRow.style.marginLeft = "1.5rem";
+		}
+		if (iasMenuRow) {
+			(iasShowCDRow ?? iasToggleRow).insertAdjacentElement("afterend", iasMenuRow);
+			iasMenuRow.style.marginLeft = "1.5rem";
+		}
 	}
 
 	// Travel Ruler Actors Config

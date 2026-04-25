@@ -7,8 +7,6 @@
 
 import { normalizeText } from "./text.mjs";
 
-const MOD = "t20-zaperas-automations";
-
 // ── Parsing / extração ──────────────────────────────────────
 
 export function parseSaveType(txt) {
@@ -75,7 +73,7 @@ export async function applyEffectsToActor(actor, effects) {
  * Rola o teste de resistência, compara com a CD e posta resultado no chat.
  * Aplica efeitos da mensagem original no alvo em caso de falha (se alvo vivo).
  */
-export async function rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage = null) {
+export async function rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage = null, showCD = true) {
 	const actor = token.actor;
 	if (!actor) return;
 
@@ -93,7 +91,6 @@ export async function rollSaveAndReport(token, saveType, cd, itemName, casterNam
 	const total = roll.total;
 	const success = total >= cd;
 	const rollHTML = await roll.render();
-	const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/result.hbs`,
@@ -133,7 +130,7 @@ export async function rollSaveAndReport(token, saveType, cd, itemName, casterNam
 	}
 }
 
-export async function promptSaveRoll(token, saveType, cd, itemName, casterName, originalMessage) {
+export async function promptSaveRoll(token, saveType, cd, itemName, casterName, originalMessage, showCD = true) {
 	const actor = token.actor;
 	if (!actor) return;
 
@@ -141,8 +138,6 @@ export async function promptSaveRoll(token, saveType, cd, itemName, casterName, 
 	if (!pericia) return;
 
 	const saveLabel = pericia.label || saveType;
-
-	const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/prompt.hbs`,
@@ -173,7 +168,7 @@ export async function promptSaveRoll(token, saveType, cd, itemName, casterName, 
 
 	if (!confirmed) return;
 
-	await rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage);
+	await rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage, showCD);
 }
 
 // ── Esperar template de área ────────────────────────────────

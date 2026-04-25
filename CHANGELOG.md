@@ -4,7 +4,7 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
-## [0.2.3] — 2026-04-24
+## [0.3.0] — 2026-04-24
 
 ### Adicionado
 

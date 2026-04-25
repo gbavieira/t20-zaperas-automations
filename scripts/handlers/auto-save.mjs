@@ -23,6 +23,8 @@ import {
 	waitForAreaTemplate
 } from "../utils/saves.mjs";
 
+const MOD = "t20-zaperas-automations";
+
 export async function handleAutoSave(message) {
 	const itemData = message.flags?.tormenta20?.itemData;
 	const content = message.content || "";
@@ -48,6 +50,7 @@ export async function handleAutoSave(message) {
 
 	const spellName = extractItemName(content);
 	const casterName = message.speaker?.alias || "???";
+	const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
 	const hasTemplate = message.getFlag("tormenta20", "template");
 	if (hasTemplate) {
@@ -56,7 +59,7 @@ export async function handleAutoSave(message) {
 				const actor = target.actor;
 				if (!actor) continue;
 				if (!shouldCurrentUserRoll(actor)) continue;
-				await promptSaveRoll(target, saveType, cd, spellName, casterName, message);
+				await promptSaveRoll(target, saveType, cd, spellName, casterName, message, showCD);
 			}
 		});
 		return;
@@ -69,6 +72,6 @@ export async function handleAutoSave(message) {
 		const actor = target.actor;
 		if (!actor) continue;
 		if (!shouldCurrentUserRoll(actor)) continue;
-		await promptSaveRoll(target, saveType, cd, spellName, casterName, message);
+		await promptSaveRoll(target, saveType, cd, spellName, casterName, message, showCD);
 	}
 }
