@@ -146,6 +146,7 @@ packs-temp/
 CLAUDE.md
 docs/superpowers/
 src/packs/
+jsconfig.json
 
 # LevelDB noise
 packs/*/LOCK

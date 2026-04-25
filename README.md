@@ -175,6 +175,30 @@
 
 ---
 
+### 🔟 Testes de Resistência Automáticos (Itens) ⚙️ Com Configuração
+
+**O que faz:** Estende a automação de testes de resistência para itens consumíveis como bombas alquímicas, fogo alquímico, venenos e similares. Quando um item é usado com alvos marcados ou template de área, o módulo calcula a CD automaticamente e abre o prompt de resistência para cada alvo.
+
+**Fórmula da CD:** `10 + metade do nível do aplicador + modificador do atributo-chave`
+
+| Tipo de item | Como a CD é calculada | Tipo de teste |
+| --- | --- | --- |
+| **Alquímico** (ex: Fogo Alquímico) | Atributo-chave lido da descrição (ex: "CD + Des") | Reflexo (padrão) |
+| **Veneno** (lista configurável) | Sempre usa Int como atributo-chave | Fortitude |
+
+**Bônus de poderes (Venefício, etc.):** O módulo confia no sistema T20. Quando o jogador marca poderes no dialog de uso do item, o sistema já aplica os bônus à CD — o módulo usa o valor final que o sistema calculou.
+
+**Configurações:**
+- **Testes de Resistência (Itens) — Ativada?** — Ligue/desligue a automação
+- **Testes de Resistência (Itens) — Configurar** — Botão para gerenciar a lista de venenos. Arraste consumíveis do tipo "Veneno" para adicioná-los. Itens na lista usam sempre Fortitude + Int como CD
+
+**Como usar:**
+- Para itens com alvo direto: selecione os tokens como alvo antes de usar o item
+- Para itens com área (bombas): posicione o template no mapa — os alvos dentro da área recebem o prompt automaticamente
+- Itens sem "CD + Atributo" na descrição e fora da lista de venenos são ignorados silenciosamente
+
+---
+
 ## 📚 Macros Incluídas
 
 O módulo vem com uma coleção de macros prontas para uso, acessíveis pela biblioteca de macros do FoundryVTT:

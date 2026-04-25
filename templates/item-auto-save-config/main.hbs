@@ -1,0 +1,52 @@
+<div class="t20-zaperas-config-list" style="padding:8px;">
+  <p style="color:#666;font-size:0.9em;margin:0 0 10px 0;">
+    Itens listados aqui serão tratados como venenos ao serem usados no chat:
+    teste de <b>Fortitude</b>, CD <b>10 + ⌊nível/2⌋ + mod Int</b> do aplicador.
+    Demais consumíveis com <em>"CD + Atributo"</em> na descrição continuam
+    sendo calculados automaticamente sem precisar entrar nesta lista.
+  </p>
+
+  <div id="poison-drop-zone"
+    style="border:2px dashed #ccc;border-radius:4px;padding:14px;background:#fafafa;text-align:center;margin-bottom:12px;">
+    <em style="color:#999;">Arraste um item do tipo Consumível aqui para adicioná-lo como veneno</em>
+  </div>
+
+  {{#if rules.length}}
+  <table style="width:100%;border-collapse:collapse;font-size:0.92em;">
+    <thead>
+      <tr style="border-bottom:2px solid #ccc;font-weight:bold;text-align:left;">
+        <th style="padding:4px 6px;">Veneno</th>
+        <th style="padding:4px 6px;width:5em;text-align:center;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rules}}
+      <tr data-idx="{{@index}}" style="border-bottom:1px solid #eee;">
+        <td style="padding:4px 6px;"><strong>{{this.name}}</strong></td>
+        <td style="padding:4px 2px;text-align:center;">
+          <button type="button" data-action="deleteItem"
+            title="Remover" style="padding:2px 7px;margin:1px;cursor:pointer;color:#b52d34;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p style="color:#888;text-align:center;margin:16px 0;">
+    Nenhum veneno configurado.
+  </p>
+  {{/if}}
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;">
+    <button type="button" data-action="resetDefaults"
+      style="cursor:pointer;color:#888;font-size:0.88em;">
+      <i class="fas fa-rotate-left"></i> Limpar Lista
+    </button>
+    <button type="button" data-action="save"
+      style="cursor:pointer;color:#006c00;font-weight:bold;padding:4px 14px;">
+      <i class="fas fa-save"></i> Salvar
+    </button>
+  </div>
+</div>

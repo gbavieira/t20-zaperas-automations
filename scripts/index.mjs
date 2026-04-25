@@ -17,10 +17,11 @@
    ============================================================ */
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
-import { DEFAULT_OPPOSED_CHECKS_DATA, DEFAULT_LIFE_DRAIN_SPELLS } from "./config.mjs";
+import { DEFAULT_OPPOSED_CHECKS_DATA, DEFAULT_LIFE_DRAIN_SPELLS, DEFAULT_POISON_ITEMS } from "./config.mjs";
 import { OpposedChecksConfig } from "./apps/opposed-checks-config.mjs";
 import { LifeDrainConfig } from "./apps/life-drain-config.mjs";
 import { TravelRulerActorConfig } from "./apps/travel-ruler-config.mjs";
+import { ItemAutoSaveConfig } from "./apps/item-auto-save-config.mjs";
 
 const MOD = "t20-zaperas-automations";
 
@@ -47,6 +48,7 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/life-drain-config/main.hbs`,
 	`modules/${MOD}/templates/travel-ruler-config/main.hbs`,
 	`modules/${MOD}/templates/cura-acelerada/prompt.hbs`,
+	`modules/${MOD}/templates/item-auto-save-config/main.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
@@ -102,6 +104,11 @@ Hooks.once("init", async () => {
 			key: "curaAcelerada",
 			name: "Cura Acelerada",
 			hint: "A cada turno de uma ameaça com 'cura acelerada' no texto de resistências, pergunta ao GM se deseja regenerar os PV correspondentes."
+		},
+		{
+			key: "itemAutoSave",
+			name: "Testes de Resistência Automáticos (Itens)",
+			hint: "Abre prompts de resistência para alvos de itens consumíveis (bombas alquímicas, venenos, fogo alquímico). Calcula a CD automaticamente pela fórmula 10 + ⌊nível/2⌋ + atributo-chave."
 		}
 	];
 
@@ -202,6 +209,23 @@ Hooks.once("init", async () => {
 		restricted: true
 	});
 
+	// ── Dados persistentes de Venenos (Item Auto-Save) ───────
+	game.settings.register(MOD, "itemAutoSavePoisons", {
+		scope: "world",
+		config: false,
+		type: Array,
+		default: DEFAULT_POISON_ITEMS
+	});
+
+	game.settings.registerMenu(MOD, "itemAutoSaveConfig", {
+		name: "Configuração de Venenos",
+		hint: "Gerenciar quais itens consumíveis são tratados como venenos (Fortitude + Int).",
+		label: "Configurar",
+		icon: "fas fa-skull-crossbones",
+		type: ItemAutoSaveConfig,
+		restricted: true
+	});
+
 	// ── Dados persistentes de Travel Ruler ───────────────────
 	game.settings.register(MOD, "travelRulerActors", {
 		scope: "world",
@@ -236,6 +260,10 @@ Hooks.once("ready", async () => {
 	if (enabled("autoSave")) {
 		const { handleAutoSave } = await import("./handlers/auto-save.mjs");
 		createChatHandlers.push(handleAutoSave);
+	}
+	if (enabled("itemAutoSave")) {
+		const { handleItemAutoSave } = await import("./handlers/item-auto-save.mjs");
+		createChatHandlers.push(handleItemAutoSave);
 	}
 	if (enabled("opposedChecks")) {
 		const { handleOpposedChecks } = await import("./handlers/opposed-checks.mjs");
@@ -394,6 +422,16 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
 	if (ldMenuRow && ldToggleRow) {
 		ldToggleRow.insertAdjacentElement("afterend", ldMenuRow);
 		ldMenuRow.style.marginLeft = "1.5rem";
+	}
+
+	// Item Auto-Save — menu Configurar (lista de venenos)
+	const iasMenuBtn = root.querySelector(`button[data-key="${MOD}.itemAutoSaveConfig"]`);
+	const iasMenuRow = iasMenuBtn?.closest(".form-group");
+	const iasToggleCheckbox = root.querySelector(`input[name="${MOD}.itemAutoSave"]`);
+	const iasToggleRow = iasToggleCheckbox?.closest(".form-group");
+	if (iasMenuRow && iasToggleRow) {
+		iasToggleRow.insertAdjacentElement("afterend", iasMenuRow);
+		iasMenuRow.style.marginLeft = "1.5rem";
 	}
 
 	// Travel Ruler Actors Config

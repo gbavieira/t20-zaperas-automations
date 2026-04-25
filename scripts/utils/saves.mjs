@@ -1,25 +1,17 @@
 /* ============================================================
-   T20 Automações — Handler: Teste de Resistência Automático
+   T20 Automações — Utils: Testes de Resistência
 
-   Quando uma magia/poder com teste de resistência é usada e o
-   conjurador tem alvos marcados (targeted), abre automaticamente
-   um prompt para o jogador (ou GM) do alvo rolar o teste.
-
-   Para magias de ÁREA (com template): em vez de rolar imediatamente,
-   aguarda o template ser colocado no mapa e então rola para os
-   alvos selecionados naquele momento.
-
-   CRÍTICO: Este handler roda em TODOS os clients (não só GM).
-   Cada client processa apenas os tokens que controla.
+   Funções compartilhadas entre os handlers de testes de resistência
+   (magias/poderes em auto-save.mjs e itens em item-auto-save.mjs).
    ============================================================ */
 
-import { normalizeText } from "../utils/text.mjs";
+import { normalizeText } from "./text.mjs";
 
 const MOD = "t20-zaperas-automations";
 
-// ── Helpers específicos deste handler ────────────────────────
+// ── Parsing / extração ──────────────────────────────────────
 
-function parseSaveType(txt) {
+export function parseSaveType(txt) {
 	const normalized = normalizeText(txt);
 	if (normalized.includes("fortitude")) return "fort";
 	if (normalized.includes("reflexo")) return "refl";
@@ -27,18 +19,18 @@ function parseSaveType(txt) {
 	return null;
 }
 
-function extractCD(html) {
+export function extractCD(html) {
 	const match = html.match(/CD\s+(\d+)/);
 	return match ? Number(match[1]) : null;
 }
 
-function extractItemName(html) {
+export function extractItemName(html) {
 	const div = document.createElement("div");
 	div.innerHTML = html;
 	return div.querySelector(".item-name")?.textContent?.trim() || "???";
 }
 
-function extractResistenciaTxt(html) {
+export function extractResistenciaTxt(html) {
 	const div = document.createElement("div");
 	div.innerHTML = html;
 	const text = div.querySelector(".card-item-header")?.textContent || "";
@@ -46,7 +38,9 @@ function extractResistenciaTxt(html) {
 	return match ? match[1].trim() : null;
 }
 
-function shouldCurrentUserRoll(actor) {
+// ── Permissões ──────────────────────────────────────────────
+
+export function shouldCurrentUserRoll(actor) {
 	const playerOwner = game.users.find((u) => u.active && !u.isGM && actor.testUserPermission(u, "OWNER"));
 	if (playerOwner) {
 		return game.user.id === playerOwner.id;
@@ -54,7 +48,9 @@ function shouldCurrentUserRoll(actor) {
 	return game.user.isGM;
 }
 
-async function applyEffectsToActor(actor, effects) {
+// ── Aplicação de efeitos ────────────────────────────────────
+
+export async function applyEffectsToActor(actor, effects) {
 	if (!effects?.length) return;
 
 	for (const chatEffect of effects) {
@@ -73,11 +69,13 @@ async function applyEffectsToActor(actor, effects) {
 	}
 }
 
+// ── Rolagem e resultado ─────────────────────────────────────
+
 /**
  * Rola o teste de resistência, compara com a CD e posta resultado no chat.
- * Exportada para reuso por handlers externos.
+ * Aplica efeitos da mensagem original no alvo em caso de falha (se alvo vivo).
  */
-export async function rollSaveAndReport(token, saveType, cd, spellName, casterName, originalMessage = null) {
+export async function rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage = null) {
 	const actor = token.actor;
 	if (!actor) return;
 
@@ -95,20 +93,22 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 	const total = roll.total;
 	const success = total >= cd;
 	const rollHTML = await roll.render();
+	const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/result.hbs`,
 		{
 			saveLabel,
 			actorName: actor.name,
-			spellName,
+			spellName: itemName,
 			casterName,
 			rollHTML,
 			bannerClass: success ? "success" : "failure",
 			bannerIcon: success ? "✓" : "✗",
 			bannerText: success ? "SUCESSO" : "FALHA",
 			total,
-			cd
+			cd,
+			showCD
 		}
 	);
 
@@ -122,7 +122,6 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 		...visibility
 	});
 
-	// Em caso de FALHA: aplica efeitos automaticamente se o alvo estiver vivo
 	if (!success && originalMessage) {
 		const currentPV = Number(actor.system?.attributes?.pv?.value ?? 0);
 		if (currentPV > 0) {
@@ -134,7 +133,7 @@ export async function rollSaveAndReport(token, saveType, cd, spellName, casterNa
 	}
 }
 
-async function promptSaveRoll(token, saveType, cd, spellName, casterName, originalMessage) {
+export async function promptSaveRoll(token, saveType, cd, itemName, casterName, originalMessage) {
 	const actor = token.actor;
 	if (!actor) return;
 
@@ -143,9 +142,11 @@ async function promptSaveRoll(token, saveType, cd, spellName, casterName, origin
 
 	const saveLabel = pericia.label || saveType;
 
+	const showCD = game.settings.get(MOD, "autoSaveShowCD");
+
 	const content = await renderTemplate(
 		`modules/t20-zaperas-automations/templates/auto-save/prompt.hbs`,
-		{ casterName, spellName, actorName: actor.name, saveLabel, cd }
+		{ casterName, spellName: itemName, actorName: actor.name, saveLabel, cd, showCD }
 	);
 
 	const confirmed = await foundry.applications.api.DialogV2.wait({
@@ -172,97 +173,35 @@ async function promptSaveRoll(token, saveType, cd, spellName, casterName, origin
 
 	if (!confirmed) return;
 
-	await rollSaveAndReport(token, saveType, cd, spellName, casterName, originalMessage);
+	await rollSaveAndReport(token, saveType, cd, itemName, casterName, originalMessage);
 }
 
-// ── Lógica de área (template) ──────────────────────────────
+// ── Esperar template de área ────────────────────────────────
 
 /**
- * Aguarda o template ser colocado no mapa e então rola os testes
- * de resistência para os alvos dentro da área.
- * Usa hook one-shot em createMeasuredTemplate.
+ * Aguarda um template ser colocado no mapa pelo autor da mensagem e então
+ * invoca `onTargets(targets, message)` com a lista de tokens alvo.
+ *
+ * Uso típico: handler chama esta função ao detectar `flags.tormenta20.template`
+ * e o callback faz o que for específico (rolar saves, calcular CD por item, etc.).
  */
-function waitForAreaTemplate(message, saveType, cd, spellName, casterName) {
+export function waitForAreaTemplate(message, onTargets) {
 	const authorId = message.author?.id ?? message.user;
 
 	const hookId = Hooks.on("createMeasuredTemplate", async (templateDoc) => {
 		const templateAuthor = templateDoc.author?.id ?? templateDoc.user;
 		if (templateAuthor !== authorId) return;
 
-		// Remove hook one-shot
 		Hooks.off("createMeasuredTemplate", hookId);
 
-		// Aguarda targets estarem disponíveis após posicionamento
 		await new Promise((r) => setTimeout(r, 150));
 
 		const user = game.users.get(authorId);
 		const targets = [...(user?.targets ?? [])];
 		if (!targets.length) return;
 
-		for (const target of targets) {
-			const actor = target.actor;
-			if (!actor) continue;
-			if (!shouldCurrentUserRoll(actor)) continue;
-			await promptSaveRoll(target, saveType, cd, spellName, casterName, message);
-		}
+		await onTargets(targets, message);
 	});
 
-	// Timeout: remove hook se template nunca for criado (5 min)
 	setTimeout(() => Hooks.off("createMeasuredTemplate", hookId), 300000);
-}
-
-// ── Handler principal ───────────────────────────────────────
-
-/**
- * Handler de createChatMessage para testes de resistência automáticos.
- * RODA EM TODOS OS CLIENTS — cada client processa os tokens que controla.
- *
- * Para magias de área (com template): aguarda o template ser colocado
- * antes de rolar os testes.
- */
-export async function handleAutoSave(message) {
-	const itemData = message.flags?.tormenta20?.itemData;
-	const content = message.content || "";
-
-	let resistTxt = itemData?.resistencia?.txt;
-	if (!resistTxt) {
-		resistTxt = extractResistenciaTxt(content);
-	}
-	if (!resistTxt) return;
-
-	const saveType = parseSaveType(resistTxt);
-	if (!saveType) return;
-
-	// Prioridade: CD do HTML renderizado (valor final com todos os bônus aplicados pelo sistema)
-	// Fallback: CD da flag do item (valor base, pode não refletir poderes ou atributo customizado)
-	let cd = extractCD(content);
-	if (!cd) cd = Number(itemData?.resistencia?.cd) || null;
-	if (!cd) return;
-
-	const authorId = message.author?.id ?? message.user;
-	const author = game.users.get(authorId);
-	if (!author) return;
-
-	const spellName = extractItemName(content);
-	const casterName = message.speaker?.alias || "???";
-
-	// Se a magia tem template de área, esperar o template ser colocado
-	const hasTemplate = message.getFlag("tormenta20", "template");
-	if (hasTemplate) {
-		waitForAreaTemplate(message, saveType, cd, spellName, casterName);
-		return;
-	}
-
-	// Fluxo normal (sem área): usa targets atuais do autor
-	const targets = author.targets;
-	if (!targets?.size) return;
-
-	for (const target of targets) {
-		const actor = target.actor;
-		if (!actor) continue;
-
-		if (!shouldCurrentUserRoll(actor)) continue;
-
-		await promptSaveRoll(target, saveType, cd, spellName, casterName, message);
-	}
 }

@@ -145,3 +145,15 @@ export const DEFAULT_LIFE_DRAIN_SPELLS = [
 export function getLifeDrainSpells() {
 	return game.settings.get("t20-zaperas-automations", "lifeDrainSpells") ?? DEFAULT_LIFE_DRAIN_SPELLS;
 }
+
+/**
+ * Lista padrão de itens consumíveis considerados venenos para o
+ * Teste de Resistência Automático (Itens). Vazia por padrão — o GM
+ * adiciona via drag-drop no menu de configuração.
+ *
+ * Formato: { name: "Nome do Item" }
+ *
+ * Venenos usam teste de Fortitude com CD = 10 + ⌊nível/2⌋ + mod Int
+ * do aplicador (regra padrão T20).
+ */
+export const DEFAULT_POISON_ITEMS = [];
