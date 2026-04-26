@@ -157,3 +157,17 @@ export function getLifeDrainSpells() {
  * do aplicador (regra padrão T20).
  */
 export const DEFAULT_POISON_ITEMS = [];
+
+/** Flag usada pelos handlers de Condições de Combate */
+export const CONDITION_TURNS_FLAG = "conditionTurnsPrompt";
+
+/**
+ * StatusIds das três condições de combate automatizadas.
+ * Baseados em CONFIG.T20.conditions — verifique em runtime se os nomes
+ * exatos diferem em sua versão do T20.
+ */
+export const CONDITION_STATUS_IDS = {
+	emChamas: "emChamas",
+	sangrando: "sangrando",
+	confuso: "confuso"
+};

@@ -49,6 +49,9 @@ const MOD_TEMPLATES = [
 	`modules/${MOD}/templates/travel-ruler-config/main.hbs`,
 	`modules/${MOD}/templates/cura-acelerada/prompt.hbs`,
 	`modules/${MOD}/templates/item-auto-save-config/main.hbs`,
+	`modules/${MOD}/templates/condition-turns/em-chamas.hbs`,
+	`modules/${MOD}/templates/condition-turns/sangrando.hbs`,
+	`modules/${MOD}/templates/condition-turns/confuso.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
@@ -109,6 +112,11 @@ Hooks.once("init", async () => {
 			key: "itemAutoSave",
 			name: "Testes de Resistência Automáticos (Itens)",
 			hint: "Abre prompts de resistência para alvos de itens consumíveis (bombas alquímicas, venenos, fogo alquímico). Calcula a CD automaticamente pela fórmula 10 + ⌊nível/2⌋ + atributo-chave."
+		},
+		{
+			key: "conditionTurns",
+			name: "Condições de Combate",
+			hint: "Automatiza condições que afetam o início do turno: Em Chamas (pergunta se apaga), Sangrando (testa Constituição CD 15), Confuso (rola efeito aleatório)."
 		}
 	];
 
@@ -145,6 +153,15 @@ Hooks.once("init", async () => {
 		requiresReload: false,
 	});
 
+	game.settings.register(MOD, "conditionTurnsPublic", {
+		name: "Mostrar Condições de Combate para os Jogadores?",
+		hint: "Se marcado, os prompts de Em Chamas/Sangrando aparecem no chat público. Se desmarcado, somente o GM vê.",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: false,
+		requiresReload: false,
+	});
 
 	game.settings.register(MOD, "autoSaveShowCD", {
 		name: "Testes de Resistência — Mostrar CD no Chat",
@@ -323,6 +340,10 @@ Hooks.once("ready", async () => {
 		const { renderCuraAceleradaPrompt } = await import("./handlers/cura-acelerada.mjs");
 		renderChatHandlers.push(renderCuraAceleradaPrompt);
 	}
+	if (enabled("conditionTurns")) {
+		const { renderConditionButtons } = await import("./handlers/condition-turns.mjs");
+		renderChatHandlers.push(renderConditionButtons);
+	}
 	if (renderChatHandlers.length) {
 		Hooks.on("renderChatMessageHTML", async (message, html) => {
 			for (const handler of renderChatHandlers) {
@@ -341,6 +362,10 @@ Hooks.once("ready", async () => {
 	if (enabled("curaAcelerada")) {
 		const { handleCuraAceleradaTurn } = await import("./handlers/cura-acelerada.mjs");
 		Hooks.on("updateCombat", handleCuraAceleradaTurn);
+	}
+	if (enabled("conditionTurns")) {
+		const { handleConditionTurns } = await import("./handlers/condition-turns.mjs");
+		Hooks.on("updateCombat", handleConditionTurns);
 	}
 
 	// ── updateActor ──────────────────────────────────────────
