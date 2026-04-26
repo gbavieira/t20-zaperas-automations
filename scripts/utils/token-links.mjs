@@ -12,15 +12,20 @@
  *   .t20-perc-token    — pan + control (Furtividade auto)
  */
 export function handleTokenLinks(_message, html) {
-  const el = html instanceof HTMLElement ? html : html[0] ?? html;
+  const el = html instanceof HTMLElement ? html : (html[0] ?? html);
 
   el.querySelectorAll(".t20-contest-token, .t20-perc-token").forEach((link) => {
     link.addEventListener("click", (ev) => {
       ev.preventDefault();
       const tokenId = ev.currentTarget.dataset.tid;
       const token = canvas.tokens?.get(tokenId);
-      if (!token) return ui.notifications.warn("Token não encontrado no canvas.");
-      canvas.animatePan({ x: token.center.x, y: token.center.y, duration: 250 });
+      if (!token)
+        return ui.notifications.warn("Token não encontrado no canvas.");
+      canvas.animatePan({
+        x: token.center.x,
+        y: token.center.y,
+        duration: 250,
+      });
       token.control({ releaseOthers: true });
     });
   });

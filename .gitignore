@@ -152,6 +152,7 @@ data/
 *.bak
 SDL.md
 claude-code-mcp-config.json
+.vscode/
 
 # LevelDB noise
 packs/*/LOCK
