@@ -18,81 +18,86 @@ import { normalizeText } from "../utils/text.mjs";
 
 /** Encontra config de drain para o nome do item, ou null */
 function findDrainConfig(itemName) {
-	if (!itemName) return null;
-	const normalized = normalizeText(itemName);
-	const spells = getLifeDrainSpells();
-	return spells.find((s) => normalizeText(s.name) === normalized) ?? null;
+  if (!itemName) return null;
+  const normalized = normalizeText(itemName);
+  const spells = getLifeDrainSpells();
+  return spells.find((s) => normalizeText(s.name) === normalized) ?? null;
 }
 
 /**
  * Localiza o Roll de dano pelo título (options.title) dentro dos rolls da mensagem.
  */
 function findDamageRoll(message, rollEl) {
-	const rollTitle = rollEl.dataset.rollTitle;
-	return message.rolls.find(
-		(r) => r.options.title === rollTitle && (!r.options.type || r.options.type === "damage")
-	);
+  const rollTitle = rollEl.dataset.rollTitle;
+  return message.rolls.find(
+    (r) =>
+      r.options.title === rollTitle &&
+      (!r.options.type || r.options.type === "damage"),
+  );
 }
 
 // ── Click handler ────────────────────────────────────────────
 
 async function handleDrainClick(event, message, config, multiplier) {
-	event.preventDefault();
-	event.stopPropagation();
+  event.preventDefault();
+  event.stopPropagation();
 
-	const btn = event.currentTarget;
-	const rollEl = btn.closest(".roll");
-	const amount = Number(rollEl.querySelector(".dice-total").innerText);
-	if (!amount) return;
+  const btn = event.currentTarget;
+  const rollEl = btn.closest(".roll");
+  const amount = Number(rollEl.querySelector(".dice-total").innerText);
+  if (!amount) return;
 
-	// Verifica se há tokens selecionados (alvos)
-	const targets = canvas.tokens.controlled;
-	if (!targets.length) {
-		ui.notifications.warn("Selecione um ou mais tokens para aplicar o dano.");
-		return;
-	}
+  // Verifica se há tokens selecionados (alvos)
+  const targets = canvas.tokens.controlled;
+  if (!targets.length) {
+    ui.notifications.warn("Selecione um ou mais tokens para aplicar o dano.");
+    return;
+  }
 
-	// Encontra o roll object para usar applyDamageV2
-	const roll = findDamageRoll(message, rollEl);
+  // Encontra o roll object para usar applyDamageV2
+  const roll = findDamageRoll(message, rollEl);
 
-	// 1) Aplica dano nos alvos (mesma lógica do sistema, com multiplicador)
-	await Promise.all(
-		targets.map((tk) => {
-			if (roll) return tk.actor.applyDamageV2(roll, multiplier);
-			return tk.actor.applyDamage(amount, multiplier, true);
-		})
-	);
+  // 1) Aplica dano nos alvos (mesma lógica do sistema, com multiplicador)
+  await Promise.all(
+    targets.map((tk) => {
+      if (roll) return tk.actor.applyDamageV2(roll, multiplier);
+      return tk.actor.applyDamage(amount, multiplier, true);
+    }),
+  );
 
-	// 2) Calcula cura: dano base * multiplicador * porcentagem de drain
-	const effectiveDamage = Math.floor(amount * multiplier);
-	const healing = Math.floor(effectiveDamage * config.healPercent / 100);
-	if (healing <= 0) return;
+  // 2) Calcula cura: dano base * multiplicador * porcentagem de drain
+  const effectiveDamage = Math.floor(amount * multiplier);
+  const healing = Math.floor((effectiveDamage * config.healPercent) / 100);
+  if (healing <= 0) return;
 
-	// 3) Obtém o atacante (token/actor do speaker)
-	const attackerToken = canvas.tokens.get(message.speaker?.token);
-	const attackerActor = attackerToken?.actor ?? game.actors.get(message.speaker?.actor);
-	if (!attackerActor) {
-		ui.notifications.warn("Não foi possível encontrar o atacante para curar.");
-		return;
-	}
+  // 3) Obtém o atacante (token/actor do speaker)
+  const attackerToken = canvas.tokens.get(message.speaker?.token);
+  const attackerActor =
+    attackerToken?.actor ?? game.actors.get(message.speaker?.actor);
+  if (!attackerActor) {
+    ui.notifications.warn("Não foi possível encontrar o atacante para curar.");
+    return;
+  }
 
-	// 4) Aplica cura ou PV temporário no atacante
-	const pv = attackerActor.system.attributes.pv;
-	if (config.tempHP) {
-		// Concede PV temporário (aditivo)
-		const currentTemp = pv.temp ?? 0;
-		const newTemp = currentTemp + healing;
-		await attackerActor.update({ "system.attributes.pv.temp": newTemp });
-	} else {
-		// Cura PV normal (sem ultrapassar máximo)
-		const newPV = Math.min(pv.value + healing, pv.max);
-		await attackerActor.update({ "system.attributes.pv.value": newPV });
-	}
+  // 4) Aplica cura ou PV temporário no atacante
+  const pv = attackerActor.system.attributes.pv;
+  if (config.tempHP) {
+    // Concede PV temporário (aditivo)
+    const currentTemp = pv.temp ?? 0;
+    const newTemp = currentTemp + healing;
+    await attackerActor.update({ "system.attributes.pv.temp": newTemp });
+  } else {
+    // Cura PV normal (sem ultrapassar máximo)
+    const newPV = Math.min(pv.value + healing, pv.max);
+    await attackerActor.update({ "system.attributes.pv.value": newPV });
+  }
 
-	// 5) Notificação
-	const attackerName = attackerToken?.name ?? attackerActor.name;
-	const curationType = config.tempHP ? "PV temporário" : "PV";
-	ui.notifications.info(`${attackerName} ganhou ${healing} ${curationType} com ${config.name}!`);
+  // 5) Notificação
+  const attackerName = attackerToken?.name ?? attackerActor.name;
+  const curationType = config.tempHP ? "PV temporário" : "PV";
+  ui.notifications.info(
+    `${attackerName} ganhou ${healing} ${curationType} com ${config.name}!`,
+  );
 }
 
 // ── Render hook ──────────────────────────────────────────────
@@ -106,38 +111,40 @@ async function handleDrainClick(event, message, config, multiplier) {
  * @param {HTMLElement} html     elemento DOM renderizado
  */
 export function renderLifeDrain(message, html) {
-	// Extrai nome do item do card
-	const itemName = html.querySelector(".item-name")?.textContent?.trim();
-	const config = findDrainConfig(itemName);
-	if (!config) return;
+  // Extrai nome do item do card
+  const itemName = html.querySelector(".item-name")?.textContent?.trim();
+  const config = findDrainConfig(itemName);
+  if (!config) return;
 
-	// Encontra todos os blocos de roll de dano
-	const damageRolls = html.querySelectorAll(".roll.roll--dano");
-	if (!damageRolls.length) return;
+  // Encontra todos os blocos de roll de dano
+  const damageRolls = html.querySelectorAll(".roll.roll--dano");
+  if (!damageRolls.length) return;
 
-	for (const rollEl of damageRolls) {
-		// Substitui cada botão de dano (exceto cura -1)
-		const dmgButtons = rollEl.querySelectorAll(".apply-dmg");
-		for (const originalBtn of dmgButtons) {
-			const mod = Number(originalBtn.dataset.mod);
-			// Ignora o botão de cura
-			if (mod < 0) continue;
+  for (const rollEl of damageRolls) {
+    // Substitui cada botão de dano (exceto cura -1)
+    const dmgButtons = rollEl.querySelectorAll(".apply-dmg");
+    for (const originalBtn of dmgButtons) {
+      const mod = Number(originalBtn.dataset.mod);
+      // Ignora o botão de cura
+      if (mod < 0) continue;
 
-			// Cria botão de drain com mesmo conteúdo visual
-			const drainBtn = document.createElement("button");
-			drainBtn.className = "apply-dmg-drain";
-			drainBtn.dataset.mod = String(mod);
-			drainBtn.innerHTML = originalBtn.innerHTML;
+      // Cria botão de drain com mesmo conteúdo visual
+      const drainBtn = document.createElement("button");
+      drainBtn.className = "apply-dmg-drain";
+      drainBtn.dataset.mod = String(mod);
+      drainBtn.innerHTML = originalBtn.innerHTML;
 
-			// Tooltip descritivo
-			const modLabel = mod === 1 ? "" : mod === 2 ? " em dobro" : " (metade)";
-			drainBtn.title = `Aplicar dano${modLabel} e curar atacante`;
+      // Tooltip descritivo
+      const modLabel = mod === 1 ? "" : mod === 2 ? " em dobro" : " (metade)";
+      drainBtn.title = `Aplicar dano${modLabel} e curar atacante`;
 
-			// Registra click handler com o multiplicador correto
-			drainBtn.addEventListener("click", (event) => handleDrainClick(event, message, config, mod));
+      // Registra click handler com o multiplicador correto
+      drainBtn.addEventListener("click", (event) =>
+        handleDrainClick(event, message, config, mod),
+      );
 
-			// Substitui o botão original
-			originalBtn.replaceWith(drainBtn);
-		}
-	}
+      // Substitui o botão original
+      originalBtn.replaceWith(drainBtn);
+    }
+  }
 }

@@ -26,16 +26,17 @@ export async function buildResultTable({
   defenseAbbr,
   showBonus = true,
   linkClass = "t20-contest-token",
-  results
+  results,
 }) {
-  const nat20Tag = '<span class="t20-nat20" title="20 Natural"> (nat 20)</span>';
+  const nat20Tag =
+    '<span class="t20-nat20" title="20 Natural"> (nat 20)</span>';
 
   const processedResults = results.map((r) => ({
     ...r,
     linkClass,
     nat20HTML: r.nat === 20 ? nat20Tag : "",
     icon: r.passed ? "✅" : "❌",
-    cssClass: r.passed ? "passed" : "failed"
+    cssClass: r.passed ? "passed" : "failed",
   }));
 
   return renderTemplate(
@@ -50,8 +51,8 @@ export async function buildResultTable({
       showBonus,
       actorOrToken: showBonus ? "Ator" : "Token",
       resultHeader: showBonus ? "Result" : "Resultado",
-      results: processedResults
-    }
+      results: processedResults,
+    },
   );
 }
 
@@ -68,18 +69,26 @@ export async function buildResultTable({
  * @param {boolean} [opts.forceGMOnly]   se true, ignora sourceMessage e força whisper apenas para GMs
  * @returns {Promise<ChatMessage>}
  */
-export async function postGMMessage({ content, flavor, sourceMessage, forceGMOnly = false }) {
-  const gmIds = game.users.filter(u => u.isGM).map(u => u.id);
+export async function postGMMessage({
+  content,
+  flavor,
+  sourceMessage,
+  forceGMOnly = false,
+}) {
+  const gmIds = game.users.filter((u) => u.isGM).map((u) => u.id);
   const visibility = forceGMOnly
     ? { whisper: gmIds, blind: false }
     : sourceMessage
-      ? { whisper: [...(sourceMessage.whisper ?? [])], blind: sourceMessage.blind ?? false }
+      ? {
+          whisper: [...(sourceMessage.whisper ?? [])],
+          blind: sourceMessage.blind ?? false,
+        }
       : { whisper: gmIds };
   return ChatMessage.create({
     user: game.user.id,
     content,
     speaker: { alias: "⚔️ Sistema" },
     flavor,
-    ...visibility
+    ...visibility,
   });
 }

@@ -14,64 +14,80 @@
    ============================================================ */
 
 import {
-	parseSaveType,
-	extractCD,
-	extractItemName,
-	extractResistenciaTxt,
-	shouldCurrentUserRoll,
-	promptSaveRoll,
-	waitForAreaTemplate
+  parseSaveType,
+  extractCD,
+  extractItemName,
+  extractResistenciaTxt,
+  shouldCurrentUserRoll,
+  promptSaveRoll,
+  waitForAreaTemplate,
 } from "../utils/saves.mjs";
 
 const MOD = "t20-zaperas-automations";
 
 export async function handleAutoSave(message) {
-	const itemData = message.flags?.tormenta20?.itemData;
-	const content = message.content || "";
+  const itemData = message.flags?.tormenta20?.itemData;
+  const content = message.content || "";
 
-	let resistTxt = itemData?.resistencia?.txt;
-	if (!resistTxt) {
-		resistTxt = extractResistenciaTxt(content);
-	}
-	if (!resistTxt) return;
+  let resistTxt = itemData?.resistencia?.txt;
+  if (!resistTxt) {
+    resistTxt = extractResistenciaTxt(content);
+  }
+  if (!resistTxt) return;
 
-	const saveType = parseSaveType(resistTxt);
-	if (!saveType) return;
+  const saveType = parseSaveType(resistTxt);
+  if (!saveType) return;
 
-	// Prioridade: CD do HTML renderizado (valor final com todos os bônus aplicados pelo sistema)
-	// Fallback: CD da flag do item (valor base, pode não refletir poderes ou atributo customizado)
-	let cd = extractCD(content);
-	if (!cd) cd = Number(itemData?.resistencia?.cd) || null;
-	if (!cd) return;
+  // Prioridade: CD do HTML renderizado (valor final com todos os bônus aplicados pelo sistema)
+  // Fallback: CD da flag do item (valor base, pode não refletir poderes ou atributo customizado)
+  let cd = extractCD(content);
+  if (!cd) cd = Number(itemData?.resistencia?.cd) || null;
+  if (!cd) return;
 
-	const authorId = message.author?.id ?? message.user;
-	const author = game.users.get(authorId);
-	if (!author) return;
+  const authorId = message.author?.id ?? message.user;
+  const author = game.users.get(authorId);
+  if (!author) return;
 
-	const spellName = extractItemName(content);
-	const casterName = message.speaker?.alias || "???";
-	const showCD = game.settings.get(MOD, "autoSaveShowCD");
+  const spellName = extractItemName(content);
+  const casterName = message.speaker?.alias || "???";
+  const showCD = game.settings.get(MOD, "autoSaveShowCD");
 
-	const hasTemplate = message.getFlag("tormenta20", "template");
-	if (hasTemplate) {
-		waitForAreaTemplate(message, async (targets) => {
-			for (const target of targets) {
-				const actor = target.actor;
-				if (!actor) continue;
-				if (!shouldCurrentUserRoll(actor)) continue;
-				await promptSaveRoll(target, saveType, cd, spellName, casterName, message, showCD);
-			}
-		});
-		return;
-	}
+  const hasTemplate = message.getFlag("tormenta20", "template");
+  if (hasTemplate) {
+    waitForAreaTemplate(message, async (targets) => {
+      for (const target of targets) {
+        const actor = target.actor;
+        if (!actor) continue;
+        if (!shouldCurrentUserRoll(actor)) continue;
+        await promptSaveRoll(
+          target,
+          saveType,
+          cd,
+          spellName,
+          casterName,
+          message,
+          showCD,
+        );
+      }
+    });
+    return;
+  }
 
-	const targets = author.targets;
-	if (!targets?.size) return;
+  const targets = author.targets;
+  if (!targets?.size) return;
 
-	for (const target of targets) {
-		const actor = target.actor;
-		if (!actor) continue;
-		if (!shouldCurrentUserRoll(actor)) continue;
-		await promptSaveRoll(target, saveType, cd, spellName, casterName, message, showCD);
-	}
+  for (const target of targets) {
+    const actor = target.actor;
+    if (!actor) continue;
+    if (!shouldCurrentUserRoll(actor)) continue;
+    await promptSaveRoll(
+      target,
+      saveType,
+      cd,
+      spellName,
+      casterName,
+      message,
+      showCD,
+    );
+  }
 }
