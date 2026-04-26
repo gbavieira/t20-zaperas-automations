@@ -1,0 +1,25 @@
+<div class="t20-sustain-prompt {{promptClass}}">
+  <div class="t20-sustain-title">
+    <i class="fas fa-fire"></i>
+    Em Chamas: {{actorName}}
+  </div>
+  <div class="t20-sustain-body">
+    <b>{{actorName}}</b> está em chamas!
+    <br>
+    Gastar uma <b>ação padrão</b> para apagar as chamas?
+  </div>
+  <div class="t20-sustain-actions">
+    <button class="sustain-yes"
+        data-action="apagar-chamas"
+        data-actor-id="{{actorId}}"
+        data-token-id="{{tokenId}}">
+      <i class="fas fa-hand"></i> Apagar (ação padrão)
+    </button>
+    <button class="sustain-no"
+        data-action="nao-apagar-chamas"
+        data-actor-id="{{actorId}}"
+        data-token-id="{{tokenId}}">
+      <i class="fas fa-flame"></i> Não apagar (toma dano)
+    </button>
+  </div>
+</div>

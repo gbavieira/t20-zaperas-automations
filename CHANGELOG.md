@@ -4,6 +4,19 @@ Todas as mudanças notáveis do módulo são documentadas aqui.
 
 ---
 
+## [0.4.0] — 2026-04-25
+
+### Adicionado
+
+- **Condições de Combate** — nova automação que automatiza três condições que afetam o início do turno do personagem em combate:
+  - **Em Chamas**: pergunta ao GM se o personagem gasta uma ação padrão para apagar. Se não → rola 1d6 de dano de fogo automaticamente.
+  - **Sangrando**: mostra prompt para rolar teste de Constituição (CD 15). Se passar → remove a condição. Se falhar → rola 1d6 de dano de perda.
+  - **Confuso**: rola 1d6 automaticamente no início do turno. Resultado 1 → move aleatória (1d8 para direção); 2–3 → não pode agir; 4–5 → ataca criatura mais próxima; 6 → confusão passa automaticamente.
+
+- **Setting de visibilidade para Condições de Combate** — nova checkbox "Mostrar Condições de Combate para os Jogadores?" permite controlar se os prompts aparecem no chat público ou como whisper apenas para o GM.
+
+---
+
 ## [0.3.0] — 2026-04-24
 
 ### Adicionado

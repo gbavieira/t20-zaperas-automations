@@ -19,10 +19,12 @@
 **O que faz:** Quando um personagem lança uma magia que exige teste de resistência (Fortitude, Reflexo ou Vontade), o módulo abre automaticamente o prompt de rolagem para cada alvo afetado. Para magias de área, basta posicionar o template no mapa — os alvos dentro da área recebem o prompt automaticamente.
 
 **Configurações:**
+
 - **Testes de Resistência — Ativada?** — Ligue/desligue a automação
 - **Testes de Resistência — Mostrar CD no chat** — Se marcado, exibe a CD do teste no dialog de rolagem e no card de resultado. Desmarque para esconder a dificuldade dos jogadores
 
 **Como usar:**
+
 - Para magias com alvo direto: selecione os tokens como alvo antes de lançar a magia
 - Para magias de área: clique em "Colocar Área de Efeito", posicione no mapa, e os testes são enviados automaticamente
 
@@ -41,12 +43,14 @@
 | **Intimidação** | Vontade | Apenas os alvos selecionados rolam |
 
 **Configurações:**
+
 - **Testes Opostos — Ativada?** — Ligue/desligue a automação
 - **Testes Opostos — Resultado apenas para o GM** — Se marcado, o resultado é enviado como whisper apenas para o mestre
 - **Testes Opostos — Rolar apenas para alvos selecionados** — Se marcado, a rolagem acontece apenas para tokens marcados como alvo
 - **Testes Opostos — Configurar** — Botão para criar regras customizadas (defina quais perícias ativam, qual perícia defende, e modo de funcionamento)
 
 **Como usar:**
+
 - Role a perícia normalmente pela ficha do personagem
 - Se a perícia está configurada para teste oposto, o módulo rola a defesa automaticamente
 - O resultado aparece no chat mostrando quem venceu e quem perdeu
@@ -59,9 +63,11 @@
 **O que faz:** Quando um personagem chega a 0 pontos de vida, o módulo aplica automaticamente todas as condições previstas pelas regras: **Sangrando, Indefeso, Desprevenido, Caído e Inconsciente**. Quando o personagem recupera pelo menos 1 PV, as condições são removidas automaticamente (exceto Caído, que o personagem precisa se levantar por conta própria).
 
 **Configurações:**
+
 - **Condições em 0 PV — Ativada?** — Ligue/desligue a automação
 
 **Como usar:**
+
 - Apenas atualizar o PV na ficha — o módulo faz o resto automaticamente
 
 ---
@@ -71,14 +77,17 @@
 **O que faz:** Ao rolar um ataque com um alvo selecionado, o módulo compara automaticamente o total do dado com a Defesa do alvo e exibe no card do chat se o ataque **acertou** ou **errou**, com destaque visual verde ou vermelho.
 
 **Regras críticas:**
+
 - Nat 20 = acerto automático (independente da Defesa)
 - Nat 1 = falha automática (independente do total)
 
 **Configurações:**
+
 - **Verificador de Defesa — Ativada?** — Ligue/desligue a automação
 - **Verificador de Defesa — Mostrar para os Jogadores?** — Se marcado, todos veem o resultado. Se desativado, apenas o mestre vê
 
 **Como usar:**
+
 - Selecione um token como alvo antes de rolar o ataque
 - O resultado aparece automaticamente no chat (✓ verde = ACERTOU | ✗ vermelho = ERROU)
 
@@ -91,10 +100,12 @@
 **Padrão:** Toque Vampírico cura o atacante em 50% do dano como PV normal (até o máximo da ficha).
 
 **Configurações:**
+
 - **Dreno de Vida — Ativada?** — Ligue/desligue a automação
 - **Dreno de Vida — Configurar** — Botão para customizar quais magias/poderes disparam o efeito. Configure o percentual de cura (0–100%) e se é PV temporário ou cura normal
 
 **Como usar:**
+
 - Lance a magia/poder normalmente
 - Os botões de dano no chat são substituídos automaticamente
 - Clique em um botão para aplicar dano e cura simultaneamente
@@ -108,10 +119,12 @@
 **Resultado:** Se o mestre confirmar, 1 PM é descontado automaticamente. Se recusar ou não tiver PM suficiente, o efeito é removido.
 
 **Configurações:**
+
 - **Contador de Magia Sustentada — Ativada?** — Ligue/desligue a automação
 - **Contador de Magia Sustentada — Mostrar para os Jogadores?** — Se marcado, prompts aparecem no chat público. Se desativado, apenas o mestre vê (whisper)
 
 **Como usar:**
+
 - Lance a magia sustentada normalmente
 - No início de cada turno do personagem em combate, o mestre vê uma pergunta no chat
 - Responda "Sim" ou "Não" — o PM é descontado ou o efeito é removido automaticamente
@@ -123,9 +136,11 @@
 **O que faz:** Para personagens com o poder **Sortudo**, o módulo adiciona automaticamente um botão de rerolar em testes de perícia no chat. O custo é 3 PM (descontado automaticamente ao clicar). Você rola novamente e fica com o resultado que preferir (exatamente como a regra do livro).
 
 **Configurações:**
+
 - **Poder Sortudo — Ativada?** — Ligue/desligue a automação
 
 **Como usar:**
+
 - Role um teste de perícia no chat
 - Se o personagem tiver o poder Sortudo, um botão de rerolar aparece na mensagem
 - Clique para rolar novamente e escolher qual resultado usar
@@ -144,10 +159,12 @@
 | **Carroça** | 9m por rodada (36 km/dia) |
 
 **Configurações:**
+
 - **Mapa de Viagem Interativo — Ativada?** — Ligue/desligue a automação
 - **Mapa de Viagem Interativo — Configurar** — Botão para escolher quais atores (personagens de jogador) devem ser considerados no cálculo de velocidade. Se nenhum estiver configurado, o módulo usa todos os PCs automaticamente
 
 **Como usar:**
+
 1. Na aba "Básicos" da configuração da cena, marque "Mapa de Viagem"
 2. Use a régua de medição normalmente (clique e arraste no mapa)
 3. As informações de viagem aparecem automaticamente no label do último ponto da régua
@@ -162,9 +179,11 @@
 > **Importante:** Se você tiver dois tokens do mesmo NPC no mapa (ex: dois Trolls), a cura acelerada funciona corretamente para cada um — o prompt identifica qual token está em turno.
 
 **Configurações:**
+
 - **Cura Acelerada — Ativada?** — Ligue/desligue a automação
 
 **Como usar:**
+
 1. Na ficha da ameaça, no campo **Resistências** (aba Detalhes), adicione o texto: `cura acelerada 15` (ou o valor desejado)
 2. Inicie combate com a ameaça
 3. Quando chegar o turno da ameaça, o mestre vê um prompt no chat
@@ -189,14 +208,48 @@
 **Bônus de poderes (Venefício, etc.):** O módulo confia no sistema T20. Quando o jogador marca poderes no dialog de uso do item, o sistema já aplica os bônus à CD — o módulo usa o valor final que o sistema calculou.
 
 **Configurações:**
+
 - **Testes de Resistência (Itens) — Ativada?** — Ligue/desligue a automação
 - **Testes de Resistência (Itens) — Mostrar CD no Chat** — Se marcado, exibe a CD no prompt de rolagem e no card de resultado. Independente da opção equivalente para magias
 - **Testes de Resistência (Itens) — Configurar** — Botão para gerenciar a lista de venenos. Arraste consumíveis do tipo "Veneno" para adicioná-los. Itens na lista usam sempre Fortitude + Int como CD
 
 **Como usar:**
+
 - Para itens com alvo direto: selecione os tokens como alvo antes de usar o item
 - Para itens com área (bombas): posicione o template no mapa — os alvos dentro da área recebem o prompt automaticamente
 - Itens sem "CD + Atributo" na descrição e fora da lista de venenos são ignorados silenciosamente
+
+---
+
+### 1️⃣1️⃣ Condições de Combate ⚙️ Configurável
+
+**O que faz:** Automatiza três condições que têm efeitos no início do turno do personagem afetado:
+
+| Condição | Efeito |
+|---|---|
+| **Em Chamas** | Pergunta se o personagem gasta uma ação padrão para apagar. Se sim → remove condição. Se não → rola 1d6 de dano de fogo automaticamente |
+| **Sangrando** | Mostra prompt para rolar teste de Constituição (CD 15). Se passar → remove condição. Se falhar → rola 1d6 de dano de perda |
+| **Confuso** | Rola 1d6 automaticamente. Resultado 1–5 → posta mensagem com efeito. Resultado 6 → remove condição e age normalmente |
+
+**Configurações:**
+
+- **Condições de Combate — Ativada?** — Ligue/desligue a automação
+- **Condições de Combate — Mostrar para os Jogadores?** — Se marcado, os prompts aparecem no chat público. Se desmarcado, apenas o mestre vê
+
+**Como usar:**
+
+- Aplique qualquer uma das três condições em um token (via ficha ou efeito)
+- No início do turno do personagem em combate, o módulo:
+  - **Em Chamas**: cria um prompt com botões "Apagar" ou "Não Apagar"
+  - **Sangrando**: cria um prompt com botão "Rolar Constituição"
+  - **Confuso**: rola automaticamente e posta o resultado no chat
+
+**Tabela de Confuso (1d6):**
+
+- **1**: Move-se para uma direção aleatória (rola 1d8: N, NE, L, SE, S, SO, O, NO)
+- **2–3**: Não pode fazer ações, balbuciando incoerentemente
+- **4–5**: Ataca a criatura mais próxima com a arma empunhada
+- **6**: A confusão passou — age normalmente
 
 ---
 
@@ -218,6 +271,7 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 ## 🐛 Bugs Conhecidos
 
 ### Testes de Resistência Automáticos
+
 - Quando uma magia tem efeitos adicionais (mesmo não utilizados), esses efeitos podem ser aplicados automaticamente no alvo se ele falhar na resistência. Estamos investigando uma solução.
 
 ---
@@ -239,15 +293,18 @@ O módulo vem com uma coleção de macros prontas para uso, acessíveis pela bib
 Contribuições são bem-vindas! Você não precisa ser programador para ajudar.
 
 **Se você encontrou um bug:**
+
 1. Vá até a aba [Issues](../../issues) do projeto
 2. Clique em **New Issue**
 3. Descreva o que aconteceu, o que você esperava que acontecesse, e se possível uma imagem ou vídeo do problema
 
 **Se você tem uma ideia de nova automação:**
+
 1. Abra uma [Issue](../../issues) com o título começando por `[Sugestão]`
 2. Explique a situação de jogo que seria automatizada e como você imagina que funcionaria
 
 **Se você sabe programar:**
+
 1. Faça um fork do repositório
 2. Crie uma branch com o nome da sua feature (`git checkout -b feat/minha-automacao`)
 3. Faça suas alterações seguindo a estrutura já existente (um arquivo por handler em `scripts/handlers/`)
