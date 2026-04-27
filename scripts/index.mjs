@@ -17,6 +17,7 @@
    ============================================================ */
 
 import { handleTokenLinks } from "./utils/token-links.mjs";
+import { unwrapHtml } from "./utils/dom.mjs";
 import {
   DEFAULT_OPPOSED_CHECKS_DATA,
   DEFAULT_LIFE_DRAIN_SPELLS,
@@ -54,12 +55,15 @@ const MOD_TEMPLATES = [
   `modules/${MOD}/templates/condition-turns/em-chamas.hbs`,
   `modules/${MOD}/templates/condition-turns/sangrando.hbs`,
   `modules/${MOD}/templates/condition-turns/confuso.hbs`,
+  `modules/${MOD}/templates/life-drain-config/spell-editor.hbs`,
+  `modules/${MOD}/templates/opposed-checks-config/rule-editor.hbs`,
+  `modules/${MOD}/templates/travel-ruler-config/actor-picker.hbs`,
 ];
 
 // ── Registro de configurações (deve rodar em "init") ─────────
 
 Hooks.once("init", async () => {
-  foundry.applications.handlebars.loadTemplates(MOD_TEMPLATES);
+  await foundry.applications.handlebars.loadTemplates(MOD_TEMPLATES);
 
   // Helper para exibir arrays como string no HBS
   Handlebars.registerHelper("join", (arr, sep) =>
@@ -318,9 +322,6 @@ Hooks.once("ready", async () => {
   }
 
   // ── renderChatMessage ────────────────────────────────────
-  // defense-check.mjs pode ser importado duas vezes (aqui e acima).
-  // O browser usa o cache ESM — o arquivo é baixado apenas uma vez.
-  // TODO lógica de 2 imports
   let _renderDefenseCheck = null;
   if (enabled("defenseCheck")) {
     ({ renderDefenseCheck: _renderDefenseCheck } =
@@ -372,8 +373,6 @@ Hooks.once("ready", async () => {
   }
 
   // ── updateCombat ─────────────────────────────────────────
-  // sustained-spell.mjs pode ser importado até 3 vezes; o browser usa cache ESM.
-  // TODO import 3 vezes
   if (enabled("sustainedSpell")) {
     const { handleSustainTurn } =
       await import("./handlers/sustained-spell.mjs");
@@ -408,137 +407,43 @@ Hooks.once("ready", async () => {
 
 // ── Reposiciona os botões "Configurar" logo após seus toggles ──
 Hooks.on("renderSettingsConfig", (_app, html) => {
-  const root = html instanceof HTMLElement ? html : (html[0] ?? html);
+  const root = unwrapHtml(html);
   if (!root) return;
 
-  // Testes de Resistência — mostrar CD
-  const asShowCDCheckbox = root.querySelector(
-    `input[name="${MOD}.autoSaveShowCD"]`,
-  );
-  const asShowCDRow = asShowCDCheckbox?.closest(".form-group");
-  const asToggleCheckbox = root.querySelector(`input[name="${MOD}.autoSave"]`);
-  const asToggleRow = asToggleCheckbox?.closest(".form-group");
-  if (asShowCDRow && asToggleRow) {
-    asToggleRow.insertAdjacentElement("afterend", asShowCDRow);
-    asShowCDRow.style.marginLeft = "1.5rem";
-  }
+  // Move o `.form-group` que contém o `childSel` para logo após o que
+  // contém o `parentSel`, e recua o filho. Sem-op se algum lado faltar.
+  const placeAfter = (parentSel, childSel) => {
+    const parent = root.querySelector(parentSel)?.closest(".form-group");
+    const child = root.querySelector(childSel)?.closest(".form-group");
+    if (!parent || !child) return null;
+    parent.insertAdjacentElement("afterend", child);
+    child.style.marginLeft = "1.5rem";
+    return child;
+  };
 
-  // Verificador de Defesa — checkbox de visibilidade
-  const dcPublicCheckbox = root.querySelector(
-    `input[name="${MOD}.defenseCheckPublic"]`,
-  );
-  const dcPublicRow = dcPublicCheckbox?.closest(".form-group");
-  const dcToggleCheckbox = root.querySelector(
-    `input[name="${MOD}.defenseCheck"]`,
-  );
-  const dcToggleRow = dcToggleCheckbox?.closest(".form-group");
-  if (dcPublicRow && dcToggleRow) {
-    dcToggleRow.insertAdjacentElement("afterend", dcPublicRow);
-    dcPublicRow.style.marginLeft = "1.5rem";
-  }
+  const inp = (key) => `input[name="${MOD}.${key}"]`;
+  const btn = (key) => `button[data-key="${MOD}.${key}"]`;
 
-  // Contador de Magia Sustentada — checkbox de visibilidade
-  const ssPublicCheckbox = root.querySelector(
-    `input[name="${MOD}.sustainedSpellPublic"]`,
-  );
-  const ssPublicRow = ssPublicCheckbox?.closest(".form-group");
-  const ssToggleCheckbox = root.querySelector(
-    `input[name="${MOD}.sustainedSpell"]`,
-  );
-  const ssToggleRow = ssToggleCheckbox?.closest(".form-group");
-  if (ssPublicRow && ssToggleRow) {
-    ssToggleRow.insertAdjacentElement("afterend", ssPublicRow);
-    ssPublicRow.style.marginLeft = "1.5rem";
-  }
+  placeAfter(inp("autoSave"), inp("autoSaveShowCD"));
+  placeAfter(inp("defenseCheck"), inp("defenseCheckPublic"));
+  placeAfter(inp("sustainedSpell"), inp("sustainedSpellPublic"));
+  placeAfter(inp("opposedChecks"), btn("opposedChecksConfig"));
 
-  // Testes Opostos
-  const ocMenuBtn = root.querySelector(
-    `button[data-key="${MOD}.opposedChecksConfig"]`,
+  // Testes Opostos: GMOnly após o toggle, TargetsOnly após GMOnly (ou toggle).
+  const ocGMOnly = placeAfter(inp("opposedChecks"), inp("opposedChecksGMOnly"));
+  placeAfter(
+    ocGMOnly ? inp("opposedChecksGMOnly") : inp("opposedChecks"),
+    inp("opposedChecksTargetsOnly"),
   );
-  const ocMenuRow = ocMenuBtn?.closest(".form-group");
-  const ocToggleCheckbox = root.querySelector(
-    `input[name="${MOD}.opposedChecks"]`,
-  );
-  const ocToggleRow = ocToggleCheckbox?.closest(".form-group");
-  if (ocMenuRow && ocToggleRow) {
-    ocToggleRow.insertAdjacentElement("afterend", ocMenuRow);
-    ocMenuRow.style.marginLeft = "1.5rem";
-  }
 
-  // Testes Opostos — checkboxes de modo
-  const ocGMOnlyCheckbox = root.querySelector(
-    `input[name="${MOD}.opposedChecksGMOnly"]`,
-  );
-  const ocGMOnlyRow = ocGMOnlyCheckbox?.closest(".form-group");
-  const ocTargetsOnlyCheckbox = root.querySelector(
-    `input[name="${MOD}.opposedChecksTargetsOnly"]`,
-  );
-  const ocTargetsOnlyRow = ocTargetsOnlyCheckbox?.closest(".form-group");
-  const ocToggleCheckbox2 = root.querySelector(
-    `input[name="${MOD}.opposedChecks"]`,
-  );
-  const ocToggleRow2 = ocToggleCheckbox2?.closest(".form-group");
-  if (ocToggleRow2) {
-    if (ocGMOnlyRow) {
-      ocToggleRow2.insertAdjacentElement("afterend", ocGMOnlyRow);
-      ocGMOnlyRow.style.marginLeft = "1.5rem";
-    }
-    if (ocTargetsOnlyRow) {
-      ocGMOnlyRow?.insertAdjacentElement("afterend", ocTargetsOnlyRow) ??
-        ocToggleRow2.insertAdjacentElement("afterend", ocTargetsOnlyRow);
-      ocTargetsOnlyRow.style.marginLeft = "1.5rem";
-    }
-  }
-  // Dreno de Vida
-  const ldMenuBtn = root.querySelector(
-    `button[data-key="${MOD}.lifeDrainConfig"]`,
-  );
-  const ldMenuRow = ldMenuBtn?.closest(".form-group");
-  const ldToggleCheckbox = root.querySelector(`input[name="${MOD}.lifeDrain"]`);
-  const ldToggleRow = ldToggleCheckbox?.closest(".form-group");
-  if (ldMenuRow && ldToggleRow) {
-    ldToggleRow.insertAdjacentElement("afterend", ldMenuRow);
-    ldMenuRow.style.marginLeft = "1.5rem";
-  }
+  placeAfter(inp("lifeDrain"), btn("lifeDrainConfig"));
 
-  // Item Auto-Save — showCD checkbox + menu Configurar
-  const iasToggleCheckbox = root.querySelector(
-    `input[name="${MOD}.itemAutoSave"]`,
+  // Item Auto-Save: showCD após toggle, menu após showCD (ou toggle).
+  const iasShowCD = placeAfter(inp("itemAutoSave"), inp("itemAutoSaveShowCD"));
+  placeAfter(
+    iasShowCD ? inp("itemAutoSaveShowCD") : inp("itemAutoSave"),
+    btn("itemAutoSaveConfig"),
   );
-  const iasToggleRow = iasToggleCheckbox?.closest(".form-group");
-  const iasShowCDCheckbox = root.querySelector(
-    `input[name="${MOD}.itemAutoSaveShowCD"]`,
-  );
-  const iasShowCDRow = iasShowCDCheckbox?.closest(".form-group");
-  const iasMenuBtn = root.querySelector(
-    `button[data-key="${MOD}.itemAutoSaveConfig"]`,
-  );
-  const iasMenuRow = iasMenuBtn?.closest(".form-group");
-  if (iasToggleRow) {
-    if (iasShowCDRow) {
-      iasToggleRow.insertAdjacentElement("afterend", iasShowCDRow);
-      iasShowCDRow.style.marginLeft = "1.5rem";
-    }
-    if (iasMenuRow) {
-      (iasShowCDRow ?? iasToggleRow).insertAdjacentElement(
-        "afterend",
-        iasMenuRow,
-      );
-      iasMenuRow.style.marginLeft = "1.5rem";
-    }
-  }
 
-  // Travel Ruler Actors Config
-  const trMenuBtn = root.querySelector(
-    `button[data-key="${MOD}.travelRulerConfig"]`,
-  );
-  const trMenuRow = trMenuBtn?.closest(".form-group");
-  const trToggleCheckbox = root.querySelector(
-    `input[name="${MOD}.travelRuler"]`,
-  );
-  const trToggleRow = trToggleCheckbox?.closest(".form-group");
-  if (trMenuRow && trToggleRow) {
-    trToggleRow.insertAdjacentElement("afterend", trMenuRow);
-    trMenuRow.style.marginLeft = "1.5rem";
-  }
+  placeAfter(inp("travelRuler"), btn("travelRulerConfig"));
 });

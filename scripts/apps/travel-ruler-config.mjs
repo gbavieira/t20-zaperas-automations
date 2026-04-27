@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { MOD } from "../config.mjs";
+import { unwrapHtml } from "../utils/dom.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
   foundry.applications.api;
@@ -18,22 +19,15 @@ const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
  * @returns {Promise<string|null>} UUID do ator ou null se cancelado
  */
 export async function openActorPickerDialog() {
-  const content = `
-<div style="display:grid;gap:10px;padding:4px 2px;">
-  <label style="font-weight:bold;">Arraste um personagem:</label>
-  <div id="actor-drop-zone" style="border:2px dashed #ccc;border-radius:4px;padding:12px;background:#fafafa;cursor:grab;min-height:40px;display:flex;align-items:center;justify-content:center;text-align:center;color:#999;">
-    <em>Arraste um personagem aqui</em>
-  </div>
-  <input type="hidden" name="actorUuid" value="">
-</div>`;
+  const content = await renderTemplate(
+    `modules/${MOD}/templates/travel-ruler-config/actor-picker.hbs`,
+    {},
+  );
 
   let selectedUuid = null;
 
   Hooks.once("renderDialogV2", (_app, dialogHtml) => {
-    const root =
-      dialogHtml instanceof HTMLElement
-        ? dialogHtml
-        : (dialogHtml[0] ?? dialogHtml);
+    const root = unwrapHtml(dialogHtml);
     const dropZone = root.querySelector("#actor-drop-zone");
     const uuidInput = root.querySelector("[name=actorUuid]");
 

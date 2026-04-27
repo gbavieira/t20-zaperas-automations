@@ -18,8 +18,7 @@ import {
   extractCD,
   extractItemName,
   extractResistenciaTxt,
-  shouldCurrentUserRoll,
-  promptSaveRoll,
+  promptSavesForTargets,
   waitForAreaTemplate,
 } from "../utils/saves.mjs";
 
@@ -55,20 +54,15 @@ export async function handleAutoSave(message) {
   const hasTemplate = message.getFlag("tormenta20", "template");
   if (hasTemplate) {
     waitForAreaTemplate(message, async (targets) => {
-      for (const target of targets) {
-        const actor = target.actor;
-        if (!actor) continue;
-        if (!shouldCurrentUserRoll(actor)) continue;
-        await promptSaveRoll(
-          target,
-          saveType,
-          cd,
-          spellName,
-          casterName,
-          message,
-          showCD,
-        );
-      }
+      await promptSavesForTargets(
+        targets,
+        saveType,
+        cd,
+        spellName,
+        casterName,
+        message,
+        showCD,
+      );
     });
     return;
   }
@@ -76,18 +70,13 @@ export async function handleAutoSave(message) {
   const targets = author.targets;
   if (!targets?.size) return;
 
-  for (const target of targets) {
-    const actor = target.actor;
-    if (!actor) continue;
-    if (!shouldCurrentUserRoll(actor)) continue;
-    await promptSaveRoll(
-      target,
-      saveType,
-      cd,
-      spellName,
-      casterName,
-      message,
-      showCD,
-    );
-  }
+  await promptSavesForTargets(
+    targets,
+    saveType,
+    cd,
+    spellName,
+    casterName,
+    message,
+    showCD,
+  );
 }
