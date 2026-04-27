@@ -55,6 +55,7 @@ const MOD_TEMPLATES = [
   `modules/${MOD}/templates/condition-turns/em-chamas.hbs`,
   `modules/${MOD}/templates/condition-turns/sangrando.hbs`,
   `modules/${MOD}/templates/condition-turns/confuso.hbs`,
+  `modules/${MOD}/templates/condition-turns/confuso-prompt.hbs`,
   `modules/${MOD}/templates/life-drain-config/spell-editor.hbs`,
   `modules/${MOD}/templates/opposed-checks-config/rule-editor.hbs`,
   `modules/${MOD}/templates/travel-ruler-config/actor-picker.hbs`,
@@ -427,6 +428,7 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
   placeAfter(inp("autoSave"), inp("autoSaveShowCD"));
   placeAfter(inp("defenseCheck"), inp("defenseCheckPublic"));
   placeAfter(inp("sustainedSpell"), inp("sustainedSpellPublic"));
+  placeAfter(inp("conditionTurns"), inp("conditionTurnsPublic"));
   placeAfter(inp("opposedChecks"), btn("opposedChecksConfig"));
 
   // Testes Opostos: GMOnly após o toggle, TargetsOnly após GMOnly (ou toggle).
@@ -446,4 +448,27 @@ Hooks.on("renderSettingsConfig", (_app, html) => {
   );
 
   placeAfter(inp("travelRuler"), btn("travelRulerConfig"));
+
+  // Separadores visuais entre grupos de automações principais
+  const dividerStyle =
+    "border: none; border-top: 1px solid #c9b77a; margin: 10px 0 4px;";
+  const parentKeys = [
+    "autoSave",
+    "itemAutoSave",
+    "defenseCheck",
+    "opposedChecks",
+    "lifeDrain",
+    "sustainedSpell",
+    "sortudo",
+    "zeroPV",
+    "conditionTurns",
+    "travelRuler",
+    "curaAcelerada",
+  ];
+  for (const key of parentKeys) {
+    const fg = root.querySelector(inp(key))?.closest(".form-group");
+    if (fg) {
+      fg.insertAdjacentHTML("beforebegin", `<hr style="${dividerStyle}">`);
+    }
+  }
 });

@@ -137,7 +137,21 @@ export async function handleItemAutoSave(message) {
   const author = game.users.get(authorId);
   if (!author) return;
   const casterName = message.speaker?.alias || "???";
-  const showCD = game.settings.get(MOD, "itemAutoSaveShowCD");
+  const showCD = game.settings.get(MOD, "itemAutoSaveShowCD") || game.user.isGM;
+
+  // Injeta o CD calculado no card do item (visível para todos que virem a mensagem)
+  if (showCD) {
+    const div = document.createElement("div");
+    div.innerHTML = message.content;
+    const cardContent = div.querySelector(".card-content");
+    if (cardContent && !cardContent.querySelector(".t20-item-cd")) {
+      const cdEl = document.createElement("p");
+      cdEl.className = "t20-item-cd";
+      cdEl.innerHTML = `<b>CD:</b> ${cd}`;
+      cardContent.appendChild(cdEl);
+      await message.update({ content: div.innerHTML });
+    }
+  }
 
   // Template de área: flags.tormenta20.template é um objeto { area, alcance } quando presente
   const hasTemplate = flags.template;

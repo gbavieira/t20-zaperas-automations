@@ -49,7 +49,7 @@ export async function handleAutoSave(message) {
 
   const spellName = extractItemName(content);
   const casterName = message.speaker?.alias || "???";
-  const showCD = game.settings.get(MOD, "autoSaveShowCD");
+  const showCD = game.settings.get(MOD, "autoSaveShowCD") || game.user.isGM;
 
   const hasTemplate = message.getFlag("tormenta20", "template");
   if (hasTemplate) {

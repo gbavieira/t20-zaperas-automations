@@ -132,20 +132,12 @@ async function handleSortudoClick(message, actor, btnContainer) {
     "Teste";
   const flavor = `<strong>${headerTitle} (Sortudo)</strong>`;
 
-  // Renderizar o dado para incluir no content (sem isso o roll não aparece)
-  const rollHTML = await newRoll.render();
-
-  // Content com header (para testes opostos), card-content vazio (evita crash
-  // no _onChatCardToggleContent do sistema) e o roll renderizado
-  const content = await renderTemplate(
-    `modules/t20-zaperas-automations/templates/sortudo/card.hbs`,
-    { headerTitle, rollHTML },
-  );
-
+  // Deixar o sistema T20 gerar o card normalmente — sem `content` customizado.
+  // Isso garante que o hook renderChatMessageHTML do sistema aplique as classes
+  // de coloração (nat 20 dourado, nat 1 vermelho) no .dice-total.
   await newRoll.toMessage({
     speaker: message.speaker,
     flavor,
-    content,
     flags: { tormenta20: { rollType: "pericia" } },
   });
 

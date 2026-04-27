@@ -15,6 +15,7 @@
 import { MOD, CONDITION_STATUS_IDS, CONDITION_TURNS_FLAG } from "../config.mjs";
 import { unwrapHtml } from "../utils/dom.mjs";
 import { getCurrentTurnActor } from "../utils/combat.mjs";
+import { normalizeText } from "../utils/text.mjs";
 
 // ── Tabela de efeitos para Confuso ───────────────────────────
 const CONFUSO_EFFECTS = {
@@ -77,7 +78,7 @@ export async function handleConditionTurns(combat, data, _options, userId) {
         await processSangrando(actor, effect, actorName, tokenId);
       } else if (status === CONDITION_STATUS_IDS.confuso) {
         if (!processedStatuses.has(status)) {
-          await processConfuso(actor, effect, actorName);
+          await processConfuso(actor, effect, actorName, tokenId);
           processedStatuses.add(status);
         }
       }
@@ -134,6 +135,22 @@ async function processSangrando(actor, effect, actorName, tokenId) {
   const token = canvas.tokens?.get(tokenId);
   if (!token) return;
 
+  // Com 0 PV ou menos: executar macro Teste de Morte em vez do prompt normal
+  const currentPV = Number(actor.system?.attributes?.pv?.value ?? 0);
+  if (currentPV <= 0) {
+    const macro =
+      game.macros.getName("Teste de Morte") ??
+      game.macros.find((m) => normalizeText(m.name).includes("teste de morte"));
+    if (macro) {
+      await macro.execute({ actor, token: token.document ?? token });
+    } else {
+      ui.notifications.warn(
+        `${actorName} está com 0 PV e sangrando — execute o Teste de Morte manualmente.`,
+      );
+    }
+    return;
+  }
+
   const showPublic = game.settings.get(MOD, "conditionTurnsPublic") ?? false;
 
   const content = await renderTemplate(
@@ -162,13 +179,42 @@ async function processSangrando(actor, effect, actorName, tokenId) {
 }
 
 /**
- * Confuso: rola 1d6 automaticamente no início do turno.
- * - 1: movimento aleatório (1d8 para direção)
- * - 2–3: não pode agir
- * - 4–5: ataca criatura mais próxima
- * - 6: remove condição
+ * Confuso: posta prompt no chat para o GM rolar 1d6 manualmente.
+ * O botão executa a lógica de roll e aplica o efeito.
  */
-async function processConfuso(actor, effect, actorName) {
+async function processConfuso(actor, effect, actorName, tokenId) {
+  const showPublic = game.settings.get(MOD, "conditionTurnsPublic") ?? false;
+
+  const content = await renderTemplate(
+    "modules/t20-zaperas-automations/templates/condition-turns/confuso-prompt.hbs",
+    {
+      actorName,
+      promptClass: "t20-confuso-prompt",
+    },
+  );
+
+  const whisperTo = showPublic ? null : ChatMessage.getWhisperRecipients("GM");
+
+  await ChatMessage.create({
+    content,
+    speaker: ChatMessage.getSpeaker({ actor }),
+    whisper: whisperTo,
+    flags: {
+      tormenta20: {
+        [CONDITION_TURNS_FLAG]: "confuso",
+        actorId: actor.id,
+        tokenId,
+        effectId: effect.id,
+      },
+    },
+  });
+}
+
+/**
+ * Executa o roll de Confusão e posta o resultado no chat.
+ * Chamado pelo botão "Rolar 1d6" no prompt.
+ */
+async function executeConfusoRoll(actor, effect, actorName) {
   const confoRoll = new Roll("1d6");
   await confoRoll.evaluate();
 
@@ -188,28 +234,15 @@ async function processConfuso(actor, effect, actorName) {
 
   const content = await renderTemplate(
     "modules/t20-zaperas-automations/templates/condition-turns/confuso.hbs",
-    {
-      actorName,
-      result,
-      effectText,
-    },
+    { actorName, result, effectText },
   );
 
-  const msg = await ChatMessage.create({
+  await ChatMessage.create({
     content,
     speaker: ChatMessage.getSpeaker({ actor }),
     rolls,
-    flags: {
-      tormenta20: {
-        [CONDITION_TURNS_FLAG]: "confuso",
-        actorId: actor.id,
-        effectId: effect.id,
-        result,
-      },
-    },
   });
 
-  // Se resultado é 6, remove a condição automaticamente
   if (result === 6) {
     try {
       await actor.deleteEmbeddedDocuments("ActiveEffect", [effect.id]);
@@ -247,6 +280,8 @@ export function renderConditionButtons(message, html) {
     renderEmChamasButtons(message, el);
   } else if (flagValue === "sangrando") {
     renderSangrandoButtons(message, el);
+  } else if (flagValue === "confuso") {
+    renderConfusoButtons(message, el);
   }
 }
 
@@ -389,6 +424,31 @@ function renderSangrandoButtons(message, html) {
     } catch (err) {
       console.error("T20 | Erro ao rolar teste de Constituição:", err);
       ui.notifications.error(`Erro ao rolar teste: ${err.message}`);
+    }
+  });
+}
+
+/**
+ * Confuso: botão "Rolar 1d6 (Confusão)"
+ */
+function renderConfusoButtons(message, html) {
+  const rolarBtn = html.querySelector('[data-action="rolar-confusao"]');
+  if (!rolarBtn) return;
+
+  const actorId = message.flags.tormenta20.actorId;
+  const effectId = message.flags.tormenta20.effectId;
+  const actor = game.actors.get(actorId);
+  if (!actor) return;
+
+  const actorName = message.speaker?.alias ?? actor.name;
+
+  rolarBtn.addEventListener("click", async () => {
+    rolarBtn.disabled = true;
+    try {
+      await executeConfusoRoll(actor, { id: effectId }, actorName);
+    } catch (err) {
+      console.error("T20 | Erro ao rolar Confusão:", err);
+      ui.notifications.error(`Erro ao rolar Confusão: ${err.message}`);
     }
   });
 }
