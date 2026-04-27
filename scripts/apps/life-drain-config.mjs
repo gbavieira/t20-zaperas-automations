@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { normalizeText } from "../utils/text.mjs";
+import { unwrapHtml } from "../utils/dom.mjs";
 import { MOD } from "../config.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
@@ -27,32 +28,14 @@ export async function openSpellEditor(spell) {
     tempHP: false,
   };
 
-  const content = `
-<form id="spell-editor-form" style="display:grid;gap:10px;padding:4px 2px;">
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;">
-    <label style="font-weight:bold;">Magia / Poder:</label>
-    <div id="spell-drop-zone" style="border:2px dashed #ccc;border-radius:4px;padding:12px;background:#fafafa;cursor:grab;min-height:40px;display:flex;align-items:center;justify-content:center;text-align:center;">
-      ${s.name ? `<strong>${s.name}</strong>` : `<em style="color:#999;">Arraste uma magia ou poder aqui</em>`}
-    </div>
-    <input type="hidden" name="spellName" value="${s.name}">
-
-    <label style="font-weight:bold;">Cura (%):</label>
-    <input type="number" name="healPercent" value="${s.healPercent}" min="0" max="100" style="width:80px;">
-
-    <label style="font-weight:bold;">Concede PV Temporários:</label>
-    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-      <input type="checkbox" name="tempHP" ${s.tempHP ? "checked" : ""}>
-      <span style="font-size:0.88em;color:#555;">Ao invés de curar PV, concede PV temporários</span>
-    </label>
-  </div>
-</form>`;
+  const content = await renderTemplate(
+    `modules/${MOD}/templates/life-drain-config/spell-editor.hbs`,
+    s,
+  );
 
   // Wiring do drag-drop — será feito no Hooks.once("renderDialogV2", ...)
   Hooks.once("renderDialogV2", (_app, dialogHtml) => {
-    const root =
-      dialogHtml instanceof HTMLElement
-        ? dialogHtml
-        : (dialogHtml[0] ?? dialogHtml);
+    const root = unwrapHtml(dialogHtml);
     const dropZone = root.querySelector("#spell-drop-zone");
     const spellNameInput = root.querySelector("[name=spellName]");
 

@@ -1,0 +1,30 @@
+<div id="rule-editor-form" style="display:grid;gap:10px;padding:4px 2px;">
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;">
+    <label style="font-weight:bold;">Perícia de Ataque:</label>
+    <select name="attackSkillKey">
+      {{#each skills}}<option value="{{key}}" {{#if (eq key ../attackSkillKey)}}selected{{/if}}>{{label}}</option>{{/each}}
+    </select>
+
+    <label style="font-weight:bold;">Modo:</label>
+    <select name="defenseMode">
+      <option value="auto"   {{#if (eq defenseMode "auto")}}selected{{/if}}>Auto (todos no canvas)</option>
+      <option value="fixed"  {{#if (eq defenseMode "fixed")}}selected{{/if}}>Fixo (GM escolhe atores)</option>
+      <option value="choice" {{#if (eq defenseMode "choice")}}selected{{/if}}>Escolha (GM escolhe perícia)</option>
+    </select>
+  </div>
+
+  <fieldset style="border:1px solid #ccc;padding:8px 12px;border-radius:4px;margin:0;">
+    <legend style="font-weight:bold;padding:0 4px;">Perícias de Defesa</legend>
+    <div id="defense-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:2px;">
+      {{#each skills}}
+        <label style="display:flex;align-items:center;gap:6px;margin:4px 0;cursor:pointer;">
+          <input type="checkbox" name="defenseChoice" value="{{key}}" {{#if checked}}checked{{/if}}>
+          {{label}}
+        </label>
+      {{/each}}
+    </div>
+    <small style="color:#888;margin-top:6px;display:block;">
+      Auto / Fixo: selecione 1. &nbsp; Escolha: selecione 2 ou mais.
+    </small>
+  </fieldset>
+</div>

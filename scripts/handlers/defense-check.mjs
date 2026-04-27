@@ -11,6 +11,8 @@
      2. renderChatMessage → injeta o visual de acertou/errou no card
    ============================================================ */
 
+import { unwrapHtml } from "../utils/dom.mjs";
+
 // ── Constante para evitar re-injeção no render ──────────────
 const DEFENSE_CHECK_CLASS = "t20-defense-check";
 const DEFENSE_CHECK_FLAG = "defenseCheck";
@@ -102,7 +104,7 @@ export async function renderDefenseCheck(message, html) {
   );
   if (!isPublic && !game.user.isGM) return;
 
-  const el = html instanceof HTMLElement ? html : (html[0] ?? html);
+  const el = unwrapHtml(html);
 
   // Evita re-injeção em re-renders
   if (el.querySelector(`.${DEFENSE_CHECK_CLASS}`)) return;

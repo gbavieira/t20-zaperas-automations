@@ -13,6 +13,8 @@
    ============================================================ */
 
 import { MOD, CONDITION_STATUS_IDS, CONDITION_TURNS_FLAG } from "../config.mjs";
+import { unwrapHtml } from "../utils/dom.mjs";
+import { getCurrentTurnActor } from "../utils/combat.mjs";
 
 // ── Tabela de efeitos para Confuso ───────────────────────────
 const CONFUSO_EFFECTS = {
@@ -48,22 +50,17 @@ const DIRECTIONS_1D8 = [
  * @param {string} userId
  */
 export async function handleConditionTurns(combat, data, _options, userId) {
-  if (game.userId !== userId) return;
-  if (combat.round < 1) return;
-  if (!("turn" in data || "round" in data)) return;
+  const ctx = getCurrentTurnActor(combat, data, userId);
+  if (!ctx) return;
+  const { actor, tokenId } = ctx;
 
-  const combatant = combat.combatants.get(combat.current.combatantId);
-  const actor = combatant?.actor;
-  if (!actor) return;
-
-  const tokenId = combatant.tokenId;
   const token = canvas.tokens?.get(tokenId);
   const actorName = token?.name ?? actor.name;
 
   // Processa cada efeito ativo, coletando por statusId
   const processedStatuses = new Set();
 
-  for (const effect of [...actor.effects]) {
+  for (const effect of actor.effects) {
     for (const status of effect.statuses ?? []) {
       // Evita processar a mesma condição múltiplas vezes por rodada
       if (
@@ -235,7 +232,7 @@ export function renderConditionButtons(message, html) {
   const flagValue = message.flags?.tormenta20?.[CONDITION_TURNS_FLAG];
   if (!flagValue) return;
 
-  const el = html instanceof HTMLElement ? html : (html[0] ?? html);
+  const el = unwrapHtml(html);
 
   // Só o GM pode interagir
   if (!game.user.isGM) {
