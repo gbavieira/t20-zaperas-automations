@@ -22,8 +22,7 @@
 import { normalizeText } from "../utils/text.mjs";
 import {
   parseSaveType,
-  shouldCurrentUserRoll,
-  promptSaveRoll,
+  promptSavesForTargets,
   waitForAreaTemplate,
   extractItemName,
 } from "../utils/saves.mjs";
@@ -144,20 +143,15 @@ export async function handleItemAutoSave(message) {
   const hasTemplate = flags.template;
   if (hasTemplate) {
     waitForAreaTemplate(message, async (targets) => {
-      for (const target of targets) {
-        const actor = target.actor;
-        if (!actor) continue;
-        if (!shouldCurrentUserRoll(actor)) continue;
-        await promptSaveRoll(
-          target,
-          saveType,
-          cd,
-          itemName,
-          casterName,
-          message,
-          showCD,
-        );
-      }
+      await promptSavesForTargets(
+        targets,
+        saveType,
+        cd,
+        itemName,
+        casterName,
+        message,
+        showCD,
+      );
     });
     return;
   }
@@ -166,18 +160,13 @@ export async function handleItemAutoSave(message) {
   const targets = author.targets;
   if (!targets?.size) return;
 
-  for (const target of targets) {
-    const actor = target.actor;
-    if (!actor) continue;
-    if (!shouldCurrentUserRoll(actor)) continue;
-    await promptSaveRoll(
-      target,
-      saveType,
-      cd,
-      itemName,
-      casterName,
-      message,
-      showCD,
-    );
-  }
+  await promptSavesForTargets(
+    targets,
+    saveType,
+    cd,
+    itemName,
+    casterName,
+    message,
+    showCD,
+  );
 }

@@ -128,9 +128,9 @@ export const ZERO_PV_FLAG_STATUS = "t20AutoZeroPVStatus";
  * Magias/poderes com dreno de vida.
  * Ao aplicar dano, cura o atacante por uma porcentagem do dano causado.
  *
- * name          — nome da magia/poder (comparação case-insensitive, sem acentos)
- * healPercent   — porcentagem de cura (ex: 50 = metade do dano)
- * sequencerFile — arquivo de efeito do Sequencer/JB2A (opcional)
+ * name        — nome da magia/poder (comparação case-insensitive, sem acentos)
+ * healPercent — porcentagem de cura (ex: 50 = metade do dano)
+ * tempHP      — se true, concede PV temporário; senão cura PV normal
  */
 export const DEFAULT_LIFE_DRAIN_SPELLS = [
   {

@@ -143,6 +143,35 @@ export async function rollSaveAndReport(
   }
 }
 
+/**
+ * Itera tokens-alvo, filtra por permissão e dispara o prompt de save.
+ * Encapsula o loop duplicado em auto-save.mjs e item-auto-save.mjs.
+ */
+export async function promptSavesForTargets(
+  targets,
+  saveType,
+  cd,
+  itemName,
+  casterName,
+  message,
+  showCD,
+) {
+  for (const target of targets) {
+    const actor = target.actor;
+    if (!actor) continue;
+    if (!shouldCurrentUserRoll(actor)) continue;
+    await promptSaveRoll(
+      target,
+      saveType,
+      cd,
+      itemName,
+      casterName,
+      message,
+      showCD,
+    );
+  }
+}
+
 export async function promptSaveRoll(
   token,
   saveType,

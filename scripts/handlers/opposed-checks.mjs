@@ -10,11 +10,10 @@
      "auto"   — rola todos os tokens do canvas automaticamente
    ============================================================ */
 
-import { buildRuntimeChecks } from "../config.mjs";
+import { buildRuntimeChecks, MOD } from "../config.mjs";
 import { openActorPicker } from "../utils/actor-picker.mjs";
 import { buildResultTable, postGMMessage } from "../utils/chat.mjs";
 import { rollSkillCheck } from "../utils/rolls.mjs";
-import { MOD } from "../config.mjs";
 
 // ── Helpers ─────────────────────────────────────────────────
 

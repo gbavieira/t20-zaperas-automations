@@ -5,8 +5,8 @@
    Aberto via game.settings.registerMenu.
    ============================================================ */
 
-import { DEFAULT_OPPOSED_CHECKS_DATA } from "../config.mjs";
-import { MOD } from "../config.mjs";
+import { DEFAULT_OPPOSED_CHECKS_DATA, MOD } from "../config.mjs";
+import { unwrapHtml } from "../utils/dom.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
   foundry.applications.api;
@@ -37,59 +37,24 @@ export async function openRuleEditor(rule) {
     defenseSkillKeys: [],
   };
 
-  function skillOptions(selectedKey) {
-    return skillEntries
-      .map(([key, v]) => {
-        const label = game.i18n.localize(v.label) ?? key;
-        return `<option value="${key}" ${key === selectedKey ? "selected" : ""}>${label}</option>`;
-      })
-      .join("");
-  }
+  const skills = skillEntries.map(([key, v]) => ({
+    key,
+    label: game.i18n.localize(v.label) ?? key,
+    checked: r.defenseSkillKeys.includes(key),
+  }));
 
-  function defenseCheckboxes() {
-    return skillEntries
-      .map(([key, v]) => {
-        const label = game.i18n.localize(v.label) ?? key;
-        const checked = r.defenseSkillKeys.includes(key) ? "checked" : "";
-        return `<label style="display:flex;align-items:center;gap:6px;margin:4px 0;cursor:pointer;">
-					<input type="checkbox" name="defenseChoice" value="${key}" ${checked}>
-					${label}
-				</label>`;
-      })
-      .join("");
-  }
+  const content = await renderTemplate(
+    `modules/${MOD}/templates/opposed-checks-config/rule-editor.hbs`,
+    {
+      skills,
+      attackSkillKey: r.attackSkillKey,
+      defenseMode: r.defenseMode,
+    },
+  );
 
-  const content = `
-<form id="rule-editor-form" style="display:grid;gap:10px;padding:4px 2px;">
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;">
-    <label style="font-weight:bold;">Perícia de Ataque:</label>
-    <select name="attackSkillKey">${skillOptions(r.attackSkillKey)}</select>
-
-    <label style="font-weight:bold;">Modo:</label>
-    <select name="defenseMode">
-      <option value="auto"   ${r.defenseMode === "auto" ? "selected" : ""}>Auto (todos no canvas)</option>
-      <option value="fixed"  ${r.defenseMode === "fixed" ? "selected" : ""}>Fixo (GM escolhe atores)</option>
-      <option value="choice" ${r.defenseMode === "choice" ? "selected" : ""}>Escolha (GM escolhe perícia)</option>
-    </select>
-  </div>
-
-  <fieldset style="border:1px solid #ccc;padding:8px 12px;border-radius:4px;margin:0;">
-    <legend style="font-weight:bold;padding:0 4px;">Perícias de Defesa</legend>
-    <div id="defense-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:2px;">
-      ${defenseCheckboxes()}
-    </div>
-    <small style="color:#888;margin-top:6px;display:block;">
-      Auto / Fixo: selecione 1. &nbsp; Escolha: selecione 2 ou mais.
-    </small>
-  </fieldset>
-</form>`;
-
-  // Set up intelligent checkbox disable behavior after dialog renders
+// Set up intelligent checkbox disable behavior after dialog renders
   Hooks.once("renderDialogV2", (_app, dialogHtml) => {
-    const root =
-      dialogHtml instanceof HTMLElement
-        ? dialogHtml
-        : (dialogHtml[0] ?? dialogHtml);
+    const root = unwrapHtml(dialogHtml);
     const modeSelect = root.querySelector("[name=defenseMode]");
     const container = root.querySelector("#defense-checkboxes");
     if (!modeSelect || !container) return;

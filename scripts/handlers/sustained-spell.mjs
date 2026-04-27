@@ -12,6 +12,9 @@
      - updateCombat          → prompt no início do turno
    ============================================================ */
 
+import { getCurrentTurnActor } from "../utils/combat.mjs";
+import { extractItemName } from "../utils/saves.mjs";
+
 // ── Constantes ───────────────────────────────────────────────
 
 const SUSTAIN_FLAG = "sustainedSpell";
@@ -39,11 +42,7 @@ export async function handleSustainCast(message) {
   const actor = game.actors.get(message.speaker?.actor);
   if (!actor) return;
 
-  // Extrai nome do item do HTML da mensagem
-  const div = document.createElement("div");
-  div.innerHTML = message.content ?? "";
-  const spellName =
-    div.querySelector(".item-name")?.textContent?.trim() || "Magia";
+  const spellName = extractItemName(message.content ?? "") || "Magia";
 
   // Evita duplicar se já existe efeito para esta mensagem
   const alreadySustaining = actor.effects.some(
@@ -89,15 +88,10 @@ export async function handleSustainCast(message) {
  * @param {object} options
  * @param {string} userId
  */
-export async function handleSustainTurn(combat, data, options, userId) {
-  // Só roda no client que triggou a mudança
-  if (game.userId !== userId) return;
-  if (combat.round < 1) return;
-  if (!("turn" in data || "round" in data)) return;
-
-  const combatant = combat.combatants.get(combat.current.combatantId);
-  const actor = combatant?.actor;
-  if (!actor) return;
+export async function handleSustainTurn(combat, data, _options, userId) {
+  const ctx = getCurrentTurnActor(combat, data, userId);
+  if (!ctx) return;
+  const { actor } = ctx;
 
   // Busca effects sustentados pelo nosso sistema
   const sustainedEffects = actor.effects.filter(

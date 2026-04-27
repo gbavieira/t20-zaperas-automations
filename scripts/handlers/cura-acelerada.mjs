@@ -11,6 +11,9 @@
      3. renderChatMessageHTML → wira botões Sim/Não
    ============================================================ */
 
+import { unwrapHtml } from "../utils/dom.mjs";
+import { getCurrentTurnActor } from "../utils/combat.mjs";
+
 // ── Constantes ───────────────────────────────────────────────
 
 const CURA_ACELERADA_PROMPT_FLAG = "curaAceleradaPrompt";
@@ -28,15 +31,10 @@ const PROMPT_CLASS = "t20-cura-acelerada-prompt";
  * @param {object} options
  * @param {string} userId
  */
-export async function handleCuraAceleradaTurn(combat, data, options, userId) {
-  // Só roda no client que triggou a mudança
-  if (game.userId !== userId) return;
-  if (combat.round < 1) return;
-  if (!("turn" in data || "round" in data)) return;
-
-  const combatant = combat.combatants.get(combat.current.combatantId);
-  const actor = combatant?.actor;
-  if (!actor) return;
+export async function handleCuraAceleradaTurn(combat, data, _options, userId) {
+  const ctx = getCurrentTurnActor(combat, data, userId);
+  if (!ctx) return;
+  const { actor, tokenId } = ctx;
 
   // Só ameaças têm cura acelerada (não PCs)
   if (actor.type !== "npc") return;
@@ -47,7 +45,6 @@ export async function handleCuraAceleradaTurn(combat, data, options, userId) {
   if (!match) return;
 
   const healAmount = Number(match[1]);
-  const tokenId = combatant.tokenId;
   const actorToken = actor.getActiveTokens()[0];
   const actorName = actorToken?.name ?? actor.name;
 
@@ -89,7 +86,7 @@ export async function handleCuraAceleradaTurn(combat, data, options, userId) {
 export function renderCuraAceleradaPrompt(message, html) {
   if (!message.flags?.tormenta20?.[CURA_ACELERADA_PROMPT_FLAG]) return;
 
-  const el = html instanceof HTMLElement ? html : (html[0] ?? html);
+  const el = unwrapHtml(html);
   const yesBtn = el.querySelector(".sustain-yes");
   const noBtn = el.querySelector(".sustain-no");
   if (!yesBtn && !noBtn) return;
