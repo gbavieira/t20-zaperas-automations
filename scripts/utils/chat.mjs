@@ -37,6 +37,7 @@ export async function buildResultTable({
     nat20HTML: r.nat === 20 ? nat20Tag : "",
     icon: r.passed ? "✅" : "❌",
     cssClass: r.passed ? "passed" : "failed",
+    bonusDisplay: r.bonus != null ? (r.bonus >= 0 ? `+${r.bonus}` : `${r.bonus}`) : null,
   }));
 
   return renderTemplate(

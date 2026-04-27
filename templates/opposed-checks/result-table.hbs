@@ -22,7 +22,7 @@
 				   {{#if this.actorId}}data-aid="{{this.actorId}}"{{/if}}>{{this.name}}</a>
 			</td>
 			<td>{{this.total}}{{{this.nat20HTML}}}</td>
-			{{#if ../showBonus}}<td>+{{this.bonus}}</td>{{/if}}
+			{{#if ../showBonus}}<td>{{this.bonusDisplay}}</td>{{/if}}
 			<td>{{this.icon}}</td>
 		</tr>
 		{{/each}}
