@@ -57,7 +57,6 @@ export const DEFAULT_OPPOSED_CHECKS_DATA = [
  * Chamado a cada mensagem de chat — lê o setting atualizado.
  */
 export function buildRuntimeChecks() {
-  const MOD = "t20-zaperas-automations";
   let stored;
   try {
     stored = game.settings.get(MOD, "opposedChecksData");

@@ -27,8 +27,7 @@ import {
   waitForAreaTemplate,
   extractItemName,
 } from "../utils/saves.mjs";
-
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
 
 // ── Atributo-chave → tipo de save (fallback quando txt está vazio) ─
 

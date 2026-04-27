@@ -145,7 +145,6 @@ export function renderCuraAceleradaPrompt(message, html) {
   if (noBtn) {
     noBtn.addEventListener("click", async () => {
       disableButtons();
-      // Sem mensagem — apenas desabilita os botões
     });
   }
 }
