@@ -20,7 +20,8 @@
      - Hooks.on("renderSceneConfig") → injectSceneConfigCheckbox
    ============================================================ */
 
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
+
 const FLAG_KEY = "travelMap";
 const TEMPLATE = `modules/${MOD}/templates/waypoint-label.hbs`;
 

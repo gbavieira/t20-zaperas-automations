@@ -9,8 +9,7 @@
    ============================================================ */
 
 import { normalizeText } from "../utils/text.mjs";
-
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
 
 /**
  * Detecta se a mensagem é um teste de perícia elegível para Sortudo.

@@ -14,8 +14,7 @@ import { buildRuntimeChecks } from "../config.mjs";
 import { openActorPicker } from "../utils/actor-picker.mjs";
 import { buildResultTable, postGMMessage } from "../utils/chat.mjs";
 import { rollSkillCheck } from "../utils/rolls.mjs";
-
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
 
 // ── Helpers ─────────────────────────────────────────────────
 

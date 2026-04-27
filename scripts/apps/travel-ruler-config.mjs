@@ -6,7 +6,8 @@
    Travel Ruler. Fallback: todos os PCs.
    ============================================================ */
 
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
+
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
   foundry.applications.api;
 

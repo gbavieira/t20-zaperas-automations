@@ -6,8 +6,8 @@
    ============================================================ */
 
 import { DEFAULT_OPPOSED_CHECKS_DATA } from "../config.mjs";
+import { MOD } from "../config.mjs";
 
-const MOD = "t20-zaperas-automations";
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
   foundry.applications.api;
 

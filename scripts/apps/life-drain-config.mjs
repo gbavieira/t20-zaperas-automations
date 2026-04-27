@@ -7,8 +7,8 @@
    ============================================================ */
 
 import { normalizeText } from "../utils/text.mjs";
+import { MOD } from "../config.mjs";
 
-const MOD = "t20-zaperas-automations";
 const { ApplicationV2, HandlebarsApplicationMixin, DialogV2 } =
   foundry.applications.api;
 

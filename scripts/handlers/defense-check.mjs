@@ -109,19 +109,19 @@ export async function renderDefenseCheck(message, html) {
 
   const { targets, attackTotal, naturalRoll } = data;
 
+  // nat 20 = acerto automático
+  // nat 1 = falha automática
   const processedTargets = targets.map((t) => {
     let hit;
-    if (naturalRoll === 20)
-      hit = true; // nat 20 = acerto automático
-    else if (naturalRoll === 1)
-      hit = false; // nat 1 = falha automática
-    else hit = attackTotal >= t.defense; // regra normal
+    if (naturalRoll === 20) hit = true;
+    else if (naturalRoll === 1) hit = false;
+    else hit = attackTotal >= t.defense;
 
     return {
       ...t,
       hit,
       icon: hit ? "✓" : "✗",
-      label: hit ? "ACERTOU!" : "ERROU!",
+      label: hit ? "ACERTOU" : "ERROU",
       cssClass: hit ? "success" : "failure",
       naturalRoll,
     };

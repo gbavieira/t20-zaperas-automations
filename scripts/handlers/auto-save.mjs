@@ -23,7 +23,7 @@ import {
   waitForAreaTemplate,
 } from "../utils/saves.mjs";
 
-const MOD = "t20-zaperas-automations";
+import { MOD } from "../config.mjs";
 
 export async function handleAutoSave(message) {
   const itemData = message.flags?.tormenta20?.itemData;
