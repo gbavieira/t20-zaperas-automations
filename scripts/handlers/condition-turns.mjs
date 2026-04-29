@@ -63,16 +63,11 @@ export async function handleConditionTurns(combat, data, _options, userId) {
 
   for (const effect of actor.effects) {
     for (const status of effect.statuses ?? []) {
-      // Evita processar a mesma condição múltiplas vezes por rodada
-      if (
-        processedStatuses.has(status) &&
-        status === CONDITION_STATUS_IDS.confuso
-      ) {
-        continue;
-      }
-
       if (status === CONDITION_STATUS_IDS.emchamas) {
-        await processEmChamas(actor, effect, actorName, tokenId);
+        if (!processedStatuses.has(status)) {
+          processedStatuses.add(status);
+          await processEmChamas(actor, effect, actorName, tokenId);
+        }
       } else if (status === CONDITION_STATUS_IDS.sangrando) {
         const currentPV = Number(actor.system?.attributes?.pv?.value ?? 0);
         if (currentPV <= 0) {
@@ -264,7 +259,10 @@ async function executeConfusoRoll(actor, effect, actorName) {
 
   if (result === 6) {
     try {
-      await actor.deleteEmbeddedDocuments("ActiveEffect", [effect.id]);
+      const confusoEffect = actor.effects.get(effect.id);
+      if (confusoEffect) {
+        await actor.deleteEmbeddedDocuments("ActiveEffect", [effect.id]);
+      }
     } catch (err) {
       console.error("T20 | Erro ao remover condição Confuso:", err);
     }
@@ -344,7 +342,7 @@ function renderEmChamasButtons(message, html) {
         console.error("T20 | Erro ao remover Em Chamas:", err);
         ui.notifications.error(`Erro ao apagar chamas: ${err.message}`);
       }
-    });
+    }, { once: true });
   }
 
   // Botão: Não Apagar (apenas registra que ainda está em chamas)
@@ -364,7 +362,7 @@ function renderEmChamasButtons(message, html) {
         console.error("T20 | Erro ao registrar chamas:", err);
         ui.notifications.error(`Erro: ${err.message}`);
       }
-    });
+    }, { once: true });
   }
 }
 
@@ -379,16 +377,18 @@ function renderSangrandoButtons(message, html) {
     testBtn.disabled = true;
   }
 
-  const actorId = message.flags.tormenta20.actorId;
-  const actor = game.actors.get(actorId);
+  const tokenId = message.flags.tormenta20.tokenId;
+  const token = canvas.tokens.get(tokenId);
+  const actor = token?.actor ?? game.actors.get(message.flags.tormenta20.actorId);
   if (!actor) return;
 
   testBtn.addEventListener("click", async () => {
     disableButtons();
     try {
       // Rola teste de Constituição (CD 15)
-      const rollData = actor.getRollData();
-      const testRoll = new Roll("1d20 + @con", rollData);
+      const con = Number(actor.system?.atributos?.con?.value ?? 0);
+      const sign = con >= 0 ? `+${con}` : `${con}`;
+      const testRoll = new Roll(`1d20${sign}`);
       await testRoll.evaluate();
 
       const total = testRoll.total;
@@ -422,7 +422,7 @@ function renderSangrandoButtons(message, html) {
       console.error("T20 | Erro ao rolar teste de Constituição:", err);
       ui.notifications.error(`Erro ao rolar teste: ${err.message}`);
     }
-  });
+  }, { once: true });
 }
 
 /**
@@ -461,7 +461,7 @@ function renderTesteMorteButton(message, html) {
       ui.notifications.error(`Erro ao executar Teste de Morte: ${err.message}`);
       btn.disabled = false;
     }
-  });
+  }, { once: true });
 }
 
 /**
@@ -471,9 +471,10 @@ function renderConfusoButtons(message, html) {
   const rolarBtn = html.querySelector('[data-action="rolar-confusao"]');
   if (!rolarBtn) return;
 
-  const actorId = message.flags.tormenta20.actorId;
+  const tokenId = message.flags.tormenta20.tokenId;
   const effectId = message.flags.tormenta20.effectId;
-  const actor = game.actors.get(actorId);
+  const token = canvas.tokens.get(tokenId);
+  const actor = token?.actor ?? game.actors.get(message.flags.tormenta20.actorId);
   if (!actor) return;
 
   const actorName = message.speaker?.alias ?? actor.name;
@@ -486,5 +487,5 @@ function renderConfusoButtons(message, html) {
       console.error("T20 | Erro ao rolar Confusão:", err);
       ui.notifications.error(`Erro ao rolar Confusão: ${err.message}`);
     }
-  });
+  }, { once: true });
 }
