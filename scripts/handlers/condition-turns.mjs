@@ -74,8 +74,17 @@ export async function handleConditionTurns(combat, data, _options, userId) {
       if (status === CONDITION_STATUS_IDS.emchamas) {
         await processEmChamas(actor, effect, actorName, tokenId);
       } else if (status === CONDITION_STATUS_IDS.sangrando) {
-        // Sangrando pode ter múltiplos stacks — processa cada um
-        await processSangrando(actor, effect, actorName, tokenId);
+        const currentPV = Number(actor.system?.attributes?.pv?.value ?? 0);
+        if (currentPV <= 0) {
+          // Com 0 PV: posta botão de morte uma única vez, ignora stacks adicionais
+          if (!processedStatuses.has(status)) {
+            processedStatuses.add(status);
+            await processSangrando(actor, effect, actorName, tokenId);
+          }
+        } else {
+          // PV normal: processa cada stack de sangrando individualmente
+          await processSangrando(actor, effect, actorName, tokenId);
+        }
       } else if (status === CONDITION_STATUS_IDS.confuso) {
         if (!processedStatuses.has(status)) {
           await processConfuso(actor, effect, actorName, tokenId);
@@ -135,19 +144,29 @@ async function processSangrando(actor, effect, actorName, tokenId) {
   const token = canvas.tokens?.get(tokenId);
   if (!token) return;
 
-  // Com 0 PV ou menos: executar macro Teste de Morte em vez do prompt normal
+  // Com 0 PV ou menos: postar botão no chat para executar macro "Sangrando" do sistema
   const currentPV = Number(actor.system?.attributes?.pv?.value ?? 0);
   if (currentPV <= 0) {
-    const macro =
-      game.macros.getName("Teste de Morte") ??
-      game.macros.find((m) => normalizeText(m.name).includes("teste de morte"));
-    if (macro) {
-      await macro.execute({ actor, token: token.document ?? token });
-    } else {
-      ui.notifications.warn(
-        `${actorName} está com 0 PV e sangrando — execute o Teste de Morte manualmente.`,
-      );
-    }
+    const showPublic = game.settings.get(MOD, "conditionTurnsPublic") ?? false;
+    const deathContent = await renderTemplate(
+      "modules/t20-zaperas-automations/templates/condition-turns/teste-morte.hbs",
+      { actorName, actorId: actor.id, tokenId },
+    );
+    const whisperTo = showPublic
+      ? null
+      : ChatMessage.getWhisperRecipients("GM");
+    await ChatMessage.create({
+      content: deathContent,
+      speaker: ChatMessage.getSpeaker({ actor }),
+      whisper: whisperTo,
+      flags: {
+        tormenta20: {
+          [CONDITION_TURNS_FLAG]: "testeMorte",
+          actorId: actor.id,
+          tokenId,
+        },
+      },
+    });
     return;
   }
 
@@ -280,6 +299,8 @@ export function renderConditionButtons(message, html) {
     renderEmChamasButtons(message, el);
   } else if (flagValue === "sangrando") {
     renderSangrandoButtons(message, el);
+  } else if (flagValue === "testeMorte") {
+    renderTesteMorteButton(message, el);
   } else if (flagValue === "confuso") {
     renderConfusoButtons(message, el);
   }
@@ -299,9 +320,10 @@ function renderEmChamasButtons(message, html) {
     if (naoApagarBtn) naoApagarBtn.disabled = true;
   }
 
-  const actorId = message.flags.tormenta20.actorId;
   const effectId = message.flags.tormenta20.effectId;
-  const actor = game.actors.get(actorId);
+  const tokenId = message.flags.tormenta20.tokenId;
+  const token = canvas.tokens.get(tokenId);
+  const actor = token?.actor ?? game.actors.get(message.flags.tormenta20.actorId);
   if (!actor) return;
 
   // Botão: Apagar (remove condição)
@@ -309,7 +331,10 @@ function renderEmChamasButtons(message, html) {
     apagarBtn.addEventListener("click", async () => {
       disableButtons();
       try {
-        await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
+        const effectStillExists = actor.effects.get(effectId);
+        if (effectStillExists) {
+          await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
+        }
 
         await ChatMessage.create({
           content: `<span class="t20-status-msg success"><i class="fas fa-fire"></i> <b>${message.speaker.alias}</b> apagou as chamas!</span>`,
@@ -322,38 +347,22 @@ function renderEmChamasButtons(message, html) {
     });
   }
 
-  // Botão: Não Apagar (rola dano)
+  // Botão: Não Apagar (apenas registra que ainda está em chamas)
   if (naoApagarBtn) {
     naoApagarBtn.addEventListener("click", async () => {
       disableButtons();
       try {
-        const dmgRoll = new Roll("1d6[fogo]");
-        await dmgRoll.evaluate();
-
-        // Aplica dano via token (evita ambiguidade com múltiplos tokens)
         const tokenId = message.flags.tormenta20.tokenId;
         const token = canvas.tokens.get(tokenId);
-        if (!token) {
-          ui.notifications.error("Token não encontrado no mapa.");
-          return;
-        }
+        const name = token?.name ?? message.speaker.alias;
 
-        // Aplicar dano
-        if (typeof token.actor.applyDamageV2 === "function") {
-          await token.actor.applyDamageV2(dmgRoll, 1);
-        } else if (typeof token.actor.applyDamage === "function") {
-          await token.actor.applyDamage(dmgRoll.total, 1, true);
-        }
-
-        // Mensagem pública com o roll
         await ChatMessage.create({
-          content: `<span class="t20-status-msg damage"><i class="fas fa-flame"></i> <b>${token.name}</b> não conseguiu apagar as chamas!</span>`,
-          speaker: ChatMessage.getSpeaker({ actor: token.actor }),
-          rolls: [dmgRoll],
+          content: `<span class="t20-status-msg damage"><i class="fas fa-fire"></i> <b>${name}</b> ainda está em chamas.</span>`,
+          speaker: ChatMessage.getSpeaker({ actor }),
         });
       } catch (err) {
-        console.error("T20 | Erro ao aplicar dano de fogo:", err);
-        ui.notifications.error(`Erro ao aplicar dano: ${err.message}`);
+        console.error("T20 | Erro ao registrar chamas:", err);
+        ui.notifications.error(`Erro: ${err.message}`);
       }
     });
   }
@@ -371,7 +380,6 @@ function renderSangrandoButtons(message, html) {
   }
 
   const actorId = message.flags.tormenta20.actorId;
-  const effectId = message.flags.tormenta20.effectId;
   const actor = game.actors.get(actorId);
   if (!actor) return;
 
@@ -388,8 +396,14 @@ function renderSangrandoButtons(message, html) {
       const success = total >= cd;
 
       if (success) {
-        // Sucesso: remove condição
-        await actor.deleteEmbeddedDocuments("ActiveEffect", [effectId]);
+        // Busca efeito de sangrando atual — o effectId da flag pode ter expirado
+        // se o sistema T20 já processou o turno nativamente
+        const sangrandoEffect = actor.effects.find((e) =>
+          e.statuses?.has(CONDITION_STATUS_IDS.sangrando),
+        );
+        if (sangrandoEffect) {
+          await actor.deleteEmbeddedDocuments("ActiveEffect", [sangrandoEffect.id]);
+        }
 
         await ChatMessage.create({
           content: `<span class="t20-status-msg success"><i class="fas fa-heart-pulse"></i> <b>${message.speaker.alias}</b> conseguiu estancar o sangramento! (${total} vs CD ${cd})</span>`,
@@ -397,33 +411,55 @@ function renderSangrandoButtons(message, html) {
           rolls: [testRoll],
         });
       } else {
-        // Falha: aplica dano
-        const dmgRoll = new Roll("1d6[perda]");
-        await dmgRoll.evaluate();
-
-        const tokenId = message.flags.tormenta20.tokenId;
-        const token = canvas.tokens.get(tokenId);
-        if (!token) {
-          ui.notifications.error("Token não encontrado no mapa.");
-          return;
-        }
-
-        // Aplicar dano
-        if (typeof token.actor.applyDamageV2 === "function") {
-          await token.actor.applyDamageV2(dmgRoll, 1);
-        } else if (typeof token.actor.applyDamage === "function") {
-          await token.actor.applyDamage(dmgRoll.total, 1, true);
-        }
-
+        // Falha: só reporta — o sistema T20 já aplica 1d6 de perda nativamente
         await ChatMessage.create({
-          content: `<span class="t20-status-msg damage"><i class="fas fa-droplet"></i> <b>${token.name}</b> continua sangrando! (${total} vs CD ${cd})</span>`,
-          speaker: ChatMessage.getSpeaker({ actor: token.actor }),
-          rolls: [testRoll, dmgRoll],
+          content: `<span class="t20-status-msg damage"><i class="fas fa-droplet"></i> <b>${message.speaker.alias}</b> continua sangrando! (${total} vs CD ${cd})</span>`,
+          speaker: ChatMessage.getSpeaker({ actor }),
+          rolls: [testRoll],
         });
       }
     } catch (err) {
       console.error("T20 | Erro ao rolar teste de Constituição:", err);
       ui.notifications.error(`Erro ao rolar teste: ${err.message}`);
+    }
+  });
+}
+
+/**
+ * Teste de Morte: botão que executa a macro "Sangrando" do sistema T20.
+ * Aparece quando o ator está sangrando com 0 PV ou menos.
+ */
+function renderTesteMorteButton(message, html) {
+  const btn = html.querySelector('[data-action="executar-teste-morte"]');
+  if (!btn) return;
+
+  const actorId = message.flags.tormenta20.actorId;
+  const tokenId = message.flags.tormenta20.tokenId;
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    try {
+      const token = canvas.tokens.get(tokenId);
+      const actor = game.actors.get(actorId);
+
+      // Busca macro "Sangrando" (teste de morte do sistema T20)
+      const macro =
+        game.macros.getName("Sangrando") ??
+        game.macros.find((m) => normalizeText(m.name) === "sangrando");
+
+      if (!macro) {
+        ui.notifications.warn(
+          'Macro "Sangrando" não encontrada. Execute o Teste de Morte manualmente.',
+        );
+        btn.disabled = false;
+        return;
+      }
+
+      await macro.execute({ actor, token: token?.document ?? token });
+    } catch (err) {
+      console.error("T20 | Erro ao executar Teste de Morte:", err);
+      ui.notifications.error(`Erro ao executar Teste de Morte: ${err.message}`);
+      btn.disabled = false;
     }
   });
 }
