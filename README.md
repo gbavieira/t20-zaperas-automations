@@ -2,7 +2,7 @@
 
 > **Módulo para FoundryVTT que adiciona automações inteligentes para o sistema Tormenta20.**
 
-**Autor:** Zapera | **Versão:** 0.3.0 | **FoundryVTT:** v13+ | **Sistema:** Tormenta20
+**Autor:** Zapera | **Versão:** 0.4.0 | **FoundryVTT:** v13+ | **Sistema:** Tormenta20
 
 ---
 
@@ -36,11 +36,11 @@
 
 **Padrão:**
 
-| Perícia usada | Defesa usada | Como funciona |
-| --- | --- | --- |
-| **Enganação** | Percepção ou Intuição | O mestre escolhe quem defende |
-| **Furtividade** | Percepção | Todos no mapa rolam automaticamente |
-| **Intimidação** | Vontade | Apenas os alvos selecionados rolam |
+| Perícia usada   | Defesa usada          | Como funciona                       |
+| --------------- | --------------------- | ----------------------------------- |
+| **Enganação**   | Percepção ou Intuição | O mestre escolhe quem defende       |
+| **Furtividade** | Percepção             | Todos no mapa rolam automaticamente |
+| **Intimidação** | Vontade               | Apenas os alvos selecionados rolam  |
 
 **Configurações:**
 
@@ -114,7 +114,7 @@
 
 ### 6️⃣ Contador de Magia Sustentada ⚙️ Configurável
 
-**O que faz:** Gerencia o ciclo completo de magias sustentadas (magias que custam 1 PM por rodada para manter ativadas). Ao lançar uma magia sustentada, o módulo aplica um efeito no personagem. A cada turno do personagem em combate, o mestre recebe uma pergunta: *"Deseja pagar 1 PM para sustentar [magia]?"*
+**O que faz:** Gerencia o ciclo completo de magias sustentadas (magias que custam 1 PM por rodada para manter ativadas). Ao lançar uma magia sustentada, o módulo aplica um efeito no personagem. A cada turno do personagem em combate, o mestre recebe uma pergunta: _"Deseja pagar 1 PM para sustentar [magia]?"_
 
 **Resultado:** Se o mestre confirmar, 1 PM é descontado automaticamente. Se recusar ou não tiver PM suficiente, o efeito é removido.
 
@@ -153,10 +153,10 @@
 
 **Modos disponíveis:**
 
-| Modo | Velocidade |
-| --- | --- |
-| **A pé** | Caminhada normal (usa o personagem mais lento do grupo) |
-| **Carroça** | 9m por rodada (36 km/dia) |
+| Modo        | Velocidade                                              |
+| ----------- | ------------------------------------------------------- |
+| **A pé**    | Caminhada normal (usa o personagem mais lento do grupo) |
+| **Carroça** | 9m por rodada (36 km/dia)                               |
 
 **Configurações:**
 
@@ -200,10 +200,10 @@
 
 **Fórmula da CD:** `10 + metade do nível do aplicador + modificador do atributo-chave`
 
-| Tipo de item | Como a CD é calculada | Tipo de teste |
-| --- | --- | --- |
+| Tipo de item                       | Como a CD é calculada                             | Tipo de teste    |
+| ---------------------------------- | ------------------------------------------------- | ---------------- |
 | **Alquímico** (ex: Fogo Alquímico) | Atributo-chave lido da descrição (ex: "CD + Des") | Reflexo (padrão) |
-| **Veneno** (lista configurável) | Sempre usa Int como atributo-chave | Fortitude |
+| **Veneno** (lista configurável)    | Sempre usa Int como atributo-chave                | Fortitude        |
 
 **Bônus de poderes (Venefício, etc.):** O módulo confia no sistema T20. Quando o jogador marca poderes no dialog de uso do item, o sistema já aplica os bônus à CD — o módulo usa o valor final que o sistema calculou.
 
@@ -225,11 +225,11 @@
 
 **O que faz:** Automatiza três condições que têm efeitos no início do turno do personagem afetado:
 
-| Condição | Efeito |
-|---|---|
+| Condição      | Efeito                                                                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | **Em Chamas** | Pergunta se o personagem gasta uma ação padrão para apagar. Se sim → remove condição. Se não → rola 1d6 de dano de fogo automaticamente |
-| **Sangrando** | Mostra prompt para rolar teste de Constituição (CD 15). Se passar → remove condição. Se falhar → rola 1d6 de dano de perda |
-| **Confuso** | Rola 1d6 automaticamente. Resultado 1–5 → posta mensagem com efeito. Resultado 6 → remove condição e age normalmente |
+| **Sangrando** | Mostra prompt para rolar teste de Constituição (CD 15). Se passar → remove condição. Se falhar → rola 1d6 de dano de perda              |
+| **Confuso**   | Rola 1d6 automaticamente. Resultado 1–5 → posta mensagem com efeito. Resultado 6 → remove condição e age normalmente                    |
 
 **Configurações:**
 
@@ -257,14 +257,14 @@
 
 O módulo vem com uma coleção de macros prontas para uso, acessíveis pela biblioteca de macros do FoundryVTT:
 
-| Macro | O que faz |
-|---|---|
-| **Baú (Item Piles)** | Transforma tokens selecionados em pilhas de loot (baú, corpo ou mantém a imagem original). Requer o módulo Item Piles. |
-| **Visão do Token** | Configura rapidamente a visão no escuro e fontes de luz (tocha, luz mágica, escuridão, olho do beholder) para os tokens selecionados. |
-| **Dano de Queda** | Calcula e rola o dano de queda conforme as regras do Tormenta20, com suporte a quedas na água e objetos pesados. |
-| **Relógio de Tibares** | Aplica a regra de Custo de Vida, descontando moedas automaticamente de cada personagem. O GM seleciona o estilo de vida (Pobre, Médio, Rico, Luxuoso) e o período (dia ou mês) individualmente para cada PJ em uma única tela de configuração. |
-| **Ração de Viagem** | Desconta rações automaticamente de cada personagem. Abre um dialog onde o GM seleciona quantas rações consumir, lê a quantidade atual do item em tempo real e desconta individualmente para cada PJ. Suporta múltiplos nomes de campo com fallback inteligente. |
-| **Limpar Réguas** | Remove todas as réguas de medição do cenário atual com um clique. |
+| Macro                  | O que faz                                                                                                                                                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Baú (Item Piles)**   | Transforma tokens selecionados em pilhas de loot (baú, corpo ou mantém a imagem original). Requer o módulo Item Piles.                                                                                                                                          |
+| **Visão do Token**     | Configura rapidamente a visão no escuro e fontes de luz (tocha, luz mágica, escuridão, olho do beholder) para os tokens selecionados.                                                                                                                           |
+| **Dano de Queda**      | Calcula e rola o dano de queda conforme as regras do Tormenta20, com suporte a quedas na água e objetos pesados.                                                                                                                                                |
+| **Relógio de Tibares** | Aplica a regra de Custo de Vida, descontando moedas automaticamente de cada personagem. O GM seleciona o estilo de vida (Pobre, Médio, Rico, Luxuoso) e o período (dia ou mês) individualmente para cada PJ em uma única tela de configuração.                  |
+| **Ração de Viagem**    | Desconta rações automaticamente de cada personagem. Abre um dialog onde o GM seleciona quantas rações consumir, lê a quantidade atual do item em tempo real e desconta individualmente para cada PJ. Suporta múltiplos nomes de campo com fallback inteligente. |
+| **Limpar Réguas**      | Remove todas as réguas de medição do cenário atual com um clique.                                                                                                                                                                                               |
 
 ---
 
