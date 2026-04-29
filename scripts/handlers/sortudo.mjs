@@ -106,9 +106,10 @@ async function handleSortudoClick(message, actor, btnContainer) {
   // 3. Gastar 3 PM
   await actor.update({ "system.attributes.pm.value": pm - 3 });
 
-  // Rerolar com a mesma fórmula
+  // Rerolar com a mesma fórmula e opções do roll original
+  // (options inclui rollType, flavor etc. que o sistema usa para colorir nat1/nat20)
   const oldRoll = message.rolls[0];
-  const newRoll = await new Roll(oldRoll.formula).evaluate();
+  const newRoll = await new Roll(oldRoll.formula, oldRoll.data, oldRoll.options).evaluate();
 
   // Efeito visual via Sequencer (se disponível)
   if (typeof Sequence !== "undefined") {
@@ -133,12 +134,20 @@ async function handleSortudoClick(message, actor, btnContainer) {
   const flavor = `<strong>${headerTitle} (Sortudo)</strong>`;
 
   // Deixar o sistema T20 gerar o card normalmente — sem `content` customizado.
-  // Isso garante que o hook renderChatMessageHTML do sistema aplique as classes
-  // de coloração (nat 20 dourado, nat 1 vermelho) no .dice-total.
+  // Herdar flags tormenta20 do roll original garante que o sistema aplique
+  // as classes de coloração (nat 20 dourado, nat 1 vermelho) no .dice-total.
+  const originalT20Flags = message.flags?.tormenta20 ?? {};
   await newRoll.toMessage({
     speaker: message.speaker,
     flavor,
-    flags: { tormenta20: { rollType: "pericia" } },
+    rollMode: message.rollMode ?? CONST.DICE_ROLL_MODES.PUBLIC,
+    flags: {
+      tormenta20: {
+        ...originalT20Flags,
+        rollType: originalT20Flags.rollType ?? "pericia",
+        sortudoReroll: true,
+      },
+    },
   });
 
   console.log(`T20 Zapera | ${actor.name} usou Sortudo (3 PM)`);
