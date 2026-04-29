@@ -54,6 +54,7 @@ const MOD_TEMPLATES = [
   `modules/${MOD}/templates/item-auto-save-config/main.hbs`,
   `modules/${MOD}/templates/condition-turns/em-chamas.hbs`,
   `modules/${MOD}/templates/condition-turns/sangrando.hbs`,
+  `modules/${MOD}/templates/condition-turns/teste-morte.hbs`,
   `modules/${MOD}/templates/condition-turns/confuso.hbs`,
   `modules/${MOD}/templates/condition-turns/confuso-prompt.hbs`,
   `modules/${MOD}/templates/life-drain-config/spell-editor.hbs`,
