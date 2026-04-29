@@ -76,7 +76,11 @@ export async function openActorPicker({
             addedIds.add(actor.id);
 
             const skl = actor.system?.pericias?.[defenseKey];
-            const bonusVal = skl ? `+${skl.value}` : "?";
+            const bonusVal = skl
+              ? skl.value >= 0
+                ? `+${skl.value}`
+                : `${skl.value}`
+              : "?";
             const em = dropZone.querySelector("em");
             if (em) em.remove();
 
